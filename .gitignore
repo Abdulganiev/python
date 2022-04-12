@@ -1,3 +1,8 @@
+*.xml
+*.xlsx
+*.xls
 *.txt
+*.csv
 *.bat
-
+.ipynb_checkpoints
+__pycache__
