@@ -1,7 +1,8 @@
 import jaydebeapi
 import json
+from datetime import datetime
 
-path = "access to the database.txt"
+path = "access_report.txt"
 with open(path) as f:
     access = json.load(f)
     
@@ -52,5 +53,13 @@ def alarm_ep():
         end;
         '''
         )
+        return cnt
 
-alarm_ep()
+cnt = alarm_ep()
+
+log = "signature_error.log"
+day = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+with open(f'log/{log}', 'a') as f:
+    f.write('**************************************\n')
+    f.write(f'{day} - {cnt}\n')
