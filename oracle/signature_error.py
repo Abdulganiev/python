@@ -1,6 +1,8 @@
 import jaydebeapi
 import json
 from datetime import datetime
+from smtp import *
+
 
 path = "access_report.txt"
 with open(path) as f:
@@ -63,3 +65,5 @@ day = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 with open(f'log/{log}', 'a') as f:
     f.write('**************************************\n')
     f.write(f'{day} - {cnt}\n')
+
+send_email('IVAbdulganiev@yanao.ru', 'Проверка ЭП сделана', msg_text=f'{day} - {cnt}\n')

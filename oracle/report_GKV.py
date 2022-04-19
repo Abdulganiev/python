@@ -2,6 +2,8 @@ import pandas as pd
 import jaydebeapi
 import json
 import datetime as dt
+import os
+from smtp import *
 
 path = "access_report.txt"
 with open(path) as f:
@@ -106,4 +108,13 @@ group by region_id''')
     file_name = f'отчет ЖКВ за {date_report} в разрезе МО'+ '.xlsx'
     df.to_excel(file_name, index=False)
 
-GKH()
+    return file_name
+
+today = dt.date.today()
+file_name = GKH()
+
+send_email('IVAbdulganiev@yanao.ru, MSNesteruk@yanao.ru', f'{file_name} на {today}', msg_text='', files=[file_name])
+
+new_file_name = f'{today} - {file_name}'
+
+os.replace(file_name, f'backup/{new_file_name}') 

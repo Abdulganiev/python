@@ -1,6 +1,7 @@
 import jaydebeapi
 import json
 from datetime import datetime
+from smtp import *
 
 path = "access_report.txt"
 with open(path) as f:
@@ -123,3 +124,5 @@ with open(f'log/{log}', 'a') as f:
     f.write(f'{day} - {cnt2} записей после загрузки\n')
 
 count_collection(conn)
+
+send_email('IVAbdulganiev@yanao.ru', 'Коллекции для ГИС ЖКХ обновлены', msg_text=f'{day} - {cnt2} записей после загрузки\n')
