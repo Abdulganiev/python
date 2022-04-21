@@ -125,7 +125,12 @@ for row in mo:
     file = row + '.xlsx'
     data[data['район'].isin([row])].to_excel(file, index=False)
     path = 'c:/VipoNet_out/'
-    shutil.move(file, path)
+    try:
+      shutil.move(file, path)
+    except:
+      send_email('IVAbdulganiev@yanao.ru', 'Данные ЕГР ЗАГС - ошибка переноса файла', msg_text=file)
+      text = f'Данные ЕГР ЗАГС - ошибка переноса файла {file} в папку {path}'
+      log(text)      
     files += file + '\n'
 
 log(files)
