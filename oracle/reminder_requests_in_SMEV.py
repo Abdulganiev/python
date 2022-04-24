@@ -1,10 +1,6 @@
 import jaydebeapi
 import json
-from datetime import datetime
-from smtp import *
-from writing_to_log_file import *
-import shutil
-import pandas as pd
+from generating_report_files import *
 
 path = "access_report.txt"
 with open(path) as f:
@@ -146,29 +142,15 @@ where EGISSO!=1 or /*zak_brak!=1 or sm!=1 or*/ AVTO!=1 or FNS_vznos!=1 or FNS_3_
         data['ID ребенка'].append(row[4])
         data['ID получателя'].append(row[5])
         data['Какой запрос необходимо сделать'].append(row[6])
-    df = pd.DataFrame(data)
-    return df
+    
+    return data
 
 #***************************************************************
 
 data = reminder_requests_in_SMEV()
+name_log = 'reminder_requests_in_SMEV'
+name_def = 'Запросы в СМЭВ для переходников на 3-7'
+test = 0
+mail = 'IVAbdulganiev@yanao.ru'
 
-files = ''
-
-mo = set(data['name'])
-
-for row in mo:
-    file = row + '.xlsx'
-    data[data['name'].isin([row])].to_excel(file, index=False)
-    path = 'c:/VipoNet_out/'
-    try:
-      shutil.move(file, path)
-    except:
-      send_email('IVAbdulganiev@yanao.ru', 'Запросы в СМЭВ для переходников на 3-7  - ошибка переноса файла', msg_text=file)
-      text = f'Запросы в СМЭВ для переходников на 3-7 - ошибка переноса файла {file} в папку {path}'
-      writing_to_log_file('reminder_requests_in_SMEV', text)      
-    files += file + '\n'
-
-writing_to_log_file('reminder_requests_in_SMEV', '\n'+files)
-
-send_email('IVAbdulganiev@yanao.ru', 'Запросы в СМЭВ для переходников на 3-7 в МО отправлены', msg_text=files)
+generating_report_files(data, name_log, name_def, test, mail)

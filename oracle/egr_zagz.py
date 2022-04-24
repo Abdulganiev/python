@@ -1,9 +1,7 @@
 import jaydebeapi
 import json
-from datetime import datetime
-from smtp import *
-import shutil
-import pandas as pd
+from generating_report_files import *
+
 
 path = "access_report.txt"
 with open(path) as f:
@@ -23,16 +21,6 @@ conn = jaydebeapi.connect(
     driver)
 
 curs = conn.cursor()
-
-#***************************************************************
-def log(file):
-  log = "egr_zagz.log"
-  day = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-
-  with open(f'log/{log}', 'a') as f:
-      f.write('**********************************************\n')
-      f.write(f'{day}\n')
-      f.write(f'{file}\n')
 
 #***************************************************************
 def zags_sm():
@@ -85,7 +73,7 @@ where
     pc.birth_date=z.DR and pc.death_date is null''')
     
     data = {
-         'район' : [],
+         'name' : [],
          'id+МО' : [] ,
          'id человека' : [] ,
          'ФИО и д.р' : [] ,
@@ -99,7 +87,7 @@ where
         }
     
     for row in curs.fetchall():
-        data['район'].append(row[0])
+        data['name'].append(row[0])
         data['id+МО'].append(row[1])
         data['id человека'].append(row[2])
         data['ФИО и д.р'].append(row[3])
@@ -111,28 +99,15 @@ where
         data['Дата акта свидетельства'].append(row[9])
         data['Номер акта свидетельства'].append(row[10])
     
-    df = pd.DataFrame(data)
-    return df
+    return data
 
 #***************************************************************
 
 data = zags_sm()
 
-files = ''
+name_log = 'zags_sm'
+name_def = 'Данные ЕГР ЗАГС'
+test = 0
+mail = 'IVAbdulganiev@yanao.ru'
 
-mo = set(data['район'])
-for row in mo:
-    file = row + '.xlsx'
-    data[data['район'].isin([row])].to_excel(file, index=False)
-    path = 'c:/VipoNet_out/'
-    try:
-      shutil.move(file, path)
-    except:
-      send_email('IVAbdulganiev@yanao.ru', 'Данные ЕГР ЗАГС - ошибка переноса файла', msg_text=file)
-      text = f'Данные ЕГР ЗАГС - ошибка переноса файла {file} в папку {path}'
-      log(text)      
-    files += file + '\n'
-
-log(files)
-
-send_email('IVAbdulganiev@yanao.ru', 'Данные ЕГР ЗАГС в МО отправлены', msg_text=files)
+generating_report_files(data, name_log, name_def, test, mail)

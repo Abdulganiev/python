@@ -1,10 +1,7 @@
 import jaydebeapi
 import json
-from datetime import datetime
-from smtp import *
-from writing_to_log_file import *
-import shutil
-import pandas as pd
+from generating_report_files import *
+
 
 path = "access_report.txt"
 with open(path) as f:
@@ -108,29 +105,16 @@ select
         data['Факт в календарных днях'].append(row[12])
         data['План в рабочих днях'].append(row[13])
         data['Факт в рабочих днях'].append(row[13])
-    df = pd.DataFrame(data)
-    return df
+    
+    return data
 
 #***************************************************************
 
 data = one_day_left()
 
-files = ''
+name_log = 'one_day_left'
+name_def = 'Гос_услуги - остался 1 день'
+test = 0
+mail = 'IVAbdulganiev@yanao.ru'
 
-mo = set(data['name'])
-
-for row in mo:
-    file = row + '.xlsx'
-    data[data['name'].isin([row])].to_excel(file, index=False)
-    path = 'c:/VipoNet_out/'
-    try:
-      shutil.move(file, path)
-    except:
-      send_email('IVAbdulganiev@yanao.ru', 'Гос_услуги - остался 1 день - ошибка переноса файла', msg_text=file)
-      text = f'Гос_услуги - остался 1 день - ошибка переноса файла {file} в папку {path}'
-      writing_to_log_file('one_day_left', text)      
-    files += file + '\n'
-
-writing_to_log_file('one_day_left', '\n'+files)
-
-send_email('IVAbdulganiev@yanao.ru', 'Гос_услуги - остался 1 день в МО отправлены', msg_text=files)
+generating_report_files(data, name_log, name_def, test, mail)

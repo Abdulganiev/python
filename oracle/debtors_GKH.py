@@ -153,32 +153,15 @@ where pc.region_id=c.region_id and pc.id=c.id''')
         data['ФИО из ответа'].append(row[7])
         data['Организация'].append(row[8])
         data['Организация телефон'].append(row[9])
-
-    df = pd.DataFrame(data)
-    return df
+    
+    return data
 
 #***************************************************************
 
-
-
-
 data = debtors_GKH()
+name_log = 'debtors_GKH'
+name_def = 'Должники ГИС ЖКХ'
+test = 0
+mail = 'IVAbdulganiev@yanao.ru'
 
-files = ''
-
-mo = set(data['Район'])
-for row in mo:
-    file = row + '.xlsx'
-    data[data['Район'].isin([row])].to_excel(file, index=False)
-    path = 'c:/VipoNet_out/'
-    try:
-      shutil.move(file, path)
-    except:
-      send_email('IVAbdulganiev@yanao.ru', 'Должники ГИС ЖКХ - ошибка переноса файла', msg_text=file)
-      text = f'Должники ГИС ЖКХ - ошибка переноса файла {file} в папку {path}'
-      writing_to_log_file('debtors_GKH', text)      
-    files += file + '\n'
-
-writing_to_log_file('debtors_GKH', '\n'+files)
-
-send_email('IVAbdulganiev@yanao.ru', 'Должники ГИС ЖКХ в МО отправлены', msg_text=files)
+generating_report_files(data, name_log, name_def, test, mail)
