@@ -9,4 +9,5 @@ def writing_to_log_file(file, text):
     path = 'log/' + log_file
     # print(text)
     with open(path, 'a+') as file_log:
-        file_log.write(dt + ' : ' + text + '\n')
+        log = f'{dt} : {text} \n'
+        file_log.write(log)
