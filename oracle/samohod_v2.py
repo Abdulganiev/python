@@ -13,7 +13,7 @@ def v2_table_all(conn):
     writing_to_log_file(f'Количество записей в uszn.temp$_snowmobile_all перед загрузкой - {cnt}')
 
     curs.execute('''INSERT INTO uszn.temp$_snowmobile_all (CarNumber, Brand, Name, RegDate, YearRelease, Owner, Address, IdentityDoc, Who, DateIssue, BirthDate, UploadDate)
-                    SELECT t1.*
+                    SELECT t1.CarNumber, t1.Brand, t1.Name, t1.RegDate, t1.YearRelease, t1.Owner, t1.Address, t1.IdentityDoc, t1.Who, t1.DateIssue, t1.BirthDate,  t1.uploaddate
                     FROM uszn.temp$_snowmobile_temp t1
                          LEFT JOIN uszn.temp$_snowmobile_all t2
                     on t1.uploaddate = t2.uploaddate

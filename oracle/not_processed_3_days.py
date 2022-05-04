@@ -65,7 +65,7 @@ on
         data['Гос_услуга'].append(row[5])
         data['Статус'].append(row[6])
         data['Откуда пришло заявление'].append(row[7])
-    # df = pd.DataFrame(data)
+
     return data
 
 #***************************************************************
@@ -73,7 +73,7 @@ on
 data = not_processed_3_days()
 name_log = 'not_processed_3_days'
 name_def = 'Гос_услуги необработанные более 3 дней'
-test = 1
+test = 0
 mail = 'IVAbdulganiev@yanao.ru'
 
 generating_report_files(data, name_log, name_def, test, mail)

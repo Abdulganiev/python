@@ -106,7 +106,7 @@ SELECT t1.id,
 group by t1.id, name''')
       col_id, col_name, col_cnt = curs.fetchall()[0]
       with open(f'log/{log}', 'a') as f:
-        f.write(f'id-{col_id}, {col_name} - {col_cnt} количество записей\n')
+        f.write(f'{region_id}-{col_id}, {col_name} - {col_cnt} количество записей\n')
 
 log = "requests_gis_gkh.log"
 day = datetime.now().strftime('%Y-%m-%d %H:%M:%S')

@@ -1,10 +1,7 @@
 import jaydebeapi
 import json
-from datetime import datetime
-from smtp import *
-from writing_to_log_file import *
-import shutil
-import pandas as pd
+from generating_report_files import *
+
 
 path = "access_report.txt"
 with open(path) as f:
@@ -131,7 +128,7 @@ where pc.region_id=c.region_id and pc.id=c.id''')
     
     data = {
          'id района' : [],
-         'Район' : [] ,
+         'name' : [] ,
          'id человека' : [] ,
          'id заявления' : [] ,
          'СНИЛС' : [] ,
@@ -144,7 +141,7 @@ where pc.region_id=c.region_id and pc.id=c.id''')
     
     for row in curs.fetchall():
         data['id района'].append(row[0])
-        data['Район'].append(row[1])
+        data['name'].append(row[1])
         data['id человека'].append(row[2])
         data['id заявления'].append(row[3])
         data['СНИЛС'].append(row[4])
