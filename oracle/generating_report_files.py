@@ -62,4 +62,30 @@ def generating_report_files_PFR(df, name_log, name_def, test, mail):
       	send_email('IVAbdulganiev@yanao.ru', f'{name_def} - ошибка переноса файла', msg_text=file)
       	text = f'{name_def} - ошибка переноса файла {file} в папку {path}'
       	writing_to_log_file(name_log, text)      
-    	
+
+def generating_report_files_PFR_2(name_log, name_def, test, mail, text):
+	dt = datetime.now().strftime('%m-%Y')
+	new_file = name_def
+	path_backup = 'd:/python/schedule/backup/'
+
+	if test == 1:
+		path = 'c:/VipoNet_out1/'
+	else:
+		path = 'c:/VipoNet_out/'
+
+	try:
+		os.remove(f'{path}/{new_file}')
+		os.remove(f'{path_backup}/{new_file}')
+	except:
+		pass
+	
+	try:
+		shutil.copy(new_file, path)
+		shutil.move(new_file, path_backup)
+		writing_to_log_file(name_log, new_file)
+		send_email(mail, f'{name_def} в ПФР отправлен', msg_text=text)
+		writing_to_log_file(name_log, f'Файл {new_file} перемещен в backup')
+	except:
+		send_email('IVAbdulganiev@yanao.ru', f'{new_file} - ошибка переноса файла', msg_text=new_file)
+		text = f'{name_def} - ошибка переноса файла {new_file} в папку {path}'
+		writing_to_log_file(name_log, text)
