@@ -28,7 +28,7 @@ curs = conn.cursor()
 def not_correct_GU_MSP():
     curs.execute('''
 select t.pc_id, t.region_id, t.id, t.message_guid, t.adr, t.request_pdoc_id, t.smev_message_id, t.state_service_name,
- (case when upper(t.adr) like '%НОВЫЙ%' then 58
+ (case when upper(t.adr) like '%НОВЫЙ У%' then 58
        when upper(t.adr) like '%КРАСНОСЕЛЬКУП%' then 59
        when upper(t.adr) like '%САЛЕХАРД%' then 60
        when upper(t.adr) like '%ЛАБЫТНАНГ%' then 62
@@ -103,12 +103,40 @@ where
 
 #***************************************************************
 
-def ararm_sql(sql, log, mail):
+def ararm_sql(sql1, sql2, sql3, log, mail):
     try:
-        curs.execute(sql)
+        curs.execute(sql1)
+        cnt_e1 = 1
+        alarm1 = ''
+    except Exception as e1:
+        alarm1 = str(e1)
+        cnt_e1 = 0
+    
+    try:
+        curs.execute(sql2)
+        cnt_e2 = 1
+        alarm2 = ''
+    except Exception as e2:
+        alarm2 = str(e2)
+        cnt_e2 = 0
+    
+    try:
+        curs.execute(sql3)
+        cnt_e3 = 1
+        alarm3 = ''
+    except Exception as e3:
+        alarm3 = str(e3)
+        cnt_e3 = 0
+        
+    if (cnt_e1 + cnt_e2 + cnt_e3) == 3:
         return 1
-    except:
-        text = f'ошибка \n {sql}'
+    else:
+        text = f'''ошибка 
+*********** {cnt_e1} \n {sql1} \n *********** \n {alarm1} \n 
+*********** {cnt_e2} \n {sql2} \n *********** \n {alarm2} \n 
+*********** {cnt_e3} \n {sql3} \n *********** \n {alarm3}'''
+        
+
         name_log = f'Alarm sql - {log}'
         writing_to_log_file(name_log, text)
         send_email(mail, name_log, msg_text=text)
@@ -128,7 +156,7 @@ def not_correct_GU_MSP_transfer(df):
             state_service_name = row[7]
             mo_out = row[8]
             
-            sql = f'''begin
+            sql1 = f'''begin -- заявитель {pc_id} МСП {state_service_name}
     delete from uszn.r_ssvc_requests where region_id={region_id} and id={id};
     update uszn.all_smev2_inc_messages set region_id={mo_out}
         where message_guid=uszn.pkXMLUtils.StrToGuid('{message_guid}');
@@ -150,20 +178,24 @@ def not_correct_GU_MSP_transfer(df):
         iOperationTagID := uszn.pkXMLImp.GetChildTagID(iSOAPBodyTagID, 1, 0);
         uszn.pkWSStateSvc.ProcessCreateApplication(rMessageGUID, iOperationTagID, 1);
     end;
-    declare
-        iiIDs uszn.pkGen.TIntegers;
-        i$ Pls_Integer;
-    begin
-      select id bulk collect into iiIDs
-        from uszn.all_personal_doc_files
-        where region_id={region_id} and pdoc_id={request_pdoc_id}
-      order by id;
-      for i in 1..iiIDs.count loop
-        begin
-          uszn.pkPerson.DeletePDocFile({region_id},iiIDs(i),1);
-        end;
-      end loop;
-    end;
+end;'''    
+            sql2 = f'''begin
+            declare
+    iiIDs uszn.pkGen.TIntegers;
+    i$ Pls_Integer;
+begin
+    select id bulk collect into iiIDs
+      from uszn.all_personal_doc_files
+      where region_id={region_id} and pdoc_id={request_pdoc_id}
+    order by id;
+    for i in 1..iiIDs.count loop
+      begin
+        uszn.pkPerson.DeletePDocFile({region_id},iiIDs(i),1);
+      end;
+    end loop;
+end;
+end;'''
+            sql3 = f'''begin    
     delete from uszn.r_personal_docs where region_id={region_id} and id={request_pdoc_id};
     begin
       uszn.pkSMEVProv.ScheduleAsyncProcessing(uszn.pkSMEVProv.GetMessageGUID({smev_message_id},1));
@@ -173,7 +205,7 @@ end;'''
             name_log = 'not_correct_GU_MSP'
             mail = 'IVAbdulganiev@yanao.ru'
 
-            resume = ararm_sql(sql, name_log, mail)
+            resume = ararm_sql(sql1, sql2, sql3, name_log, mail)
 
             if resume == 1:
                 text = f'Заявитель {pc_id} c МСП {state_service_name} перенесен в {mo_out}, его адрес {adr}'
