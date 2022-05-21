@@ -29,7 +29,7 @@ curs = conn.cursor()
 def not_correct_GU_PGS():
     curs.execute('''
 select t.pc_id, t.region_id, t.id, t.message_guid, t.adr, t.request_pdoc_id, t.smev_message_id, t.state_service_name,
- (case when upper(t.adr) like '%НОВЫЙ%' then 58
+ (case when upper(t.adr) like '%НОВЫЙ У%' then 58
        when upper(t.adr) like '%КРАСНОСЕЛЬКУП%' then 59
        when upper(t.adr) like '%САЛЕХАРД%' then 60
        when upper(t.adr) like '%ЛАБЫТНАНГ%' then 62
