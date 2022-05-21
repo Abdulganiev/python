@@ -33,35 +33,56 @@ def generating_report_files(df, name_log, name_def, test, mail):
 		writing_to_log_file(name_log, text)
 		send_email(mail, f'{name_def} - {text}', msg_text='')
 
+# *****************************************************************
+
 def generating_report_files_PFR(df, name_log, name_def, test, mail):
     data = pd.DataFrame(df)
     dt = datetime.now().strftime('%m-%Y')
     file = f'{name_def}{dt}.xlsx'
     data.to_excel(file, index=False)
+    writing_to_log_file(name_log, f'создали файл {file}')
+
     if test == 1:
         path = 'c:/VipoNet_out1/'
+        writing_to_log_file(name_log, f'path {path}')
     else:
         path = 'c:/VipoNet_out/'
+        writing_to_log_file(name_log, f'path {path}')
     try:
 	    path_backup = 'd:/python/schedule/backup/'
+	    writing_to_log_file(name_log, f'path_backup {path_backup}')
 	    
-	    new_file = file + '.zip'
-	    zipFile = zipfile.ZipFile(new_file, 'w', zipfile.ZIP_DEFLATED)
-	    zipFile.write(file)
-	    zipFile.close()
-	    shutil.move(new_file, path)
+	    try:
+	    	new_file = file + '.zip'
+	    	writing_to_log_file(name_log, f'архирование файла {new_file}')
+	    	zipFile = zipfile.ZipFile(new_file, 'w', zipfile.ZIP_DEFLATED)
+	    	zipFile.write(file)
+	    	zipFile.close()
+	    except:
+	    	writing_to_log_file(name_log, 'ошибка архивирования файла {file} в {new_file}')
+	    
+	    try:
+	    	shutil.move(new_file, path)
+	    	writing_to_log_file(name_log, f'перенесли {new_file} в {path}')
+	    except:
+	    	writing_to_log_file(name_log, f'ошибка переноса {new_file} в {path}')
 
-	    today = dt.date.today()
-	    new_file_name = f'{today} - {file}'
-	    os.replace(file, f'backup/{new_file_name}')
+	    try:
+	    	shutil.move(file, path_backup)
+	    	writing_to_log_file(name_log, f'перенесли {file} в {path_backup}')
+	    except:
+	    	writing_to_log_file(name_log, f'ошибка переноса {file} в {path_backup}')
 
 	    writing_to_log_file(name_log, new_file)
+
 	    send_email(mail, f'{name_def} в ПФР отправлен', msg_text=new_file)
-	    writing_to_log_file(name_log, f'Файл {file} перемещен в backup и переименован в {new_file_name}')
-    except:
-      	send_email('IVAbdulganiev@yanao.ru', f'{name_def} - ошибка переноса файла', msg_text=file)
-      	text = f'{name_def} - ошибка переноса файла {file} в папку {path}'
+	    writing_to_log_file(name_log, f'{name_def} в ПФР отправлен')
+    except Exception as e:
+      	text = f'{name_def} - ошибка'
+      	send_email(mail, f'{name_def} - ошибка ', msg_text=text)
       	writing_to_log_file(name_log, text)      
+
+# *****************************************************************
 
 def generating_report_files_PFR_2(name_log, name_def, test, mail, text):
 	dt = datetime.now().strftime('%m-%Y')

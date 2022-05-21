@@ -106,6 +106,6 @@ for key, value in report.items():
 name_log = 'PFR_file_request'
 name_def = file_zip
 test = 0
-mail = 'IVAbdulganiev@yanao.ru'
+mail = 'IVAbdulganiev@yanao.ru,AVShashkov@yanao.ru'
     
 generating_report_files_PFR_2(name_log, name_def, test, mail, text_report)

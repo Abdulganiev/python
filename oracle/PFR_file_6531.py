@@ -67,7 +67,7 @@ with zipfile.ZipFile(file_zip, 'a') as myzip:
 text = f'Количество строк в файле - {cnt}'
 name_log = 'PFR_file_6531'
 name_def = file_zip
-test = 1
+test = 0
 mail = 'IVAbdulganiev@yanao.ru'
     
 generating_report_files_PFR_2(name_log, name_def, test, mail, text)
