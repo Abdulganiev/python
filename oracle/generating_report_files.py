@@ -94,19 +94,43 @@ def generating_report_files_PFR_2(name_log, name_def, test, mail, text):
 	else:
 		path = 'c:/VipoNet_out/'
 
+	writing_to_log_file(name_log, f'выбран режим {test} - {path}')
+
 	try:
-		os.remove(f'{path}/{new_file}')
-		os.remove(f'{path_backup}/{new_file}')
-	except:
-		pass
+		os.remove(f'{path}{new_file}')
+		writing_to_log_file(name_log, f'{path}{new_file} удален')
+	except Exception as e:
+		writing_to_log_file(name_log, f'сбой при удалении {path}{new_file}, ошибка {e}')
+
+	try:
+		os.remove(f'{path_backup}{new_file}')
+		writing_to_log_file(name_log, f'{path_backup}{new_file} удален')
+	except Exception as e:
+		writing_to_log_file(name_log, f'сбой при удалении {path_backup}{new_file}, ошибка {e}')
 	
+	cnt = 0 # счетчик для отправки
+
 	try:
 		shutil.copy(new_file, path)
-		shutil.move(new_file, path_backup)
-		writing_to_log_file(name_log, new_file)
-		send_email(mail, f'{name_def} в ПФР отправлен', msg_text=text)
-		writing_to_log_file(name_log, f'Файл {new_file} перемещен в backup')
-	except:
-		send_email('IVAbdulganiev@yanao.ru', f'{new_file} - ошибка переноса файла', msg_text=new_file)
-		text = f'{name_def} - ошибка переноса файла {new_file} в папку {path}'
+		writing_to_log_file(name_log, f'Файл {new_file} скопирован в {path}')
+		cnt += 1
+	except Exception as e:
+		text = f'{name_def} - ошибка копирования файла {new_file} в папку {path}, ошибка - {e}'
+		send_email(mail, f'{new_file} - ошибка переноса файла', msg_text=text)
 		writing_to_log_file(name_log, text)
+
+	try:
+		shutil.move(new_file, path_backup)
+		writing_to_log_file(name_log, f'Файл {new_file} перемещен в {path_backup}')
+		cnt += 1
+	except Exception as e:
+		text = f'{name_def} - ошибка переноса файла {new_file} в папку {path_backup}, ошибка - {e}'
+		send_email(mail, f'{new_file} - ошибка переноса файла', msg_text=text)
+		writing_to_log_file(name_log, text)
+
+	if cnt == 2:
+		send_email(mail, f'{name_def} в ПФР отправлен', msg_text=text)
+		writing_to_log_file(name_log, f'Письмо отправлено с текстом - {text}')
+	else:
+		send_email(mail, f'Alarm {name_def}', msg_text=text)
+		writing_to_log_file(name_log, 'Письмо "Alarm" отправлено')
