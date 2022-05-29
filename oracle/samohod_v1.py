@@ -1,26 +1,28 @@
 import pandas as pd
-import os, sys, re
-from datetime import datetime
-import subprocess
+from generating_report_files import *
 
-def writing_to_log_file(text):
-    # '''функция создания лог файла и записи в него информации'''
-    dt = datetime.now().strftime('%Y-%m-%d %X')
-    log_file = re.sub('\W', '_', datetime.now().strftime('%Y-%m-%d')) + ' samohod.log'
-    path = 'log/' + log_file
-    # print(text)
-    with open(path, 'a+') as file_log:
-        file_log.write(dt + ' : ' + text + '\n')
+#***************************************************************
+log = 'samohod'
+curs = connect_oracle()
 
 #****************************************************************************************************
-def v1_table_all(conn):
-    curs = conn.cursor()
+def v1(xl):
+    v1_drop()
+    v1_insert(xl)
+    v1_table_all()
+    v1_table_del()
+    v1_table_new()
+    v1_table_chahge()
+    v1_table_update()
+    v1_table_insert()
 
-    writing_to_log_file('Загрузка данных в uszn.temp$_snowmobile_all')
+#****************************************************************************************************
+def v1_table_all():
+    writing_to_log_file(log, 'Загрузка данных в uszn.temp$_snowmobile_all')
     
     curs.execute('SELECT count(*) FROM uszn.temp$_snowmobile_all')
     cnt = curs.fetchone()[0]
-    writing_to_log_file(f'Количество записей в uszn.temp$_snowmobile_all перед загрузкой - {cnt}')
+    writing_to_log_file(log, f'Количество записей в uszn.temp$_snowmobile_all перед загрузкой - {cnt}')
 
     curs.execute('''INSERT INTO uszn.temp$_snowmobile_all (CarNumber, Brand, Name, YearRelease, Owner, Address, IdentityDoc, Who, DateIssue, BirthDate, RegDate, UploadDate)
                     SELECT t1.CarNumber, t1.Brand, t1.Name, t1.YearRelease, t1.Owner, t1.Address, t1.IdentityDoc, t1.Who, t1.DateIssue, t1.BirthDate, t1.RegDate, t1.UploadDate
@@ -31,17 +33,15 @@ def v1_table_all(conn):
 
     curs.execute('SELECT count(*) FROM uszn.temp$_snowmobile_all')
     cnt = curs.fetchone()[0]
-    writing_to_log_file(f'Количество записей в uszn.temp$_snowmobile_all после загрузки - {cnt}')
+    writing_to_log_file(log, f'Количество записей в uszn.temp$_snowmobile_all после загрузки - {cnt}')
 
 #****************************************************************************************************
-def v1_table_del(conn):
-    curs = conn.cursor()
-
-    writing_to_log_file('Удаление таблицы uszn.temp$_snowmobile_del')
+def v1_table_del():
+    writing_to_log_file(log, 'Удаление таблицы uszn.temp$_snowmobile_del')
     curs.execute('DROP TABLE uszn.temp$_snowmobile_del')
 
-    writing_to_log_file('Создание таблицы uszn.temp$_snowmobile_del из загрузка в нее данных')
-    curs.execute('''CREATE TABLE uszn.temp$_snowmobile_del as
+    writing_to_log_file(log, 'Создание таблицы uszn.temp$_snowmobile_del из загрузка в нее данных')
+    curs.execute('''CREATE TABLE uszn.temp$_snowmobile_del AS
                     SELECT 
                      t1.CarNumber,
                      t1.Brand,
@@ -61,13 +61,11 @@ def v1_table_del(conn):
 
     curs.execute('SELECT count(*) FROM uszn.temp$_snowmobile_del')
     cnt = curs.fetchone()[0]
-    writing_to_log_file(f'Количество записей в uszn.temp$_snowmobile_del после загрузки - {cnt}')
+    writing_to_log_file(log, f'Количество записей в uszn.temp$_snowmobile_del после загрузки - {cnt}')
 
 #****************************************************************************************************
-def v1_table_new(conn):
-    curs = conn.cursor()
-
-    writing_to_log_file('Удаление таблицы uszn.temp$_snowmobile_new')
+def v1_table_new():
+    writing_to_log_file(log, 'Удаление таблицы uszn.temp$_snowmobile_new')
     curs.execute('DROP TABLE uszn.temp$_snowmobile_new')
 
     curs.execute('''CREATE TABLE uszn.temp$_snowmobile_new AS
@@ -90,13 +88,11 @@ def v1_table_new(conn):
 
     curs.execute('SELECT count(*) FROM uszn.temp$_snowmobile_new')
     cnt = curs.fetchone()[0]
-    writing_to_log_file(f'Количество записей в uszn.temp$_snowmobile_new после загрузки - {cnt}')
+    writing_to_log_file(log, f'Количество записей в uszn.temp$_snowmobile_new после загрузки - {cnt}')
 
 #****************************************************************************************************
-def v1_table_chahge(conn):
-    curs = conn.cursor()
-
-    writing_to_log_file('Удаление таблицы uszn.temp$_snowmobile_change')
+def v1_table_chahge():
+    writing_to_log_file(log, 'Удаление таблицы uszn.temp$_snowmobile_change')
     curs.execute('DROP TABLE uszn.temp$_snowmobile_change')
 
     curs.execute('''CREATE TABLE uszn.temp$_snowmobile_change AS
@@ -129,21 +125,19 @@ def v1_table_chahge(conn):
 
     curs.execute('SELECT count(*) FROM uszn.temp$_snowmobile_change')
     cnt = curs.fetchone()[0]
-    writing_to_log_file(f'Количество записей в uszn.temp$_snowmobile_change после загрузки - {cnt}')
+    writing_to_log_file(log, f'Количество записей в uszn.temp$_snowmobile_change после загрузки - {cnt}')
 
 #****************************************************************************************************
-def v1_table_update(conn):
-    curs = conn.cursor()
-
-    writing_to_log_file('Обновление таблицы uszn.temp$_snowmobile из таблицы uszn.temp$_snowmobile_change')
+def v1_table_update():
+    writing_to_log_file(log, 'Обновление таблицы uszn.temp$_snowmobile из таблицы uszn.temp$_snowmobile_change')
     
     curs.execute('SELECT count(*) FROM uszn.temp$_snowmobile_change')
     cnt = curs.fetchone()[0]
-    writing_to_log_file(f'Количество записей в uszn.temp$_snowmobile_change - {cnt}')
+    writing_to_log_file(log, f'Количество записей в uszn.temp$_snowmobile_change - {cnt}')
 
     curs.execute('SELECT count(*) FROM uszn.temp$_snowmobile')
     cnt = curs.fetchone()[0]
-    writing_to_log_file(f'Количество записей в uszn.temp$_snowmobile до загрузки - {cnt}')
+    writing_to_log_file(log, f'Количество записей в uszn.temp$_snowmobile до загрузки - {cnt}')
 
     curs.execute('''UPDATE uszn.temp$_snowmobile
                     SET dateTo = sysdate - INTERVAL '1' SECOND
@@ -152,15 +146,15 @@ def v1_table_update(conn):
 
     curs.execute('SELECT count(*) FROM uszn.temp$_snowmobile')
     cnt = curs.fetchone()[0]
-    writing_to_log_file(f'Количество записей в uszn.temp$_snowmobile после загрузки - {cnt}')
+    writing_to_log_file(log, f'Количество записей в uszn.temp$_snowmobile после загрузки - {cnt}')
 
 
     #******************************
-    writing_to_log_file('Обновление таблицы uszn.temp$_snowmobile из таблицы uszn.temp$_snowmobile_del')
+    writing_to_log_file(log, 'Обновление таблицы uszn.temp$_snowmobile из таблицы uszn.temp$_snowmobile_del')
 
     curs.execute('SELECT count(*) FROM uszn.temp$_snowmobile_del')
     cnt = curs.fetchone()[0]
-    writing_to_log_file(f'Количество записей в uszn.temp$_snowmobile_del - {cnt}')
+    writing_to_log_file(log, f'Количество записей в uszn.temp$_snowmobile_del - {cnt}')
 
     curs.execute('''UPDATE uszn.temp$_snowmobile
                     SET dateTo = sysdate - INTERVAL '1' SECOND
@@ -168,15 +162,13 @@ def v1_table_update(conn):
                     and dateTo = to_date('31.12.9999,23:59:59','dd.mm.yyyy,hh24:mi:ss')''')
     
 #****************************************************************************************************
-def v1_table_insert(conn):
-    curs = conn.cursor()
-
+def v1_table_insert():
     #*****************************
-    writing_to_log_file('Добавление записей в таблице uszn.temp$_snowmobile из таблицы uszn.temp$_snowmobile_new')
+    writing_to_log_file(log, 'Добавление записей в таблице uszn.temp$_snowmobile из таблицы uszn.temp$_snowmobile_new')
     
     curs.execute('SELECT count(*) FROM uszn.temp$_snowmobile')
     cnt = curs.fetchone()[0]
-    writing_to_log_file(f'Количество записей в uszn.temp$_snowmobile до загрузки - {cnt}')
+    writing_to_log_file(log, f'Количество записей в uszn.temp$_snowmobile до загрузки - {cnt}')
 
     curs.execute('''INSERT INTO uszn.temp$_snowmobile (CarNumber, Brand, Name, YearRelease, Owner, Address, IdentityDoc, Who, DateIssue, BirthDate, RegDate, DelFlg, DateFrom, DateTo)  
                     SELECT CarNumber, Brand, Name, YearRelease, Owner, Address, IdentityDoc, Who, DateIssue, BirthDate, RegDate, 0, sysdate, to_date('31.12.9999,23:59:59','dd.mm.yyyy,hh24:mi:ss')
@@ -184,14 +176,14 @@ def v1_table_insert(conn):
     
     curs.execute('SELECT count(*) FROM uszn.temp$_snowmobile')
     cnt = curs.fetchone()[0]
-    writing_to_log_file(f'Количество записей в uszn.temp$_snowmobile после загрузки - {cnt}')
+    writing_to_log_file(log, f'Количество записей в uszn.temp$_snowmobile после загрузки - {cnt}')
 
     #*****************************
-    writing_to_log_file('Добавление записей в таблице uszn.temp$_snowmobile из таблицы uszn.temp$_snowmobile_change')
+    writing_to_log_file(log, 'Добавление записей в таблице uszn.temp$_snowmobile из таблицы uszn.temp$_snowmobile_change')
 
     curs.execute('SELECT count(*) FROM uszn.temp$_snowmobile')
     cnt = curs.fetchone()[0]
-    writing_to_log_file(f'Количество записей в uszn.temp$_snowmobile до загрузки - {cnt}')
+    writing_to_log_file(log, f'Количество записей в uszn.temp$_snowmobile до загрузки - {cnt}')
 
     curs.execute('''INSERT INTO uszn.temp$_snowmobile (CarNumber, Brand, Name, YearRelease, Owner, Address, IdentityDoc, Who, DateIssue, BirthDate, RegDate, DelFlg, DateFrom, DateTo)  
                     SELECT CarNumber, Brand, Name, YearRelease, Owner, Address, IdentityDoc, Who, DateIssue, BirthDate, RegDate, 0, sysdate, to_date('31.12.9999,23:59:59','dd.mm.yyyy,hh24:mi:ss')
@@ -199,14 +191,14 @@ def v1_table_insert(conn):
 
     curs.execute('SELECT count(*) FROM uszn.temp$_snowmobile')
     cnt = curs.fetchone()[0]
-    writing_to_log_file(f'Количество записей в uszn.temp$_snowmobile после загрузки - {cnt}')
+    writing_to_log_file(log, f'Количество записей в uszn.temp$_snowmobile после загрузки - {cnt}')
     
     #*****************************
-    writing_to_log_file('Добавление записей в таблице uszn.temp$_snowmobile из таблицы uszn.temp$_snowmobile_del')
+    writing_to_log_file(log, 'Добавление записей в таблице uszn.temp$_snowmobile из таблицы uszn.temp$_snowmobile_del')
 
     curs.execute('SELECT count(*) FROM uszn.temp$_snowmobile')
     cnt = curs.fetchone()[0]
-    writing_to_log_file(f'Количество записей в uszn.temp$_snowmobile до загрузки - {cnt}')
+    writing_to_log_file(log, f'Количество записей в uszn.temp$_snowmobile до загрузки - {cnt}')
 
     curs.execute('''INSERT INTO uszn.temp$_snowmobile (CarNumber, Brand, Name, YearRelease, Owner, Address, IdentityDoc, Who, DateIssue, BirthDate, RegDate, DelFlg, DateFrom, DateTo)  
                     SELECT CarNumber, Brand, Name, YearRelease, Owner, Address, IdentityDoc, Who, DateIssue, BirthDate, RegDate, 1, sysdate, to_date('31.12.9999,23:59:59','dd.mm.yyyy,hh24:mi:ss') 
@@ -214,33 +206,29 @@ def v1_table_insert(conn):
 
     curs.execute('SELECT count(*) FROM uszn.temp$_snowmobile')
     cnt = curs.fetchone()[0]
-    writing_to_log_file(f'Количество записей в uszn.temp$_snowmobile после загрузки - {cnt}')
+    writing_to_log_file(log, f'Количество записей в uszn.temp$_snowmobile после загрузки - {cnt}')
 
 #****************************************************************************************************
-def v1_drop(conn):
-    curs = conn.cursor()
-    
-    writing_to_log_file('Удаление данных из uszn.temp$_snowmobile_temp')
+def v1_drop():
+    writing_to_log_file(log, 'Удаление данных из uszn.temp$_snowmobile_temp')
 
     curs.execute('SELECT count(*) FROM uszn.temp$_snowmobile_temp')
     cnt = curs.fetchone()[0]
-    writing_to_log_file(f'В uszn.temp$_snowmobile_temp было {cnt} записей')
+    writing_to_log_file(log, f'В uszn.temp$_snowmobile_temp было {cnt} записей')
     
     curs.execute('DELETE FROM uszn.temp$_snowmobile_temp')
 
     curs.execute('SELECT count(*) FROM uszn.temp$_snowmobile_temp')
     cnt = curs.fetchone()[0]
-    writing_to_log_file(f'В uszn.temp$_snowmobile_temp осталось {cnt} записей')
+    writing_to_log_file(log, f'В uszn.temp$_snowmobile_temp осталось {cnt} записей')
 
 #****************************************************************************************************
-def v1_insert(conn, xl):
-    curs = conn.cursor()
-
-    writing_to_log_file(f'Загрузка данных в uszn.temp$_snowmobile_temp')
+def v1_insert(xl):
+    writing_to_log_file(log, f'Загрузка данных в uszn.temp$_snowmobile_temp')
     
     curs.execute('SELECT count(*) FROM uszn.temp$_snowmobile_temp')
     cnt = curs.fetchone()[0]
-    writing_to_log_file(f'В uszn.temp$_snowmobile_temp было {cnt} записей')
+    writing_to_log_file(log, f'В uszn.temp$_snowmobile_temp было {cnt} записей')
 
     xl.drop(labels = [0,1,2],axis = 0, inplace = True)
     xl.dropna(thresh=3, inplace = True)
@@ -251,4 +239,4 @@ def v1_insert(conn, xl):
 
     curs.execute('SELECT count(*) FROM uszn.temp$_snowmobile_temp')
     cnt = curs.fetchone()[0]
-    writing_to_log_file(f'В uszn.temp$_snowmobile_temp стало {cnt} записей')
+    writing_to_log_file(log, f'В uszn.temp$_snowmobile_temp стало {cnt} записей')

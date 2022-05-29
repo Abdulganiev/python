@@ -1,28 +1,4 @@
-import jaydebeapi
-import json
-from datetime import datetime
-from smtp import *
-from writing_to_log_file import *
-
-path = "access_report.txt"
-with open(path) as f:
-    access = json.load(f)
-    
-driver = 'ojdbc14.jar'
-path_base = access['path_base']
-password = access['password']
-login = access['login']
-port = access['port']
-sid = access['sid']
-
-conn = jaydebeapi.connect(
-    'oracle.jdbc.driver.OracleDriver',
-    f'jdbc:oracle:thin:{login}/{password}@{path_base}:{port}/{sid}',
-    [login, password],
-    driver)
-
-curs = conn.cursor()
-
+from generating_report_files import *
 
 #***************************************************************
 def statuses_in_MFC():
@@ -72,11 +48,13 @@ where (region_id, id) in
  on b1.region_id=b2.region_id and b1.id=b2.id
  where b1.error_message is not null)''')
 
-        cnt = str(cnt)
-
-        writing_to_log_file('statuses_in_MFC', cnt)
-        send_email('IVAbdulganiev@yanao.ru', 'Статусы в МФЦ отработаны', msg_text=cnt)
+    return cnt
 
 #***************************************************************
 
-statuses_in_MFC()
+curs = connect_oracle()
+
+cnt = str(statuses_in_MFC())
+
+writing_to_log_file('statuses_in_MFC', cnt)
+send_email('IVAbdulganiev@yanao.ru', 'Статусы в МФЦ отработаны', msg_text=cnt)

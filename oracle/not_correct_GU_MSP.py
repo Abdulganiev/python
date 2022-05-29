@@ -1,28 +1,8 @@
-import jaydebeapi
-import json
 import pandas as pd
-from writing_to_log_file import *
-from smtp import *
+from generating_report_files import *
 
-
-path = "access_report.txt"
-with open(path) as f:
-    access = json.load(f)
-    
-driver = 'ojdbc14.jar'
-path_base = access['path_base']
-password = access['password']
-login = access['login']
-port = access['port']
-sid = access['sid']
-
-conn = jaydebeapi.connect(
-    'oracle.jdbc.driver.OracleDriver',
-    f'jdbc:oracle:thin:{login}/{password}@{path_base}:{port}/{sid}',
-    [login, password],
-    driver)
-
-curs = conn.cursor()
+#***************************************************************
+curs = connect_oracle()
 
 #***************************************************************
 def not_correct_GU_MSP():
@@ -42,6 +22,7 @@ select t.pc_id, t.region_id, t.id, t.message_guid, t.adr, t.request_pdoc_id, t.s
        when upper(t.adr) like '%ПУРОВСК%' then 67
        when upper(t.adr) like '%ЯМАЛЬ%' then 68
        when upper(t.adr) like '%ШУРЫШ%' then 69
+       when upper(t.adr) like '%МУЖИ%' then 69
        when upper(t.adr) like '%ТАЗ%' then 70
    else 0 end) as mo_out
 from

@@ -1,33 +1,13 @@
-import jaydebeapi
-import json
-from datetime import datetime
-from smtp import *
+from generating_report_files import *
 
-path = "access_report.txt"
-with open(path) as f:
-    access = json.load(f)
-    
-driver = 'ojdbc14.jar'
-path_base = access['path_base']
-password = access['password']
-login = access['login']
-port = access['port']
-sid = access['sid']
-
-conn = jaydebeapi.connect(
-    'oracle.jdbc.driver.OracleDriver',
-    f'jdbc:oracle:thin:{login}/{password}@{path_base}:{port}/{sid}',
-    [login, password],
-    driver)
-
-curs = conn.cursor()
-
-def drop_table():
+# ********************************************************
+def drop_table(): # удаление временной таблицы
   cnt = count_table()
   if cnt > 0:
     curs.execute('DROP TABLE uszn.temp$_gkv_gu')
 
-def creating_table():
+# ********************************************************
+def creating_table(): # создание временное таблицы
   cnt = count_table()
   if cnt == 0:
     curs.execute(
@@ -52,23 +32,23 @@ SELECT row_number() over(partition by t2.region_id ORDER BY t2.pc_id) as num,
                    uszn.pkPerson.GetCloseDate(t2.region_id, t2.pc_id) is null
 GROUP BY t2.region_id, t2.pc_id''')  
 
+# ********************************************************
 def deleting_collection():
   curs.execute('''
 DELETE uszn.r_ssvc_rq_collection_items
 WHERE collection_id in (SELECT id 
                          FROM uszn.r_ssvc_request_collections 
-                         WHERE name like 'ЖКВ-_')
-    ''')
+                         WHERE name like 'ЖКВ-_')''')
 
-def loading_data():
+# ********************************************************
+def loading_data_1():
   for region_id in range(58,71):
-    for row in range(1,4):
-      name_collection = f"'ЖКВ-{row}'"
+    name_collection = f"'ЖКВ-1'"
 
-      curs.execute(f'''
+    curs.execute(f'''
 INSERT INTO uszn.r_ssvc_rq_collection_items(collection_id, collection_region_id, request_id, request_region_id)
     SELECT 
-    distinct (SELECT v2.id 
+    DISTINCT (SELECT v2.id 
         FROM uszn.r_ssvc_request_collections v2 
         WHERE v2.name={name_collection} and 
               v2.region_id=t1.region_id),
@@ -77,18 +57,59 @@ INSERT INTO uszn.r_ssvc_rq_collection_items(collection_id, collection_region_id,
         t1.region_id
     FROM uszn.temp$_gkv_gu t1
     WHERE t1.region_id={region_id} and
-          t1.num between 1 and (SELECT ceil(max(t2.num)/3) 
-                                 FROM uszn.temp$_gkv_gu t2 
-                                 WHERE t2.region_id=t1.region_id)''')
+    t1.num BETWEEN 1 and 
+                   (SELECT ceil(max(t2.num)/3) FROM uszn.temp$_gkv_gu t2 WHERE t2.region_id=t1.region_id)''')
 
-def count_table():
+# ********************************************************************
+def loading_data_2():
+  for region_id in range(58,71):
+    name_collection = f"'ЖКВ-2'"
+
+    curs.execute(f'''
+INSERT INTO uszn.r_ssvc_rq_collection_items(collection_id, collection_region_id, request_id, request_region_id)
+    SELECT 
+    DISTINCT (SELECT v2.id 
+        FROM uszn.r_ssvc_request_collections v2 
+        WHERE v2.name={name_collection} and 
+              v2.region_id=t1.region_id),
+        t1.region_id, 
+        t1.id, 
+        t1.region_id
+    FROM uszn.temp$_gkv_gu t1
+    WHERE t1.region_id={region_id} and
+    t1.num BETWEEN (SELECT ceil(max(t2.num)/3)   FROM uszn.temp$_gkv_gu t2 WHERE t2.region_id=t1.region_id) + 1 and
+                   (SELECT ceil(max(t2.num)/3)*2 FROM uszn.temp$_gkv_gu t2 WHERE t2.region_id=t1.region_id)''')
+
+# ********************************************************************
+def loading_data_3():
+  for region_id in range(58,71):
+    name_collection = f"'ЖКВ-3'"
+
+    curs.execute(f'''
+INSERT INTO uszn.r_ssvc_rq_collection_items(collection_id, collection_region_id, request_id, request_region_id)
+    SELECT 
+    DISTINCT (SELECT v2.id 
+        FROM uszn.r_ssvc_request_collections v2 
+        WHERE v2.name={name_collection} and 
+              v2.region_id=t1.region_id),
+        t1.region_id, 
+        t1.id, 
+        t1.region_id
+    FROM uszn.temp$_gkv_gu t1
+    WHERE t1.region_id={region_id} and
+    t1.num between (SELECT ceil(max(t2.num)/3)*2 FROM uszn.temp$_gkv_gu t2 WHERE t2.region_id=t1.region_id) + 1 and
+                   (SELECT max(t2.num)           FROM uszn.temp$_gkv_gu t2 WHERE t2.region_id=t1.region_id)''')
+
+# ********************************************************************
+def count_table(): # проверка временной таблицы на наличие записей
   try:
-    curs.execute('SELECT count(*) from uszn.temp$_gkv_gu')
+    curs.execute('SELECT count(*) FROM uszn.temp$_gkv_gu')
     return int(curs.fetchall()[0][0])
   except:
     return 0
 
-def count_collection(conn):
+# ********************************************************************
+def count_collection():
   for region_id in range(58,71):
     for row in range(1,4):
       name_collection = f"'ЖКВ-{row}'"
@@ -105,24 +126,26 @@ SELECT t1.id,
            t1.region_id=t2.collection_region_id
 group by t1.id, name''')
       col_id, col_name, col_cnt = curs.fetchall()[0]
-      with open(f'log/{log}', 'a') as f:
-        f.write(f'{region_id}-{col_id}, {col_name} - {col_cnt} количество записей\n')
+      writing_to_log_file(log, f'{region_id}-{col_id}, {col_name} - {col_cnt} количество записей')
 
-log = "requests_gis_gkh.log"
-day = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+# ********************************************************
 
+writing_to_log_file(log, '************************************************')
+curs = connect_oracle()
 cnt1 = count_table()
 drop_table()
 creating_table()
 cnt2 = count_table()
 deleting_collection()
-loading_data()
+loading_data_1()
+loading_data_2()
+loading_data_3()
 
-with open(f'log/{log}', 'a') as f:
-    f.write('**************************************\n')
-    f.write(f'{day} - {cnt1} записей до загрузки\n')
-    f.write(f'{day} - {cnt2} записей после загрузки\n')
+log = 'requests_gis_gkh'
+text = f'{cnt1} записей до загрузки, {cnt2} записей после загрузки'
+mail = 'IVAbdulganiev@yanao.ru'
 
-count_collection(conn)
+count_collection()
 
-send_email('IVAbdulganiev@yanao.ru', 'Коллекции для ГИС ЖКХ обновлены', msg_text=f'{day} - {cnt2} записей после загрузки\n')
+writing_to_log_file(log, text)
+send_email(mail, 'Коллекции для ГИС ЖКХ обновлены', msg_text=text)

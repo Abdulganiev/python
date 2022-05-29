@@ -1,28 +1,6 @@
-import jaydebeapi
-import json
-from datetime import datetime
-from smtp import *
+from generating_report_files import *
 
-
-path = "access_report.txt"
-with open(path) as f:
-    access = json.load(f)
-    
-driver = 'ojdbc14.jar'
-path_base = access['path_base']
-password = access['password']
-login = access['login']
-port = access['port']
-sid = access['sid']
-
-conn = jaydebeapi.connect(
-    'oracle.jdbc.driver.OracleDriver',
-    f'jdbc:oracle:thin:{login}/{password}@{path_base}:{port}/{sid}',
-    [login, password],
-    driver)
-
-curs = conn.cursor()
-
+# ********************************************
 def alarm_ep():
     curs.execute(
     '''select count(*) from
@@ -54,15 +32,16 @@ def alarm_ep():
         end;
         '''
         )
-        return cnt
+    return cnt
+
+# ********************************************
+
+curs = connect_oracle()
 
 cnt = alarm_ep()
 
-log = "signature_error.log"
-day = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+log = 'signature_error'
+text = f'{cnt}'
 
-with open(f'log/{log}', 'a') as f:
-    f.write('**************************************\n')
-    f.write(f'{day} - {cnt}\n')
-
-send_email('IVAbdulganiev@yanao.ru', 'Проверка ЭП сделана', msg_text=f'{day} - {cnt}\n')
+writing_to_log_file(log, text)
+send_email('IVAbdulganiev@yanao.ru', 'Проверка ЭП сделана', msg_text=text)

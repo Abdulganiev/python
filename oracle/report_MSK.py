@@ -1,28 +1,4 @@
-import jaydebeapi
-import json
-from datetime import datetime
-from smtp import *
-from writing_to_log_file import *
-
-path = "access_report.txt"
-with open(path) as f:
-    access = json.load(f)
-    
-driver = 'ojdbc14.jar'
-path_base = access['path_base']
-password = access['password']
-login = access['login']
-port = access['port']
-sid = access['sid']
-
-conn = jaydebeapi.connect(
-    'oracle.jdbc.driver.OracleDriver',
-    f'jdbc:oracle:thin:{login}/{password}@{path_base}:{port}/{sid}',
-    [login, password],
-    driver)
-
-curs = conn.cursor()
-
+from generating_report_files import *
 
 #***************************************************************
 def report_MSK():
@@ -145,5 +121,7 @@ from
     send_email(mail, name_log, msg_text=cnt)
 
 #***************************************************************
+
+curs = connect_oracle()
 
 report_MSK()

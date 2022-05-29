@@ -1,36 +1,16 @@
-import jaydebeapi
-import json
 from generating_report_files import *
 
-
-path = "access_report.txt"
-with open(path) as f:
-    access = json.load(f)
-    
-driver = 'ojdbc14.jar'
-path_base = access['path_base']
-password = access['password']
-login = access['login']
-port = access['port']
-sid = access['sid']
-
-conn = jaydebeapi.connect(
-    'oracle.jdbc.driver.OracleDriver',
-    f'jdbc:oracle:thin:{login}/{password}@{path_base}:{port}/{sid}',
-    [login, password],
-    driver)
-
-curs = conn.cursor()
-
+#***************************************************************
+curs = connect_oracle()
 
 #***************************************************************
-
 def PFR_file_request():
     with open('PFR_file_6531.sql', 'r', encoding='utf8') as f:
         sql = f.read()
     curs.execute(sql)
     return curs.fetchall()
 
+#***************************************************************
 def PFR_file_request_name():
     curs.execute("""select 
         '030'||To_Char(TRUNC(SYSDATE), 'y')||To_Char(TRUNC(SYSDATE), 'mm')||'1.000' 

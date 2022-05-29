@@ -1,6 +1,6 @@
 import json
 import os
-
+from writing_to_log_file import *
 import smtplib # Импортируем библиотеку по работе с SMTP
 
 # Добавляем необходимые подклассы - MIME-типы
@@ -14,6 +14,9 @@ from email.mime.multipart import MIMEMultipart # Многокомпонентн�
 
 
 def send_email(addr_to, msg_subj, msg_text='', files=[]):
+    writing_to_log_file('smtp.txt', '*********************************************')
+    writing_to_log_file('smtp.txt', 'Вызов функции send_email')
+    writing_to_log_file('smtp.txt', f'Отправка письма {addr_to} с темой "{msg_subj}"')
 	# '''Функция по отпрвке писем через smtp.yanao.ru. 
 	#    Логин, пароль и сервер указываются в файле access_mail.txt.
 	#    addr_to - указать адресата (обязательно).
@@ -22,7 +25,6 @@ def send_email(addr_to, msg_subj, msg_text='', files=[]):
 	#    files - указать файлы в виде ['файл 1', 'файл 2', и т.д.] (необязательно).
 	# '''
     path = 'access_mail.txt'
-
     with open(path) as f:
         access = json.load(f)
     
@@ -43,6 +45,7 @@ def send_email(addr_to, msg_subj, msg_text='', files=[]):
     try:
         # подключаемся к почтовому сервису
         smtp = smtplib.SMTP(server) # Создаем объект SMTP
+        writing_to_log_file('smtp.txt', f'Подлючение к серверу {server}')
 #         smtp.set_debuglevel(1) # журнал, при необходимости включаем
 #         smtp.set_debuglevel(True) # Включаем режим отладки, если не нужен - можно закомментировать
         smtp.starttls() # Начинаем шифрованный обмен по TLS
@@ -50,14 +53,17 @@ def send_email(addr_to, msg_subj, msg_text='', files=[]):
         # логинимся на почтовом сервере
         smtp.login(addr_from, password) # Получаем доступ
         smtp.send_message(msg) # Отправляем сообщение
+        writing_to_log_file('smtp.txt', 'Письмо отправлено')
     except smtplib.SMTPException as err:
-        print('Что - то пошло не так...')
+        writing_to_log_file('smtp.txt', f'Ошибка подлючения к серверу {server} - {err}')
+        # print('Что - то пошло не так...')
         raise err
     finally:
         smtp.quit()
 
 
 def process_attachement(msg, files):                        # Функция по обработке списка, добавляемых к сообщению файлов
+    writing_to_log_file('smtp.txt', 'Вызов функции process_attachement')
 	# '''Функция по обработке списка, добавляемых к сообщению файлов'''
     for f in files:
         if os.path.isfile(f):                               # Если файл существует
@@ -70,6 +76,7 @@ def process_attachement(msg, files):                        # Функция п�
 
 
 def attach_file(msg, filepath):                             # Функция по добавлению конкретного файла к сообщению
+    writing_to_log_file('smtp.txt', 'Вызов функции attach_file')
 	# '''Функция по добавлению конкретного файла к сообщению'''
     filename = os.path.basename(filepath)                   # Получаем только имя файла
     ctype, encoding = mimetypes.guess_type(filepath)        # Определяем тип файла на основе его расширения

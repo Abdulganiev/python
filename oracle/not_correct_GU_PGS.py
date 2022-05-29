@@ -1,32 +1,18 @@
-import jaydebeapi
-import json
 import pandas as pd
-from writing_to_log_file import *
-from smtp import *
-
-
-path = "access_report.txt"
-with open(path) as f:
-    access = json.load(f)
-    
-driver = 'ojdbc14.jar'
-path_base = access['path_base']
-password = access['password']
-login = access['login']
-port = access['port']
-sid = access['sid']
-
-conn = jaydebeapi.connect(
-    'oracle.jdbc.driver.OracleDriver',
-    f'jdbc:oracle:thin:{login}/{password}@{path_base}:{port}/{sid}',
-    [login, password],
-    driver)
-
-curs = conn.cursor()
-
+from generating_report_files import *
 
 #***************************************************************
-def not_correct_GU_PGS():
+name_log = 'not_correct_GU_PGS'
+mail = 'IVAbdulganiev@yanao.ru'
+writing_to_log_file(name_log, '******************************************')
+
+#***************************************************************
+curs = connect_oracle()
+writing_to_log_file(name_log, f'Подключение к базе')
+
+#***************************************************************
+def not_correct_GU_PGS(name_log):
+    writing_to_log_file(name_log, 'Вызов функции not_correct_GU_PGS')
     curs.execute('''
 select t.pc_id, t.region_id, t.id, t.message_guid, t.adr, t.request_pdoc_id, t.smev_message_id, t.state_service_name,
  (case when upper(t.adr) like '%НОВЫЙ У%' then 58
@@ -102,20 +88,21 @@ on
     return data
 
 #***************************************************************
-
 def ararm_sql(sql, log, mail):
+    writing_to_log_file(log, 'Вызов функции ararm_sql')
     try:
         curs.execute(sql)
         return 1
-    except:
-        text = f'ошибка \n {sql}'
+    except Exception as e:
+        text = f'ошибка \n {sql} \n {e}'
         name_log = f'Alarm sql - {log}'
         writing_to_log_file(name_log, text)
         send_email(mail, name_log, msg_text=text)
         return 0    
 
 #***************************************************************
-def not_correct_GU_PGS_transfer(df):
+def not_correct_GU_PGS_transfer(df, name_log, mail):
+    writing_to_log_file(name_log, 'Вызов функции not_correct_GU_PGS_transfer')
     for row in df.itertuples(index=False):
         if row[8] != 0:
             pc_id = row[0]
@@ -150,9 +137,6 @@ def not_correct_GU_PGS_transfer(df):
     end;
     delete from uszn.r_personal_docs where region_id={region_id} and id={request_pdoc_id};
 end;'''
-            name_log = 'not_correct_GU_PGS'
-            mail = 'IVAbdulganiev@yanao.ru'
-
             resume = ararm_sql(sql, name_log, mail)
             if resume == 1:
                 text = f'Заявитель {pc_id} c ПГС {state_service_name} перенесен в {mo_out}, его адрес {adr}'
@@ -168,15 +152,12 @@ end;'''
 
 #***************************************************************
 
-data = not_correct_GU_PGS()
+data = not_correct_GU_PGS(name_log)
 df = pd.DataFrame(data)
 
 if len(set(data['pc_id'])) > 0:
-    not_correct_GU_PGS_transfer(df)
+    not_correct_GU_PGS_transfer(df, name_log, mail)
 else:
     text = 'Некорретных заявлений ПГС нет'
-    name_log = 'not_correct_GU_PGS'
-    mail = 'IVAbdulganiev@yanao.ru'
-
     writing_to_log_file(name_log, text)
     send_email(mail, name_log, msg_text=text)
