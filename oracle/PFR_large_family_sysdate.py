@@ -1,7 +1,5 @@
 import datetime as dt
-
-#***************************************************************
-curs = connect_oracle()
+from generating_report_files import *
 
 #***************************************************************
 def PFR_large_family_sysdate():
@@ -74,12 +72,35 @@ group by t1.region_id, t1.coll_id,
     return data
 
 #***************************************************************
-
-data = PFR_large_family_sysdate()
 name_log = 'PFR_large_family_sysdate'
 dt = datetime.now().strftime('%d')
 name_def = f'DSZN_030_{dt}-' 
 test = 0
 mail = 'IVAbdulganiev@yanao.ru'
+cnt_curs = 0
+cnt_data = 0
 
-generating_report_files_PFR(data, name_log, name_def, test, mail)
+#***************************************************************
+writing_to_log_file(name_log, '***********************************')
+
+try:
+    curs = connect_oracle()
+except Exception as e:
+    writing_to_log_file(name_log, f'ошибка подключения к базе \n {e}')
+else:
+    writing_to_log_file(name_log, 'К базе подключился')
+    cnt_curs = 1
+
+if cnt_curs == 1:
+    try:
+        data = PFR_large_family_sysdate()
+    except Exception as e:
+        writing_to_log_file(name_log, f'ошибка функции PFR_large_family_sysdate \n {e}')
+else:
+    cnt_curs = 1
+
+if cnt_curs == 1:
+    try:
+        generating_report_files_PFR(data, name_log, name_def, test, mail)
+    except Exception as e:
+        writing_to_log_file(name_log, f'ошибка функции generating_report_files_PFR \n {e}')

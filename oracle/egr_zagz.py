@@ -1,10 +1,6 @@
 from generating_report_files import *
 
 #***************************************************************
-curs = connect_oracle()
-writing_to_log_file(name_log, f'Подключение к базе')
-
-#***************************************************************
 def zags_sm():
     curs.execute('''begin
   uszn.pkXMLImp.ClearParsedXMLData(0);
@@ -84,12 +80,17 @@ where
     return data
 
 #***************************************************************
-
-data = zags_sm()
-
 name_log = 'zags_sm'
 name_def = 'Данные ЕГР ЗАГС'
 test = 0
 mail = 'IVAbdulganiev@yanao.ru'
+
+#***************************************************************
+writing_to_log_file(name_log, f'*********************************************')
+
+curs = connect_oracle()
+writing_to_log_file(name_log, f'Подключение к базе')
+
+data = zags_sm()
 
 generating_report_files(data, name_log, name_def, test, mail)

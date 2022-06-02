@@ -1,6 +1,6 @@
-# from smtp import *
 import shutil, zipfile, os, jaydebeapi, json
 import pandas as pd
+from pandas.io.excel import ExcelWriter
 from datetime import datetime
 import datetime as dt
 
@@ -13,6 +13,29 @@ from email.mime.text import MIMEText # Текст/HTML
 from email.mime.image import MIMEImage # Изображения
 from email.mime.audio import MIMEAudio # Аудио
 from email.mime.multipart import MIMEMultipart # Многокомпонентный объект
+
+# *****************************************************************
+def generating_report_GKV_kv(df, name_log, name, region_id, test):
+    data = pd.DataFrame(df)
+    today = dt.date.today()
+    mail = 'IVAbdulganiev@yanao.ru'
+    file_name = f'отчет ЖКВ {name}.xlsx'
+    text = f'{file_name} за МО - {region_id} на {today}'
+    new_file_name = f'{today} - {file_name}'
+
+    if region_id == '58':
+        with ExcelWriter(file_name) as writer: 
+            data.to_excel(writer, sheet_name=f'{region_id}', index=False)
+    else:
+        with ExcelWriter(file_name, engine='openpyxl', mode='a') as writer: 
+            data.to_excel(writer, sheet_name=f'{region_id}', index=False)
+
+    if test == 0 and region_id == '70':
+        send_email(mail, text, msg_text=file_name, files=[file_name])
+    if region_id == '70':
+        os.replace(file_name, f'backup/{new_file_name}') 
+
+    writing_to_log_file(name_log, text)
 
 # *****************************************************************
 def generating_report_GKV(df, name_log, name, test):
