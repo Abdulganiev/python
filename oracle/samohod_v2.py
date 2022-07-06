@@ -1,4 +1,5 @@
 import pandas as pd
+import re
 from generating_report_files import *
 
 #***************************************************************
@@ -138,7 +139,7 @@ def v2_table_update():
                     and dateTo = to_date('31.12.9999,23:59:59','dd.mm.yyyy,hh24:mi:ss')''')
 
     #******************************
-    writing_to_log_file('Обновление таблицы uszn.temp$_snowmobile из таблицы uszn.temp$_snowmobile_del')
+    writing_to_log_file(log, 'Обновление таблицы uszn.temp$_snowmobile из таблицы uszn.temp$_snowmobile_del')
 
     curs.execute('SELECT count(*) FROM uszn.temp$_snowmobile_del')
     cnt = curs.fetchone()[0]
@@ -221,6 +222,15 @@ def v2_insert(xl):
     xl.drop(labels = [0,1,2],axis = 0, inplace = True)
     xl.dropna(thresh=3, inplace = True)
 
+    xl['Unnamed: 3'] = pd.to_datetime(xl['Unnamed: 3']).dt.normalize()
+    xl['Unnamed: 3'] = xl['Unnamed: 3'].apply(dat)
+
+    xl['Unnamed: 9'] = pd.to_datetime(xl['Unnamed: 9']).dt.normalize()
+    xl['Unnamed: 9'] = xl['Unnamed: 9'].apply(dat)
+
+    xl['Unnamed: 10'] = pd.to_datetime(xl['Unnamed: 10']).dt.normalize()
+    xl['Unnamed: 10'] = xl['Unnamed: 10'].apply(dat)
+
     for data in xl.itertuples(index=False):
         curs.execute('''INSERT INTO uszn.temp$_snowmobile_temp (CarNumber, Brand, Name, RegDate, YearRelease, Owner, Address, IdentityDoc, Who, DateIssue, BirthDate, UploadDate) 
         values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, to_date(sysdate, 'dd.mm.yyyy'))''', [data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7], data[8], data[9], data[10]])
@@ -228,3 +238,11 @@ def v2_insert(xl):
     curs.execute('SELECT count(*) FROM uszn.temp$_snowmobile_temp')
     cnt = curs.fetchone()[0]
     writing_to_log_file(log, f'В uszn.temp$_snowmobile_temp стало {cnt} записей')
+
+#****************************************************************************************************
+def dat(x):
+    try:
+        x = str(x).replace(' 00:00:00', '')
+        return re.sub(r'(\d{4})-(\d{2})-(\d{2})', r'\3.\2.\1', x)
+    except:
+        return x    
