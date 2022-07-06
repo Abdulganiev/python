@@ -15,6 +15,16 @@ from email.mime.audio import MIMEAudio # Аудио
 from email.mime.multipart import MIMEMultipart # Многокомпонентный объект
 
 # *****************************************************************
+def generating_list_GKV_kv(name_log, text, file_name, test, mail):
+    today = dt.date.today()
+    new_file_name = f'{today} - {file_name}'
+    text = f'mail - {mail} \n{text}'
+
+    send_email(mail, file_name, msg_text=text, files=[file_name])
+    os.replace(file_name, f'backup/{new_file_name}') 
+    writing_to_log_file(name_log, text)
+
+# *****************************************************************
 def generating_report_GKV_kv(df, name_log, name, region_id, test):
     data = pd.DataFrame(df)
     today = dt.date.today()
