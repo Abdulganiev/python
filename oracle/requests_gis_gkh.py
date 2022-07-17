@@ -129,23 +129,104 @@ group by t1.id, name''')
       writing_to_log_file(log, f'{region_id}-{col_id}, {col_name} - {col_cnt} количество записей')
 
 # ********************************************************
+def alarm_log(mail, log, text):
+  writing_to_log_file(log, text)
+  send_email(mail, text, msg_text=text)
 
-writing_to_log_file(log, '************************************************')
-curs = connect_oracle()
-cnt1 = count_table()
-drop_table()
-creating_table()
-cnt2 = count_table()
-deleting_collection()
-loading_data_1()
-loading_data_2()
-loading_data_3()
-
+# ********************************************************
 log = 'requests_gis_gkh'
-text = f'{cnt1} записей до загрузки, {cnt2} записей после загрузки'
 mail = 'IVAbdulganiev@yanao.ru'
 
-count_collection()
+# ********************************************************
+try:
+  writing_to_log_file(log, '************************************************')
+except Exception as e:
+  text = f'произошла ошибка при вызове функции writing_to_log_file - {e}'
+  alarm_log(mail, log, text)
 
-writing_to_log_file(log, text)
-send_email(mail, 'Коллекции для ГИС ЖКХ обновлены', msg_text=text)
+# ********************************************************
+try:
+  curs = connect_oracle()
+except Exception as e:
+  text = f'произошла ошибка при вызове функции connect_oracle() - {e}'
+  alarm_log(mail, log, text)
+
+# ********************************************************
+try:
+  cnt1 = count_table()
+except Exception as e:
+  text = f'произошла ошибка при вызове функции count_table() - {e}'
+  alarm_log(mail, log, text)
+
+# ********************************************************
+try:
+  drop_table()
+except Exception as e:
+  text = f'произошла ошибка при вызове функции drop_table() - {e}'
+  alarm_log(mail, log, text)
+
+# ********************************************************
+try:
+  creating_table()
+except Exception as e:
+  text = f'произошла ошибка при вызове функции creating_table() - {e}'
+  alarm_log(mail, log, text)
+
+# ********************************************************
+try:
+  cnt2 = count_table()
+except Exception as e:
+  text = f'произошла ошибка при вызове функции count_table() - {e}'
+  alarm_log(mail, log, text)
+
+# ********************************************************
+try:
+  deleting_collection()
+except Exception as e:
+  text = f'произошла ошибка при вызове функции deleting_collection() - {e}'
+  alarm_log(mail, log, text)
+
+# ********************************************************
+try:
+  loading_data_1()
+except Exception as e:
+  text = f'произошла ошибка при вызове функции loading_data_1() - {e}'
+  alarm_log(mail, log, text)
+
+# ********************************************************
+try:
+  loading_data_2()
+except Exception as e:
+  text = f'произошла ошибка при вызове функции loading_data_2() - {e}'
+  alarm_log(mail, log, text)
+
+# ********************************************************
+try:
+  loading_data_3()
+except Exception as e:
+  text = f'произошла ошибка при вызове функции loading_data_3() - {e}'
+  alarm_log(mail, log, text)
+
+# ********************************************************
+try:
+  count_collection()
+except Exception as e:
+  text = f'произошла ошибка при вызове функции count_collection() - {e}'
+  alarm_log(mail, log, text)
+
+# ********************************************************
+text = f'{cnt1} записей до загрузки, {cnt2} записей после загрузки'
+
+# ********************************************************
+try:
+  writing_to_log_file(log, text)
+except Exception as e:
+  text = f'произошла ошибка при вызове функции writing_to_log_file - {e}'
+  alarm_log(mail, log, text)
+
+# ********************************************************
+try:
+  send_email(mail, 'Коллекции для ГИС ЖКХ обновлены', msg_text=text)
+except Exception as e:
+  text = f'произошла ошибка при вызове функции send_email() - {e}'
+  alarm_log(mail, log, text)
