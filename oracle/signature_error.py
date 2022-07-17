@@ -3,10 +3,9 @@ from generating_report_files import *
 # ********************************************
 def alarm_ep():
     curs.execute(
-    '''select count(*) from
-     (select id
+    '''select count(*) 
        from uszn.all_smev3_inc_messages
-       where date_created>=To_Date('01.01.2021') and proc_status_id in (3))''')
+       where date_created>=To_Date('01.01.2021') and proc_status_id in (3)''')
     cnt = int(curs.fetchall()[0][0])
 
     if cnt > 0:
