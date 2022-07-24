@@ -2,7 +2,15 @@ import pandas as pd
 from generating_report_files import *
 
 #***************************************************************
-curs = connect_oracle()
+log = 'not_correct_GU_MSP'
+mail = 'IVAbdulganiev@yanao.ru'
+
+#***************************************************************
+try:
+    curs = connect_oracle()
+except Exception as e:
+  text = f'произошла ошибка при вызове функции connect_oracle - {e}'
+  alarm_log(mail, log, text)
 
 #***************************************************************
 def not_correct_GU_MSP():
@@ -83,7 +91,6 @@ where
     return data
 
 #***************************************************************
-
 def ararm_sql(sql1, sql2, sql3, log, mail):
     try:
         curs.execute(sql1)
@@ -117,26 +124,24 @@ def ararm_sql(sql1, sql2, sql3, log, mail):
 *********** {cnt_e2} \n {sql2} \n *********** \n {alarm2} \n 
 *********** {cnt_e3} \n {sql3} \n *********** \n {alarm3}'''
         
-
-        name_log = f'Alarm sql - {log}'
-        writing_to_log_file(name_log, text)
-        send_email(mail, name_log, msg_text=text)
+        writing_to_log_file(log, text)
+        send_email(mail, log, msg_text=text)
         return 0
 
 #***************************************************************    
 def not_correct_GU_MSP_transfer(df):
     for row in df.itertuples(index=False):
+        pc_id = row[0]
+        region_id = row[1]
+        id = row[2]
+        message_guid = row[3]
+        adr = row[4]
+        request_pdoc_id = row[5]
+        smev_message_id = row[6]
+        state_service_name = row[7]
+        mo_out = row[8]
+
         if row[8] != 0:
-            pc_id = row[0]
-            region_id = row[1]
-            id = row[2]
-            message_guid = row[3]
-            adr = row[4]
-            request_pdoc_id = row[5]
-            smev_message_id = row[6]
-            state_service_name = row[7]
-            mo_out = row[8]
-            
             sql1 = f'''begin -- заявитель {pc_id} МСП {state_service_name}
     delete from uszn.r_ssvc_requests where region_id={region_id} and id={id};
     update uszn.all_smev2_inc_messages set region_id={mo_out}
@@ -183,35 +188,38 @@ end;'''
     end;
 end;'''
             
-            name_log = 'not_correct_GU_MSP'
-            mail = 'IVAbdulganiev@yanao.ru'
-
-            resume = ararm_sql(sql1, sql2, sql3, name_log, mail)
+            try:
+                resume = ararm_sql(sql1, sql2, sql3, log, mail)
+            except Exception as e:
+                text = f'произошла ошибка при вызове функции ararm_sql - {e}'
+                alarm_log(mail, log, text)
 
             if resume == 1:
                 text = f'Заявитель {pc_id} c МСП {state_service_name} перенесен в {mo_out}, его адрес {adr}'
 
-                writing_to_log_file(name_log, text)
-                send_email(mail, name_log, msg_text=text)
+                writing_to_log_file(log, text)
+                send_email(mail, log, msg_text=text)
         else:
             text = f'Заявитель {pc_id} c МСП {state_service_name} - проблема с адресом - {adr}'
-            name_log = '!!! not_correct_GU_MSP'
-            mail = 'IVAbdulganiev@yanao.ru'
-            
-            writing_to_log_file(name_log, text)
-            send_email(mail, name_log, msg_text=text)
+            writing_to_log_file(log, text)
+            send_email(mail, log+' проблема с адресом', msg_text=text)
 
 #***************************************************************
-
-data = not_correct_GU_MSP()
+try:
+    data = not_correct_GU_MSP()
+except Exception as e:
+    text = f'произошла ошибка при вызове функции not_correct_GU_MSP - {e}'
+    alarm_log(mail, log, text)
 df = pd.DataFrame(data)
 
 if len(set(data['pc_id'])) > 0:
-    not_correct_GU_MSP_transfer(df)
+    try:
+        not_correct_GU_MSP_transfer(df)
+    except Exception as e:
+        text = f'произошла ошибка при вызове функции not_correct_GU_MSP_transfer - {e}'
+        alarm_log(mail, log, text)
 else:
     text = 'Некорретных заявлений МСП нет'
-    name_log = 'not_correct_GU_MSP'
-    mail = 'IVAbdulganiev@yanao.ru'
 
-    writing_to_log_file(name_log, text)
-    send_email(mail, name_log, msg_text=text)
+    writing_to_log_file(log, text)
+    send_email(mail, log, msg_text=text)

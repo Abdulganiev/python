@@ -7,8 +7,12 @@ mail = 'IVAbdulganiev@yanao.ru'
 writing_to_log_file(name_log, '******************************************')
 
 #***************************************************************
-curs = connect_oracle()
-writing_to_log_file(name_log, f'Подключение к базе')
+try:
+    curs = connect_oracle()
+    writing_to_log_file(name_log, f'Подключение к базе')
+except Exception as e:
+  text = f'произошла ошибка при вызове функции connect_oracle - {e}'
+  alarm_log(mail, name_log, text)
 
 #***************************************************************
 def not_correct_GU_PGS(name_log):
@@ -40,7 +44,7 @@ from
   
   (select
  NVL(uszn.pkPerson.GetPersonalReq(region_id, id, 15),
-    (select value from uszn.all_personal_doc_reqs
+    (select uszn.StrCommaConcat(value) from uszn.all_personal_doc_reqs
       where region_id=pc.region_id and pdoc_id=uszn.pkPerson.GetMainPersonIdentity(pc.region_id, pc.id, 0) and class_id=8434))
  from uszn.v_people_and_colls pc
  where pc.region_id=r.region_id and pc.id=r.pc_id) as adr,
@@ -95,25 +99,24 @@ def ararm_sql(sql, log, mail):
         return 1
     except Exception as e:
         text = f'ошибка \n {sql} \n {e}'
-        name_log = f'Alarm sql - {log}'
-        writing_to_log_file(name_log, text)
-        send_email(mail, name_log, msg_text=text)
+        alarm_log(mail, name_log, text)
         return 0    
 
 #***************************************************************
 def not_correct_GU_PGS_transfer(df, name_log, mail):
     writing_to_log_file(name_log, 'Вызов функции not_correct_GU_PGS_transfer')
     for row in df.itertuples(index=False):
+        pc_id = row[0]
+        region_id = row[1]
+        id = row[2]
+        message_guid = row[3]
+        adr = row[4]
+        request_pdoc_id = row[5]
+        smev_message_id = row[6]
+        state_service_name = row[7]
+        mo_out = row[8]
+
         if row[8] != 0:
-            pc_id = row[0]
-            region_id = row[1]
-            id = row[2]
-            message_guid = row[3]
-            adr = row[4]
-            request_pdoc_id = row[5]
-            smev_message_id = row[6]
-            state_service_name = row[7]
-            mo_out = row[8]
             sql = f'''begin -- заявитель {region_id}-{pc_id}
     delete from uszn.r_ssvc_requests where region_id={region_id} and id={id};
     update uszn.r_smev3_inc_messages set region_id={mo_out} -- {adr}
@@ -137,26 +140,37 @@ def not_correct_GU_PGS_transfer(df, name_log, mail):
     end;
     delete from uszn.r_personal_docs where region_id={region_id} and id={request_pdoc_id};
 end;'''
-            resume = ararm_sql(sql, name_log, mail)
+            try:
+                resume = ararm_sql(sql, name_log, mail)
+            except Exception as e:
+                text = f'произошла ошибка при вызове функции resume - {e}'
+                alarm_log(mail, name_log, text)
+
             if resume == 1:
                 text = f'Заявитель {pc_id} c ПГС {state_service_name} перенесен в {mo_out}, его адрес {adr}'
                 writing_to_log_file(name_log, text)
                 send_email(mail, name_log, msg_text=text)
         else:
             text = f'Заявитель {pc_id} c ПГС {state_service_name} - проблема с адресом - {adr}'
-            name_log = '!!! not_correct_GU_PGS'
-            mail = 'IVAbdulganiev@yanao.ru'
-            
             writing_to_log_file(name_log, text)
-            send_email(mail, name_log, msg_text=text)
+            send_email(mail, name_log+' - проблема с адресом', msg_text=text)
 
 #***************************************************************
+try:
+    data = not_correct_GU_PGS(name_log)
+except Exception as e:
+  text = f'произошла ошибка при вызове функции not_correct_GU_PGS - {e}'
+  alarm_log(mail, name_log, text)
 
-data = not_correct_GU_PGS(name_log)
 df = pd.DataFrame(data)
 
 if len(set(data['pc_id'])) > 0:
-    not_correct_GU_PGS_transfer(df, name_log, mail)
+    try:
+        not_correct_GU_PGS_transfer(df, name_log, mail)
+    except Exception as e:
+        text = f'произошла ошибка при вызове функции not_correct_GU_PGS_transfer - {e}'
+        alarm_log(mail, name_log, text)
+
 else:
     text = 'Некорретных заявлений ПГС нет'
     writing_to_log_file(name_log, text)
