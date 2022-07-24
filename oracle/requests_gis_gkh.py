@@ -1,6 +1,10 @@
 from generating_report_files import *
 
 # ********************************************************
+log = 'requests_gis_gkh'
+mail = 'IVAbdulganiev@yanao.ru'
+
+# ********************************************************
 def drop_table(): # удаление временной таблицы
   cnt = count_table()
   if cnt > 0:
@@ -127,15 +131,6 @@ SELECT t1.id,
 group by t1.id, name''')
       col_id, col_name, col_cnt = curs.fetchall()[0]
       writing_to_log_file(log, f'{region_id}-{col_id}, {col_name} - {col_cnt} количество записей')
-
-# ********************************************************
-def alarm_log(mail, log, text):
-  writing_to_log_file(log, text)
-  send_email(mail, text, msg_text=text)
-
-# ********************************************************
-log = 'requests_gis_gkh'
-mail = 'IVAbdulganiev@yanao.ru'
 
 # ********************************************************
 try:
