@@ -14,6 +14,11 @@ from email.mime.image import MIMEImage # Изображения
 from email.mime.audio import MIMEAudio # Аудио
 from email.mime.multipart import MIMEMultipart # Многокомпонентный объект
 
+# ********************************************************
+def alarm_log(mail, log, text):
+  writing_to_log_file(log, text)
+  send_email(mail, log, msg_text=text)
+
 # *****************************************************************
 def generating_list_GKV_kv(name_log, text, file_name, test, mail):
     today = dt.date.today()
