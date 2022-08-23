@@ -3,18 +3,15 @@ from time import sleep
 import pyperclip
 import pyautogui as pag
 
-def paste(text: str):    
-    pyperclip.copy(text)
-    press_and_release('ctrl + v')
-
+pag.FAILSAFE = True
 
 def type(text: str, interval=0.0):    
     buffer = pyperclip.paste()
     if not interval:
-        paste(text)
+        past(text)
     else:
         for char in text:
-            paste(char)
+            past(char)
             sleep(interval)
     pyperclip.copy(buffer)
     
@@ -36,9 +33,8 @@ def hom(text, o=1):
     pag.click()
     pag.moveTo(590, 385, 4)
     pag.click()
-
-    past(text)
     pag.press("esc")
+    past(text)
 
     if o == 1: # обязательный или нет
         pag.moveTo(565, 512, 1.5)
@@ -92,6 +88,7 @@ def gu_mesto(text, o):
     text2 = 'указываются на основании записи в документе, удостоверяющем личность, или ином документе, подтверждающем постоянное проживание заявителя на территории Ямало-Ненецкого автономного округа'
     pag.moveTo(565, 450, 1.5)
     pag.click()
+    pag.press("esc")
     past(text2)
 
     pag.moveTo(580, 490, 1.5)
@@ -110,7 +107,9 @@ def variant1(text, t1='Да'):
     pag.click()
     pag.moveTo(565, 595, 1.5)
     pag.click()
+    pag.press("esc")
     past(t1)
+    pag.press("esc")
     pag.press("enter")
     
 def variant2(text, t1, t2):
@@ -121,14 +120,16 @@ def variant2(text, t1, t2):
     pag.click()
     pag.moveTo(565, 595, 1.5)
     pag.click()
+    pag.press("esc")
     past(t1)
     pag.press("esc")
-    
     pag.moveTo(565, 705, 1.5)
     pag.click()        
     pag.moveTo(565, 745, 1.5)
     pag.click()
+    pag.press("esc")
     past(t2)
+    pag.press("esc")
     pag.press("enter")
     
 def variant3(text, t1, t2, t3):
@@ -139,27 +140,33 @@ def variant3(text, t1, t2, t3):
     pag.click()
     pag.moveTo(565, 595, 1.5)
     pag.click()
+    pag.press("esc")
     past(t1)
     pag.press("esc")
-    
     pag.moveTo(565, 705, 1.5)
     pag.click()        
     pag.moveTo(565, 745, 1.5)
     pag.click()
+    pag.press("esc")
     past(t2)
     pag.press("esc")
-    
     pag.moveTo(565, 845, 1.5)
     pag.click()
     pag.press("end")
     pag.moveTo(575, 280, 1.5)
     pag.click()
+    pag.press("esc")
     past(t3)
+    pag.press("esc")
     pag.press("enter")
 
 def past(text):
     pyperclip.copy(text)
     pag.hotkey('ctrl', 'v')
+
+# def past(text: str):    
+#     pyperclip.copy(text)
+#     press_and_release('ctrl + v')    
 
 def in_file(text, o):
     hom(text,  o)
@@ -169,33 +176,37 @@ def in_file(text, o):
     
 def end():
     pag.moveTo(431, 285, 1.5)
+    pag.click()
 
 def zayav(x=0):
-    pag.moveTo(1244, 345-x, 3.5)
+    pag.moveTo(1225, 325-x, 3.5)
     pag.click()
-    pag.moveTo(560, 390-x, 3.5)
+    pag.moveTo(560, 370-x, 3.5)
     pag.click()
+    pag.press("esc")
     text = 'Данные заявления'
+    pag.press("esc")
     past(text)
     pag.press("enter")
-    pag.moveTo(1245, 405-x, 3.5)
+    pag.moveTo(1222, 395-x, 3.5)
     pag.click()
 
 def forma(text1, text2):
-    pag.moveTo(1235, 330, 1.5)
-    pag.click()
-    pag.moveTo(559, 372, 3.5)
-    pag.click()
-    past(text1)
-    pag.moveTo(572, 443, 1)
-    pag.click()
-    pag.moveTo(578, 504, 1)
-    pag.click()
-    pag.moveTo(565, 476, 1)
-    pag.click()
-    pag.moveTo(567, 511, 1)
-    pag.click()
-    pag.press("end")
+    pag.moveTo(1235, 330, 1.5) # переход на кнопку "Добавить форму"
+    pag.click() # клик по кнопке
+    pag.moveTo(559, 372, 3.5) # переход на поле "Наименование формы"
+    pag.click() # клик в поле
+    pag.press("esc")
+    past(text1) # вставить текст
+    # pag.moveTo(572, 443, 1)
+    # pag.click()
+    # pag.moveTo(578, 504, 1)
+    # pag.click()
+    # pag.moveTo(565, 477, 1) # Доступно только пользователям ЕСИА
+    # pag.click()
+    pag.moveTo(567, 512, 1) # Доступно только пользователям ЕСИА с подтвержденной учётной записью
+    pag.click() # клик в чек-бокс
+    pag.press("end") 
     pag.moveTo(613, 345, 1)
     pag.click()
     pag.click()
@@ -216,7 +227,7 @@ def forma(text1, text2):
 def forma2():
     sleep(2)
     pag.press("home")
-    pag.moveTo(1237, 572, 1)
+    pag.moveTo(1211, 575, 1)
     pag.click()    
 
 def gragd():
@@ -232,6 +243,16 @@ def dul(text):
     gu_str('Серия и номер', 1)
     gu_str('Кем выдан', 1)
     gu_dat('Когда выдан', 1)
-    gu_str('Код подразделения', 1)
+    gu_str('Код подразделения', 0)
     gu_str('Место рождения', 1)
     pag.click()
+
+def bank():
+    variant2('Денежные средства прошу перечислять через кредитное учреждение:',
+         'Банк', 'Отделение федеральной почтовой связи')
+    gu_com('Данные кредитного учреждения', 0)
+    gu_str('Наименование', 1)
+    gu_num('БИК (обязателен если банк)', 0)
+    gu_num('ИНН (обязателен если банк)', 0)
+    gu_num('КПП (обязателен если банк)', 0)
+    gu_num('Номер счета заявителя (обязателен если банк)', 0)
