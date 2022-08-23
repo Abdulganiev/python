@@ -1,0 +1,1 @@
+select count(*) from uszn.temp$_death
