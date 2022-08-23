@@ -1,6 +1,12 @@
 from generating_report_files import *
 
 #***************************************************************
+name_log = 'duplicates_on_payment'
+name_def = 'Дубликаты по выплате'
+test = 0
+mail = 'IVAbdulganiev@yanao.ru'
+
+#***************************************************************
 curs = connect_oracle()
 writing_to_log_file(name_log, f'Подключение к базе')
 
@@ -62,11 +68,5 @@ for region in range(58, 71):
         data['Описание человека'].append(row[2])
         data['Выплата'].append(row[3])
         data['СНИЛС'].append(row[4])
-
-
-name_log = 'duplicates_on_payment'
-name_def = 'Дубликаты по выплате'
-test = 0
-mail = 'IVAbdulganiev@yanao.ru'
 
 generating_report_files(data, name_log, name_def, test, mail)

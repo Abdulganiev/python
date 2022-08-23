@@ -1,6 +1,12 @@
 from generating_report_files import *
 
 #***************************************************************
+name_log = 'PFR_file_6531'
+name_def = file_zip
+test = 0
+mail = 'IVAbdulganiev@yanao.ru'
+
+#***************************************************************
 curs = connect_oracle()
 
 #***************************************************************
@@ -45,9 +51,5 @@ with zipfile.ZipFile(file_zip, 'a') as myzip:
     myzip.write(path)
 
 text = f'Количество строк в файле - {cnt}'
-name_log = 'PFR_file_6531'
-name_def = file_zip
-test = 0
-mail = 'IVAbdulganiev@yanao.ru'
     
 generating_report_files_PFR_2(name_log, name_def, test, mail, text)
