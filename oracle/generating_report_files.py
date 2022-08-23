@@ -14,6 +14,40 @@ from email.mime.image import MIMEImage # Изображения
 from email.mime.audio import MIMEAudio # Аудио
 from email.mime.multipart import MIMEMultipart # Многокомпонентный объект
 
+
+# *****************************************************************
+def report_1gmu(df, file_name, mail, name_log):
+    today = dt.date.today()
+
+    data = pd.DataFrame(df)
+    data.to_excel(file_name, index=False)
+    text = '1-ГМУ ' + file_name
+    send_email(mail, text, msg_text=file_name, files=[file_name])
+
+    new_file_name = f'{today} - {file_name}'
+    os.replace(file_name, f'backup/{new_file_name}') 
+
+    writing_to_log_file(name_log, text)      
+
+# *****************************************************************
+def report_death(df, region_id, id):
+    mail = 'IVAbdulganiev@yanao.ru'
+    name_log = 'checking_death'
+
+    today = dt.date.today()
+    text = f'0{region_id} - Данные по умершему в МО-{region_id} док-{id}'
+    file_name = text + '.xlsx'
+
+    data = pd.DataFrame(df)
+    data.to_excel(file_name, index=False)
+
+    send_email(mail, text, msg_text=file_name, files=[file_name])
+
+    new_file_name = f'{today} - {file_name}'
+    os.replace(file_name, f'backup/{new_file_name}') 
+
+    writing_to_log_file(name_log, text)      
+
 # ********************************************************
 def alarm_log(mail, log, text):
   writing_to_log_file(log, text)
@@ -77,6 +111,29 @@ def generating_report_GKV(df, name_log, name, test):
     os.replace(file_name, f'backup/{new_file_name}') 
 
     writing_to_log_file(name_log, text)      
+
+# *****************************************************************
+def generating_report_GSP(df, name_log, name, test):
+    data = pd.DataFrame(df)
+
+    today = dt.date.today()
+    file_name = f'{name}.xlsx'
+    
+    data.to_excel(file_name, index=False)
+
+    if test == 1:
+        mail = 'IVAbdulganiev@yanao.ru'
+    else:
+        mail = 'IVAbdulganiev@yanao.ru, OVKolpakova@yanao.ru'
+
+    text = f'{file_name} на {today}'
+
+    send_email(mail, text, msg_text=file_name, files=[file_name])
+
+    new_file_name = f'{today} - {file_name}'
+    os.replace(file_name, f'backup/{new_file_name}') 
+
+    writing_to_log_file(name_log, text)
 
 # *****************************************************************
 def send_email(addr_to, msg_subj, msg_text='', files=[]):
