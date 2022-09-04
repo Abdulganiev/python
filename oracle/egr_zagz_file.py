@@ -10,36 +10,14 @@ mail = 'IVAbdulganiev@yanao.ru'
 file_name = name_log + '.xml' # имя файла
 
 #***************************************************************
-def zags_sm(curs):
+def zags_sm_sql(curs):
     with open('egr_zagz_file_find.sql', 'r', encoding='utf8') as f:
         sql = f.read()
     curs.execute(sql)
     return curs.fetchall()
 
 #***************************************************************
-writing_to_log_file(name_log, f'********start*********************************')
-
-try:
-    curs = connect_oracle()
-except Exception as e:    
-    text = f'произошла ошибка при вызове функции connect_oracle() - {e}'
-    alarm_log(mail, name_log, text)
-
-try:
-    df = pd.DataFrame(zags_sm(curs))
-except Exception as e:    
-    text = f'произошла ошибка при вызове функции zags_sm() - {e}'
-    alarm_log(mail, name_log, text)
-    cnt = 0
-
-try:
-    cnt = len(df)
-except Exception as e:    
-    text = f'произошла ошибка cnt = len(df) - {e}'
-    writing_to_log_file(name_log, text)
-    cnt = 0
-
-if cnt > 0:
+def zags_sm_file(curs, file_name, name_log):
     with open(file_name, 'w', encoding='utf8') as f: # запись в файл первых строки
         text = '<?xml version="1.0" encoding="UTF-8" ?>'
         f.write(text + '\n')
@@ -70,16 +48,46 @@ if cnt > 0:
         f.write(text)
 
     try:
+        shutil.move(file_name, 'y:/')
+    except Exception as e:
+        text = f'произошла ошибка shutil.move - {e}'
+        writing_to_log_file(name_log, text)    
+
+#***************************************************************
+def zags_sm_remove(file_name, name_log):
+    try:
         os.remove(f'y:/{file_name}')
     except Exception as e:
         text = f'os.remove - {e}'
         writing_to_log_file(name_log, text)
 
+#***************************************************************
+writing_to_log_file(name_log, f'********start*********************************')
+cnt = 0
+con = 0
+
+try:
+    curs = connect_oracle()
+    con = 1
+except Exception as e:    
+    text = f'произошла ошибка при вызове функции connect_oracle() - {e}'
+    alarm_log(mail, name_log, text)
+    con = 0
+
+if con != 0:
     try:
-        shutil.move(file_name, 'y:/')
-    except Exception as e:
-        text = f'произошла ошибка shutil.move - {e}'
-        writing_to_log_file(name_log, text)
+        df = pd.DataFrame(zags_sm_sql(curs))
+        cnt = len(df)
+    except Exception as e:    
+        text = f'произошла ошибка при вызове функции zags_sm_sql() - {e}'
+        alarm_log(mail, name_log, text)
+        cnt = 0
+
+if cnt != 0:
+    zags_sm_remove(file_name, name_log)
+    zags_sm_file(curs, file_name, name_log)
+else:
+    writing_to_log_file(name_log, 'Данных нет')
 
 writing_to_log_file(name_log, f'количество записей - {cnt}')
 writing_to_log_file(name_log, 'end')

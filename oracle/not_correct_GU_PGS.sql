@@ -25,17 +25,27 @@ from
   (case
     when uszn.pkPerson.GetPersonalReq(r.region_id, r.pc_id, 15) is not null
       then uszn.pkPerson.GetPersonalReq(r.region_id, r.pc_id, 15)
-    
+
     when (select uszn.StrCommaConcat(value) from uszn.all_personal_doc_reqs q
            where q.region_id=r.region_id and q.pdoc_id=uszn.pkPerson.GetMainPersonIdentity(r.region_id, r.pc_id, 0) and class_id=8434) is not null
       then (select uszn.StrCommaConcat(value) from uszn.all_personal_doc_reqs q
              where q.region_id=r.region_id and q.pdoc_id=uszn.pkPerson.GetMainPersonIdentity(r.region_id, r.pc_id, 0) and class_id=8434)
-    
+
     when (select uszn.StrCommaConcat(uszn.pkGen.StripRgnPrefix(decoded_value)) from uszn.all_personal_doc_reqs q
            where q.class_id=14531 and q.region_id=r.region_id and q.pdoc_id=r.request_pdoc_id) is not null
       then (select uszn.StrCommaConcat(uszn.pkGen.StripRgnPrefix(decoded_value)) from uszn.all_personal_doc_reqs q
              where q.class_id=14531 and q.region_id=r.region_id and q.pdoc_id=r.request_pdoc_id)
-    
+
+    when (select uszn.StrCommaConcat(uszn.pkGen.StripRgnPrefix(decoded_value)) from uszn.all_personal_doc_reqs q
+           where q.class_id=18784 and q.region_id=r.region_id and q.pdoc_id=r.request_pdoc_id) is not null
+      then (select uszn.StrCommaConcat(uszn.pkGen.StripRgnPrefix(decoded_value)) from uszn.all_personal_doc_reqs q
+             where q.class_id=18784 and q.region_id=r.region_id and q.pdoc_id=r.request_pdoc_id)
+
+    when (select uszn.StrCommaConcat(uszn.pkGen.StripRgnPrefix(decoded_value)) from uszn.all_personal_doc_reqs q
+           where q.class_id=18854 and q.region_id=r.region_id and q.pdoc_id=r.request_pdoc_id) is not null
+      then (select uszn.StrCommaConcat(uszn.pkGen.StripRgnPrefix(decoded_value)) from uszn.all_personal_doc_reqs q
+             where q.class_id=18854 and q.region_id=r.region_id and q.pdoc_id=r.request_pdoc_id)
+             
     end) as adr,
 
  r.request_pdoc_id,
