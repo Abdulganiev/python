@@ -5,11 +5,16 @@ curs = connect_oracle()
 
 # *****************************************************************
 def GKH(region_id):
-    with open('report_GKV_MO.sql', 'r', encoding='utf8') as f:
+    with open('report_GKV_MO_mm_itog.sql', 'r', encoding='utf8') as f:
         sql = f.read()
     sql = sql.replace('{region_id}', f'{region_id}')
     curs.execute(sql)
     return curs.fetchall()
+
+# *****************************************************************
+def report_GKV_name():
+    curs.execute("select to_char(TRUNC(ADD_MONTHS(SYSDATE,-1),'MM'), 'mm.yyyy') from dual")
+    return curs.fetchone()
 
 # *****************************************************************
 data = {
@@ -27,8 +32,15 @@ for region_id in range(58, 71):
         data['в том числе льготники'].append(row[3])
         data['площадь'].append(row[4])
         
-log = 'report_GKV_MO'
+# *****************************************************************
+log = 'report_GKV_MO_mm_itog'
 test = 0
-name = 'в разрезе МО'
+period = report_GKV_name()[0]
+name = f'отчет ЖКВ за {period} в разрезе МО'
 
-generating_report_GKV(data, log, name, test)
+if test == 1:
+    mail = 'IVAbdulganiev@yanao.ru'
+else:
+    mail = 'IVAbdulganiev@yanao.ru, MSNesteruk@yanao.ru'
+
+generating_report_GKV(data, log, name, mail)

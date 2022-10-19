@@ -37,12 +37,24 @@ def report_GKV_YANAO_data(d):
                 data['в том числе носители льгот'].append(d[0][el-1])
             cnt += 1
     return data
+
+# *****************************************************************
+def report_GKV_name():
+    curs.execute("select to_char(TRUNC(ADD_MONTHS(SYSDATE,-1),'MM'), 'mm.yyyy') from dual")
+    return curs.fetchone()
+
 # *****************************************************************
 
 data = report_GKV_YANAO_data(report_GKV_YANAO())
 
 log = 'report_GKV_YANAO'
 test = 0
-name = 'в ЯНАО'
+period = report_GKV_name()[0]
+name = f'отчет ЖКВ за {period} в ЯНАО'
 
-generating_report_GKV(data, log, name, test)
+if test == 1:
+    mail = 'IVAbdulganiev@yanao.ru'
+else:
+    mail = 'IVAbdulganiev@yanao.ru, MSNesteruk@yanao.ru'
+
+generating_report_GKV(data, log, name, mail)

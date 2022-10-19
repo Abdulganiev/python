@@ -4,6 +4,9 @@ from pandas.io.excel import ExcelWriter
 from datetime import datetime
 import datetime as dt
 
+from openpyxl import load_workbook
+from openpyxl.styles import Alignment, Border, Side, Font
+
 import smtplib # Импортируем библиотеку по работе с SMTP
 # Добавляем необходимые подклассы - MIME-типы
 import mimetypes # Импорт класса для обработки неизвестных MIME-типов, базирующихся на расширении файла
@@ -64,54 +67,139 @@ def generating_list_GKV_kv(name_log, text, file_name, test, mail):
     writing_to_log_file(name_log, text)
 
 # *****************************************************************
-def generating_report_GKV_kv(df, name_log, name, region_id, test):
+def generating_report_GKV_kv(df, name_log, name, region_id, mail):
     data = pd.DataFrame(df)
     today = dt.date.today()
-    mail = 'IVAbdulganiev@yanao.ru'
-    file_name = f'отчет ЖКВ {name}.xlsx'
-    text = f'{file_name} за МО - {region_id} на {today}'
+    file_name = f'{name}.xlsx'
+    text = f'{name} на {today}'
     new_file_name = f'{today} - {file_name}'
 
     if region_id == '58':
-        with ExcelWriter(file_name) as writer: 
+        with ExcelWriter(file_name) as writer:
+            data.to_excel(writer, sheet_name='104', index=False)
             data.to_excel(writer, sheet_name=f'{region_id}', index=False)
     else:
         with ExcelWriter(file_name, engine='openpyxl', mode='a') as writer: 
             data.to_excel(writer, sheet_name=f'{region_id}', index=False)
 
-    if test == 0 and region_id == '70':
-        send_email(mail, text, msg_text=file_name, files=[file_name])
     if region_id == '70':
+        format_GKV(file_name)
+        format_GKV_104(file_name)
+        send_email(mail, text, msg_text=name, files=[file_name])
         os.replace(file_name, f'backup/{new_file_name}') 
 
     writing_to_log_file(name_log, text)
 
 # *****************************************************************
-def generating_report_GKV(df, name_log, name, test):
-    data = pd.DataFrame(df)
-
+def generating_report_GKV(df, name_log, name, mail):
     today = dt.date.today()
-    first = today.replace(day=1)
-    lastMonth = first - dt.timedelta(days=1)
-    date_report = lastMonth.strftime('%m.%Y')
-    file_name = f'отчет ЖКВ за {date_report} {name}.xlsx'
-    
-    data.to_excel(file_name, index=False)
-
-    if test == 1:
-        mail = 'IVAbdulganiev@yanao.ru'
-    else:
-        mail = 'IVAbdulganiev@yanao.ru, MSNesteruk@yanao.ru'
-
-    text = f'{file_name} на {today}'
-
-    send_email(mail, text, msg_text=file_name, files=[file_name])
-
+    file_name = f'{name}.xlsx'
+    text = f'{name} на {today}'
     new_file_name = f'{today} - {file_name}'
-    os.replace(file_name, f'backup/{new_file_name}') 
 
+    data = pd.DataFrame(df)
+    data.to_excel(file_name, index=False)
+    format_GKV(file_name)
+
+    send_email(mail, text, msg_text=text, files=[file_name])
+    os.replace(file_name, f'backup/{new_file_name}') 
     writing_to_log_file(name_log, text)      
 
+# *****************************************************************
+def format_GKV_104(file):
+    wb = load_workbook(file)
+    sheet = wb['104']
+    list_formula = ['C', 'D', 'E']
+    list_not = [13, 14, 15, 18, 19, 20, 25, 26, 36, 37, 44, 45, 49, 50, 52, 53]
+    for ceil in list_formula:
+        for i in range(3, 54):
+            if list_not.count(i) == 0:
+                sheet[f'{ceil}{i}'] = f"=SUM('58:70'!{ceil}{i})"
+    wb.save(file)
+
+# *****************************************************************
+def format_GKV(file):
+    # определим стили сторон
+    style_g = 'thin'
+    b_left=Side(border_style=style_g, color='FF000000')
+    b_right=Side(border_style=style_g, color='FF000000')
+    b_top=Side(border_style=style_g, color='FF000000')
+    b_bottom=Side(border_style=style_g, color='FF000000')
+    b_diagonal=Side(border_style=None, color='FF000000')
+    b_diagonal_direction=0
+    b_outline=Side(border_style=None, color='FF000000')
+    b_vertical=Side(border_style=None, color='FF000000')
+    b_horizontal=Side(border_style=None, color='FF000000')
+
+    wb = load_workbook(file)
+
+    for sh in wb.sheetnames:
+        sheet = wb[sh]
+        for row in sheet.iter_rows():
+            for cell in row:
+        #         выравнивание текста во всех ячейках
+                cell.alignment = Alignment(wrap_text=True, horizontal='center', vertical='center')
+        #         рисуем границы
+                cell.border = Border(top=b_top, bottom=b_bottom, left=b_left, right=b_right)
+
+        for i in range(1, 54):
+            sheet[f'B{i}'].alignment = Alignment(wrap_text=True, horizontal='left')
+
+        list_heading = ['B1', 'B2', 'B15', 'B19', 'B26', 'B37', 'B45', 'B50']
+        for ceil in list_heading: # выравнивание текста в определенных ячейках
+            sheet[ceil].alignment = Alignment(horizontal='center', vertical='center')
+            sheet[ceil].font = Font(bold=True)
+
+        list_itog = ['B14', 'B18', 'B25', 'B36', 'B44', 'B49', 'B52', 'B53']
+        for ceil in list_itog: # выравнивание текста в определенных ячейках
+            sheet[ceil].alignment = Alignment(horizontal='right', vertical='center')
+
+        list_rovno = ['B2:E2', 'B15:E15', 'B19:E19', 'B26:E26', 'B37:E37', 'B45:E45', 'B50:E50']
+        for ceil in list_rovno: # объедение ячеек
+            sheet.merge_cells(ceil)
+
+        width_stolb = {'B' : 120, 'C' : 40, 'D' : 20, 'E' : 20}
+        for key, value in width_stolb.items(): # ширина столбцов
+            sheet.column_dimensions[key].width = value
+
+        list_formula = ['C', 'D', 'E']
+        for ceil in list_formula:
+            sheet[f'{ceil}14'] = f'=SUM({ceil}3:{ceil}12)'
+            sheet[f'{ceil}13'] = f'=SUM({ceil}9:{ceil}11)'
+            sheet[f'{ceil}18'] = f'=SUM({ceil}16:{ceil}17)'
+            sheet[f'{ceil}20'] = f'=SUM({ceil}21:{ceil}23)'
+            sheet[f'{ceil}25'] = f'=SUM({ceil}21:{ceil}24)'
+            sheet[f'{ceil}36'] = f'=SUM({ceil}27:{ceil}35)'
+            sheet[f'{ceil}44'] = f'=SUM({ceil}38:{ceil}43)'
+            sheet[f'{ceil}49'] = f'=SUM({ceil}46:{ceil}48)'
+            sheet[f'{ceil}52'] = f'={ceil}51'
+            sheet[f'{ceil}53'] = f'={ceil}14+{ceil}18+{ceil}25+{ceil}36+{ceil}44+{ceil}49+{ceil}52'
+        
+    wb.save(file)
+
+# *****************************************************************
+def generating_mail_mo(region_id, mail, test):
+    mail_mo = {
+        58 : 'uszn@nur.yanao.ru',
+        59 : 'szn@krasnoselkupsky.yanao.ru',
+        60 : 'dtszns@slh.yanao.ru',
+        61 : 'utszn@priuralye.yanao.ru',
+        62 : 'mail@utszn.lbt.yanao.ru',
+        63 : 'usp@nadym.yanao.ru',
+        64 : 'utszn@gubadm.ru',
+        65 : 'uszn@muravlenko.yanao.ru',
+        66 : 'ORSiDP@noyabrsk.yanao.ru',
+        67 : 'usp@pur.yanao.ru',
+        68 : 'uszn@yam.yanao.ru',
+        69 : 'uszn@shur.yanao.ru',
+        70 : 'sz@tazovsky.yanao.ru',
+    }
+    
+    if test == 1:
+        return mail
+    else:
+        mail = f'{mail}, {mail_mo[region_id]}'
+        return mail
 # *****************************************************************
 def generating_report_GSP(df, name_log, name, test):
     data = pd.DataFrame(df)

@@ -12,11 +12,6 @@ def report_GKV_kv(region_id):
     return curs.fetchall()
 
 # *****************************************************************
-def report_GKV_name():
-    curs.execute("SELECT to_char(TRUNC(ADD_MONTHS(SYSDATE, -3), 'Q'),'Q')||' кв '||to_char(TRUNC(ADD_MONTHS(SYSDATE, -3), 'Q'),'YYYY') FROM dual")
-    return curs.fetchone()
-
-# *****************************************************************
 def report_GKV_kv_data(d):
     data = {
              '№ п/п' : [],
@@ -44,14 +39,41 @@ def report_GKV_kv_data(d):
     return data
 
 # *****************************************************************
+def report_GKV_name():
+    curs.execute("SELECT to_char(TRUNC(ADD_MONTHS(SYSDATE, -3), 'Q'),'Q')||' кв '||to_char(TRUNC(ADD_MONTHS(SYSDATE, -3), 'Q'),'YYYY') FROM dual")
+    return curs.fetchone()
+
+# *****************************************************************
+def report_GKV_mo(region_id):
+    sql = f'SELECT uszn.pkTSrv.GetRegionName({region_id}) FROM dual'
+    curs.execute(sql)
+    return curs.fetchone()
+
+# *****************************************************************
+def report_GKV_mail(region_id, mail, ):
+    sql = f'SELECT uszn.pkTSrv.GetRegionName({region_id}) FROM dual'
+    curs.execute(sql)
+    return curs.fetchone()
+
+# *****************************************************************
 log = 'report_GKV_kv'
 test = 0
-Q = report_GKV_name()
-name = f'за {Q[0]}'
+period = report_GKV_name()[0]
+name = f'отчет ЖКВ за {period}'
+
+if test == 1:
+    mail = 'IVAbdulganiev@yanao.ru'
+else:
+    mail = 'IVAbdulganiev@yanao.ru'
 
 # *****************************************************************
 writing_to_log_file(log, '********************************************')
 
 for region_id in range(58, 71):
+    mo = report_GKV_mo(region_id)[0]
+    name_mo = f'{name} в {mo}'
+    mail_mo = generating_mail_mo(region_id, mail, test)
+
     data = report_GKV_kv_data(report_GKV_kv(region_id))
-    generating_report_GKV_kv(data, log, name, str(region_id), test)
+    generating_report_GKV_kv(data, log, name, str(region_id), mail)
+    generating_report_GKV(data, log, name_mo, mail_mo)
