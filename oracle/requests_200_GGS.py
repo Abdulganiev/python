@@ -6,17 +6,20 @@ mail = 'IVAbdulganiev@yanao.ru'
 
 # ********************************************************
 def drop_table(): # удаление временной таблицы
+  writing_to_log_file(log, f'drop_table')
   cnt = count_table()
+  writing_to_log_file(log, f'drop_table - {cnt}')
   if cnt > 0:
     curs.execute('DROP TABLE uszn.temp$_200_GGS')
+    writing_to_log_file(log, f'DROP TABLE uszn.temp$_200_GGS')
 
 # ********************************************************
 def creating_table(): # создание временное таблицы
+  writing_to_log_file(log, f'creating_table')
   cnt = count_table()
   if cnt == 0:
     curs.execute(
-    '''
-CREATE TABLE uszn.temp$_200_GGS
+    '''CREATE TABLE uszn.temp$_200_GGS
 as
 SELECT row_number() over(partition by t2.region_id ORDER BY t2.pc_id) as num,
        t2.region_id,
@@ -33,15 +36,19 @@ SELECT row_number() over(partition by t2.region_id ORDER BY t2.pc_id) as num,
                    and (state_svc_id,state_svc_region_id) in ((1,104),(9,104)) and
                    t2.status_id in (20, 30, 40)
 GROUP BY t2.region_id, t2.pc_id''')  
+    writing_to_log_file(log, f'CREATE TABLE uszn.temp$_200_GGS')
+  cnt = count_table()
 
 # ********************************************************
 def deleting_collection():
+  writing_to_log_file(log, f'deleting_collection')
   curs.execute('''
 DELETE uszn.r_ssvc_rq_collection_items
 WHERE collection_id=1 and collection_region_id=71''')
 
 # ********************************************************
 def loading_data():
+  writing_to_log_file(log, f'loading_data')
   curs.execute('''
 INSERT INTO uszn.r_ssvc_rq_collection_items(collection_id, collection_region_id, request_id, request_region_id)
     SELECT 1, t1.region_id, t1.id, t1.region_id
@@ -49,10 +56,14 @@ INSERT INTO uszn.r_ssvc_rq_collection_items(collection_id, collection_region_id,
 
 # ********************************************************************
 def count_table(): # проверка временной таблицы на наличие записей
+  writing_to_log_file(log, f'count_table')
   try:
     curs.execute('SELECT count(*) FROM uszn.temp$_200_GGS')
-    return int(curs.fetchall()[0][0])
+    cnt = int(curs.fetchall()[0][0])
+    writing_to_log_file(log, f'SELECT count(*) FROM uszn.temp$_200_GGS - {cnt}')
+    return cnt
   except:
+    writing_to_log_file(log, f'SELECT count(*) FROM uszn.temp$_200_GGS - 0')
     return 0
 
 # ********************************************************************
@@ -75,6 +86,7 @@ def count_collection_200():
     ext = f'произошла ошибка при внутри функции count_collection_200() - {e}'
     alarm_log(mail, log, text)
   return col_cnt
+
 
 # ********************************************************
 try:
@@ -105,6 +117,7 @@ except Exception as e:
   alarm_log(mail, log, text)
 
 # ********************************************************
+
 try:
   creating_table()
 except Exception as e:
@@ -113,7 +126,7 @@ except Exception as e:
 
 # ********************************************************
 try:
-  cnt2 = count_collection_200()
+  text = count_collection_200()
 except Exception as e:
   text = f'произошла ошибка при вызове функции count_collection_200() - {e}'
   alarm_log(mail, log, text)
@@ -127,9 +140,23 @@ except Exception as e:
 
 # ********************************************************
 try:
+  text = count_collection_200()
+except Exception as e:
+  text = f'произошла ошибка при вызове функции count_collection_200() - {e}'
+  alarm_log(mail, log, text)
+
+# ********************************************************
+try:
   loading_data()
 except Exception as e:
   text = f'произошла ошибка при вызове функции loading_data() - {e}'
+  alarm_log(mail, log, text)
+
+# ********************************************************
+try:
+  cnt2 = count_collection_200()
+except Exception as e:
+  text = f'произошла ошибка при вызове функции count_collection_200() - {e}'
   alarm_log(mail, log, text)
 
 # ********************************************************
