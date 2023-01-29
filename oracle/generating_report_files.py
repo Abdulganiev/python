@@ -99,7 +99,7 @@ def generating_report_GKV(df, name_log, name, mail):
 
     data = pd.DataFrame(df)
     data.to_excel(file_name, index=False)
-    format_GKV(file_name)
+    # format_GKV(file_name)
 
     send_email(mail, text, msg_text=text, files=[file_name])
     os.replace(file_name, f'backup/{new_file_name}') 
@@ -142,7 +142,7 @@ def format_GKV(file):
         #         рисуем границы
                 cell.border = Border(top=b_top, bottom=b_bottom, left=b_left, right=b_right)
 
-        for i in range(1, 54):
+        for i in range(1, 14):
             sheet[f'B{i}'].alignment = Alignment(wrap_text=True, horizontal='left')
 
         list_heading = ['B1', 'B2', 'B15', 'B19', 'B26', 'B37', 'B45', 'B50']

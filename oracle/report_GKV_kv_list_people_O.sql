@@ -20,7 +20,7 @@ select
   RPad( Nvl( uszn.pkPerson.GetRawPCReqValueOnDate( r.region_id, uszn.pkPIC.GetCollByRole(r.region_id, r.people_id, 46, ADD_MONTHS(TRUNC(ADD_MONTHS(SYSDATE, -3), 'Q'), 3)-1), 3760,  -- общая площадь
   3845,  -- дата с
   null,  -- дата по
-  To_Date('31.03.2022') ),' '),100 )||
+  ADD_MONTHS(TRUNC(ADD_MONTHS(SYSDATE, -3), 'Q'), 3)-1 ),' '),100 )||
   RPad(Nvl(To_Char(r.pc_house), ' '),40)||
   RPad(Nvl(To_Char(r.pc_srv), ' '),40)||
   RPad(' ', 100) as record_C,

@@ -1,1 +1,2 @@
-select 'Отчет ГСП за период с '||to_char(trunc(sysdate, 'yy'))||' по '||to_char(trunc(sysdate, 'mm')-1) from dual
+-- select 'Отчет ГСП за период с '||to_char(trunc(sysdate, 'yy'))||' по '||to_char(trunc(sysdate, 'mm')-1) from dual
+select 'Отчет ГСП за период с '||to_char(trunc(trunc(sysdate, 'mm')-1, 'yy'))||' по '||to_char(trunc(sysdate, 'mm')-1) from dual

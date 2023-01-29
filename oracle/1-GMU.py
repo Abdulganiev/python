@@ -3,7 +3,7 @@ import pandas as pd
 
 #***************************************************************
 name_log = '1-GMU'
-mail = 'IVAbdulganiev@yanao.ru' # AVShashkov@yanao.ru
+mail = 'IVAbdulganiev@yanao.ru, AVShashkov@yanao.ru' # AVShashkov@yanao.ru
 
 #***************************************************************
 try:

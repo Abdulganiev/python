@@ -8,13 +8,19 @@ mail = 'IVAbdulganiev@yanao.ru'
 
 #**************************************************
 def search_messages(curs):
-    curs = connect_oracle()
+    # curs = connect_oracle()
     with open('death_find.sql', 'r', encoding='utf8') as f:
         sql = f.read()
     curs.execute(sql)
     df = curs.fetchall()
-    curs.close()
+    # curs.close()
     return df
+
+#**************************************************
+def death_pre_check(curs):
+    with open('death_pre-check.sql', 'r', encoding='utf8') as f:
+        sql = f.read()
+    curs.execute(sql)    
 
 #**************************************************
 def processing(curs, region_id, id):
@@ -35,6 +41,8 @@ def processing(curs, region_id, id):
         with open('death_insert.sql', 'r', encoding='utf8') as f:
             sql = f.read()
         curs.execute(sql)
+        return 1
+    return 0
 
 #**************************************************        
 def death_cnt(curs):
@@ -48,8 +56,14 @@ writing_to_log_file(name_log, '*******start*************************************
 
 try:
     curs = connect_oracle()
-except Exception as e:    
+except Exception as e:
     text = f'произошла ошибка при вызове функции connect_oracle() - {e}'
+    alarm_log(mail, name_log, text)    
+
+try:
+    death_pre_check(curs)
+except Exception as e:    
+    text = f'произошла ошибка при вызове функции death_pre_check() - {e}'
     alarm_log(mail, name_log, text)    
 
 try:
@@ -71,13 +85,14 @@ writing_to_log_file(name_log, text)
 
 #*********************************************
 i = 0
+cnt = 0
 start_time = time.time()
 start_time_1 = time.time()
 
 #*********************************************
 for row in data.itertuples(index=False):
     try:
-        processing(curs, row[0], row[1])
+        cnt += processing(curs, row[0], row[1])
     except Exception as e:    
         text = f'произошла ошибка при вызове функции processing() - {e}'
         alarm_log(mail, name_log, text)
@@ -97,12 +112,12 @@ for row in data.itertuples(index=False):
         text = f'{i} - {dt}'
         writing_to_log_file(name_log, text)
         
-        curs.close()
-        try:
-            curs = connect_oracle()
-        except Exception as e:    
-            text = f'произошла ошибка при вызове функции connect_oracle() - {e}'
-            alarm_log(mail, name_log, text)    
+        # curs.close()
+        # try:
+        #     curs = connect_oracle()
+        # except Exception as e:    
+        #     text = f'произошла ошибка при вызове функции connect_oracle() - {e}'
+        #     alarm_log(mail, name_log, text)    
         
         i = 0
         start_time = time.time()
@@ -121,7 +136,7 @@ except Exception as e:
     text = f'произошла ошибка при вызове функции death_cnt() - {e}'
     alarm_log(mail, name_log, text)    
 
-text = f'{cnt_data} - {dt}'
+text = f'{cnt_data} - {dt}. Обработано {cnt} сообщений'
 writing_to_log_file(name_log, text)
 
 writing_to_log_file(name_log, 'end')
