@@ -4,19 +4,64 @@ from generating_report_files import *
 
 #***************************************************************
 log = 'samohod'
-curs = connect_oracle()
+mail = 'IVAbdulganiev@yanao.ru'
 
 #****************************************************************************************************
-def v2(xl):
-    v2_drop()
-    v2_insert(xl)
-    v2_table_all()
-    v2_table_del()
-    v2_table_new()
-    v2_table_chahge()
-    v2_table_update()
-    v2_table_insert()
+try:
+    curs = connect_oracle()
+except Exception as e:
+    text = f'произошла ошибка при вызове функции connect_oracle() - {e}'
+    alarm_log(mail, log, text)
+#****************************************************************************************************
 
+def v2(xl):
+    try:
+        v2_drop()
+    except Exception as e:
+        text = f'произошла ошибка при вызове функции v2_drop() - {e}'
+        alarm_log(mail, log, text)
+
+    try:
+        v2_insert(xl)
+    except Exception as e:
+        text = f'произошла ошибка при вызове функции v2_insert() - {e}'
+        alarm_log(mail, log, text)    
+
+    try:
+        v2_table_all()
+    except Exception as e:
+        text = f'произошла ошибка при вызове функции v2_table_all() - {e}'
+        alarm_log(mail, log, text)    
+
+    try:
+        v2_table_del()
+    except Exception as e:
+        text = f'произошла ошибка при вызове функции v2_table_del() - {e}'
+        alarm_log(mail, log, text)    
+
+    try:
+        v2_table_new()
+    except Exception as e:
+        text = f'произошла ошибка при вызове функции v2_table_new() - {e}'
+        alarm_log(mail, log, text)    
+
+    try:
+        v2_table_chahge()
+    except Exception as e:
+        text = f'произошла ошибка при вызове функции v2_table_chahge() - {e}'
+        alarm_log(mail, log, text)    
+
+    try:
+        v2_table_update()
+    except Exception as e:
+        text = f'произошла ошибка при вызове функции v2_table_update() - {e}'
+        alarm_log(mail, log, text)    
+
+    try:
+        v2_table_insert()
+    except Exception as e:
+        text = f'произошла ошибка при вызове функции v2_table_insert() - {e}'
+        alarm_log(mail, log, text)    
 
 #****************************************************************************************************
 def v2_table_all():

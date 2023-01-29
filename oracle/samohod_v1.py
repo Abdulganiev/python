@@ -4,19 +4,64 @@ import re
 
 #***************************************************************
 log = 'samohod'
-curs = connect_oracle()
+mail = 'IVAbdulganiev@yanao.ru'
+
+#****************************************************************************************************
+try:
+    curs = connect_oracle()
+except Exception as e:
+    text = f'произошла ошибка при вызове функции connect_oracle() - {e}'
+    alarm_log(mail, log, text)
 
 #****************************************************************************************************
 def v1(xl):
-    writing_to_log_file(log, 'Запуск функции v1')
-    v1_drop()
-    v1_insert(xl)
-    v1_table_all()
-    v1_table_del()
-    v1_table_new()
-    v1_table_chahge()
-    v1_table_update()
-    v1_table_insert()
+    try:
+        v1_drop()
+    except Exception as e:
+        text = f'произошла ошибка при вызове функции v1_drop() - {e}'
+        alarm_log(mail, log, text)
+
+    try:
+        v1_insert(xl)
+    except Exception as e:
+        text = f'произошла ошибка при вызове функции v1_insert() - {e}'
+        alarm_log(mail, log, text)
+
+    try:
+        v1_table_all()
+    except Exception as e:
+        text = f'произошла ошибка при вызове функции v1_table_all() - {e}'
+        alarm_log(mail, log, text)
+
+    try:
+        v1_table_del()
+    except Exception as e:
+        text = f'произошла ошибка при вызове функции v1_table_del() - {e}'
+        alarm_log(mail, log, text)
+
+    try:
+        v1_table_new()
+    except Exception as e:
+        text = f'произошла ошибка при вызове функции v1_table_new() - {e}'
+        alarm_log(mail, log, text)
+
+    try:
+        v1_table_chahge()
+    except Exception as e:
+        text = f'произошла ошибка при вызове функции v1_table_chahge() - {e}'
+        alarm_log(mail, log, text)
+
+    try:
+        v1_table_update()
+    except Exception as e:
+        text = f'произошла ошибка при вызове функции v1_table_update() - {e}'
+        alarm_log(mail, log, text)
+
+    try:
+        v1_table_insert()
+    except Exception as e:
+        text = f'произошла ошибка при вызове функции v1_table_insert() - {e}'
+        alarm_log(mail, log, text)
 
 
 #****************************************************************************************************

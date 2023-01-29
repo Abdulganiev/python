@@ -6,6 +6,11 @@ from samohod_v2 import *
 from generating_report_files import *
 
 #***************************************************************
+log = 'samohod'
+mail = 'IVAbdulganiev@yanao.ru'
+today = dt.date.today()
+
+#***************************************************************
 def movi_file(file):
     new_file_name = f'{today} - {file}'
     os.replace(file, f'backup/{new_file_name}')
@@ -18,7 +23,8 @@ def write_file(file):
         writing_to_log_file(log, f'Файл {file} записан в dataframe')
         return xl
     except Exception as e:
-        writing_to_log_file(log, f'Alarm: \n {e}')
+        text = f'Alarm: \n {e}'
+        alarm_log(mail, log, text)
     
 #***************************************************************
 def write_df(xl):
@@ -33,6 +39,12 @@ def write_df(xl):
                 writing_to_log_file(log, 'Запуск вариант 1')
                 # print('Запуск вариант 1')
                 v1(xl)
+            elif data[0] == 'Гос. рег. знак' and data[1] == 'Марка' and data[2] == 'Наименование' and data[3] == 'Дата регистрации' and data[4] == 'Год вып.' and data[5] == 'Владелец' and data[6] == 'Адрес владельца' and data[7] == 'Документ, удост. личность' and data[8] == 'Кем выдан док. удост. личность' and data[9] == 'Дата выдачи док. удост. личность' and data[10] == 'СНИЛС' and data[11] == 'Дата рождения':
+                writing_to_log_file(log, 'Запуск вариант 3')
+                # print('Запуск вариант 3')
+                xl.drop('Unnamed: 10', axis=1, inplace=True)
+                xl.rename(columns={'Unnamed: 11': 'Unnamed: 10'}, inplace=True)
+                v2(xl)
             else:    
                 writing_to_log_file(log, 'ВНИМАНИЕ!!! Ошибки в полях')
                 text = f'Файл от службы на {file} содержит ошибки в полях'
@@ -43,9 +55,6 @@ def write_df(xl):
         cnt += 1
 
 #***************************************************************
-log = 'samohod'
-mail = 'IVAbdulganiev@yanao.ru'
-today = dt.date.today()
 writing_to_log_file(log, '***************************************')
 
 c = os.listdir(os.getcwd())
