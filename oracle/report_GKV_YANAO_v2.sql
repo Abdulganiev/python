@@ -505,15 +505,15 @@ from
                   select
                       a.region_id,
                       a.pka_people_coll_id as people_id,
-                      uszn.ToDateDef(a.receipt_date) as payout_date,
+                      a.payout_doc_doc_date as payout_date,
                       a.pc_count_applied_to as pc_count,
                       -- перевод признака учёта в категорию ПФ РФ
                       uszn.pkOutDocCol.GetPFRF_Cat(
                         a.region_id, a.pka_people_coll_id, a.pkaf_region_id, a.pkaf_id,
-                        Trunc(uszn.ToDateDef(a.receipt_date), 'mm'), Last_Day(uszn.ToDateDef(a.receipt_date))) as n_cat,
+                        Trunc(a.payout_doc_doc_date, 'mm'), Last_Day(a.payout_doc_doc_date)) as n_cat,
 						--Trunc(a.poi_payout_date, 'mm'), Last_Day(a.poi_payout_date)) as n_cat,
                       -- коллектив ищем на дату суммы
-                      uszn.pkPic.GetCollByRole(a.region_id, a.pka_people_coll_id, 46, uszn.ToDateDef(a.receipt_date), 0, 0) as coll_id
+                      uszn.pkPic.GetCollByRole(a.region_id, a.pka_people_coll_id, 46, a.payout_doc_doc_date, 0, 0) as coll_id
 					  --uszn.pkPic.GetCollByRole(a.region_id, a.pka_people_coll_id, 46, a.poi_payout_date, 0, 0) as coll_id
                     from uszn.all_po_amounts a
                     where
@@ -522,7 +522,7 @@ from
                             a.region_id,
                             First_Value(a.id) over (
                               partition by a.region_id, a.poi_assigned_id
-                              order by uszn.ToDateDef(a.receipt_date) desc, a.pc_count_applied_to desc, a.income_date desc, a.id) as amount_id
+                              order by a.payout_doc_doc_date desc, a.pc_count_applied_to desc, a.income_date desc, a.id) as amount_id
                           from uszn.all_po_amounts a
                           where
                             -- фильтр по району
