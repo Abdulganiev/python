@@ -235,7 +235,7 @@ def send_email(addr_to, msg_subj, msg_text='', files=[]):
     #    msg_text - указать текст письма (необязательно).
     #    files - указать файлы в виде ['файл 1', 'файл 2', и т.д.] (необязательно).
     # '''
-    path = 'access_mail.txt'
+    path = r'd:/python/schedule/access_mail.txt'
     with open(path) as f:
         access = json.load(f)
     
@@ -321,31 +321,68 @@ def attach_file(msg, filepath):                             # Функция п�
 def writing_to_log_file(file, text):
     # '''функция создания лог файла и записи в него информации'''
     dt = datetime.now().strftime('%Y-%m-%d %X')
-    log_file = file + '.log'
-    path = 'log/' + log_file
-
+    path = f'd:/python/schedule/log/{file}.log'
     with open(path, 'a+') as file_log:
         log = f'{dt} : {text} \n'
         file_log.write(log)
 
 # *****************************************************************
 def connect_oracle():
-    path = 'access_report.txt'
+    mail = 'IVAbdulganiev@yanao.ru,300195@mail.ru'
+    name_log = 'access_report'
+
+    #***************************************************************
+    path = r'd:/python/schedule/access_report.txt'
     with open(path) as f:
         access = json.load(f)
     
-    driver = 'ojdbc14.jar'
+    driver = r'd:/python/schedule/ojdbc14.jar'
     path_base = access['path_base']
     password = access['password']
     login = access['login']
     port = access['port']
     sid = access['sid']
 
-    conn = jaydebeapi.connect(
-        'oracle.jdbc.driver.OracleDriver',
-        f'jdbc:oracle:thin:{login}/{password}@{path_base}:{port}/{sid}',
-        [login, password],
-        driver)
+    try:
+        conn = jaydebeapi.connect(
+            'oracle.jdbc.driver.OracleDriver',
+            f'jdbc:oracle:thin:{login}/{password}@{path_base}:{port}/{sid}',
+            [login, password],
+            driver)
+    except Exception as e:
+        text = f'произошла ошибка при вызове функции connect_oracle - {e}'
+        alarm_log(mail, name_log, text)
+
+    curs = conn.cursor()
+
+    return curs
+
+# *****************************************************************
+def connect_oracle_large_family():
+    mail = 'IVAbdulganiev@yanao.ru,300195@mail.ru'
+    name_log = 'access_report_large_family'
+
+    #***************************************************************
+    path = r'd:/python/schedule/access_large_family.txt'
+    with open(path) as f:
+        access = json.load(f)
+    
+    driver = r'd:/python/schedule/ojdbc14.jar'
+    path_base = access['path_base']
+    password = access['password']
+    login = access['login']
+    port = access['port']
+    sid = access['sid']
+
+    try:
+        conn = jaydebeapi.connect(
+            'oracle.jdbc.driver.OracleDriver',
+            f'jdbc:oracle:thin:{login}/{password}@{path_base}:{port}/{sid}',
+            [login, password],
+            driver)
+    except Exception as e:
+        text = f'произошла ошибка при вызове функции connect_oracle_large_family - {e}'
+        alarm_log(mail, name_log, text)
 
     curs = conn.cursor()
 

@@ -18,7 +18,7 @@ from
  uszn.temp$_death t3
 on Translate(UPPER(t1.last_name), 'Ё', 'Е')   = Translate(UPPER(t3.last_name), 'Ё', 'Е')   and
    Translate(UPPER(t1.first_name), 'Ё', 'Е')  = Translate(UPPER(t3.first_name), 'Ё', 'Е')  and
-   --Translate(UPPER(t1.middle_name), 'Ё', 'Е') = Translate(UPPER(t3.middle_name), 'Ё', 'Е') and
+   Translate(UPPER(t1.middle_name), 'Ё', 'Е') = Translate(UPPER(t3.middle_name), 'Ё', 'Е') and
    t1.birth_date = uszn.ToDateDef(t3.birth_date) and
    t1.death_date is null and
    t3.last_name is not null and
