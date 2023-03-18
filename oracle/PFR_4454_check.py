@@ -101,33 +101,13 @@ def load_files():
 # *************************************************            
 def load_base(xl):
     table = 'uszn.temp$_pfr_check'
-    # nabor = ['Дата подачи',
-    #          'СНИЛС заявителя', 'Фамилия', 'Имя', 'Отчество', 'ДР', 
-    #          'СНИЛС ребенка', 'Фамилия ребенка', 'Имя ребенка', 'Отчество ребенка', 'ДР ребенка', 
-    #          'Дата принятия решения', 'Решение', 'Статус решения', 
-    #          'С', 'По', 'Сумма на человека']
-
-
     nabor = ['СНИЛС получателя ЕП', 'Фамилия получателя ЕП', 'Имя получателя ЕП', 'Отчество получателя ЕП',
              'Дата рождения получателя ЕП', 
              'СНИЛС лица основания ЕП', 'Фамилия лица основания ЕП', 'Имя лица основания ЕП',
              'Отчество лица основания ЕП', 'Дата рождения лица основания ЕП',
              'Дата решения о назначении',
              'Период,на который установено ЕП С', 'Период,на который установено ЕП ПО', 'Размер назначения ЕП']
-
     xl = xl[nabor]
-    # xl['Дата подачи'] = xl['Дата подачи'].apply(dat)
-    # xl['ДР'] = xl['ДР'].apply(dat)
-    # xl['ДР ребенка'] = xl['ДР ребенка'].apply(dat)
-    # xl['ДР ребенка'] = xl['ДР ребенка'].apply(replace_nat)
-    # xl['СНИЛС заявителя'] = xl['СНИЛС заявителя'].apply(snils)
-    # xl['СНИЛС ребенка'] = xl['СНИЛС ребенка'].apply(snils)
-    # xl['DT'] = today
-    # xl['DT'] = xl['DT'].apply(dat)
-    # xl['Дата принятия решения'] = xl['DT'].apply(dat)
-    # xl['С'] = xl['С'].apply(dat)
-    # xl['По'] = xl['По'].apply(dat)
-
     xl['Дата решения о назначении'] = xl['Дата решения о назначении'].apply(dat)
     xl['Дата рождения получателя ЕП'] = xl['Дата рождения получателя ЕП'].apply(dat)
     xl['Дата рождения лица основания ЕП'] = xl['Дата рождения лица основания ЕП'].apply(dat)
@@ -147,18 +127,24 @@ def load_base(xl):
     cnt = curs.fetchone()[0]
     writing_to_log_file(log, f'Количество записей в {table} перед загрузкой - {cnt}')
     a = 0
+
+    curs.execute('delete from uszn.temp$_pfr_check')
+
     for data in xl.itertuples(index=False):
         try:
             curs.execute(f'''INSERT INTO {table} (app_date, app_snils, app_F, app_I, app_O, app_DR, baby_snils, baby_F, baby_I, baby_O, baby_DR, decision_date, decision, decision_status, date_from, date_to, amount, date_upload) 
                 values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )''', 
                 #          [data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7], data[8], data[9], data[10], 
                 #           data[11], data[12], data[13], data[14], data[15], data[16], data[17]])
-                            ['', data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7], data[8], 'Назначить', 'Назначить', 
-                             data[9], data[10], data[11], data[12], data[13], data[14]])
+                            ['', data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7], data[8], data[9], 'Назначить', 'Назначить', 
+                             data[10], data[11], data[12], data[13], data[14]])
             a += 1
         except Exception as e:
             text = f'произошла ошибка - {e}'
             alarm_log(mail, log, text)
+
+    curs.execute('''insert into uszn.temp$_pfr_check_temp
+                        select * from uszn.temp$_pfr_check''')
     return a
 
 # *************************************************

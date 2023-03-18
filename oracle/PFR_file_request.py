@@ -90,7 +90,10 @@ for key, value in categories.items():
     cnt = 0 # считаем строки
     for row in data:
         with open(path, 'a+', encoding='IBM866') as f: # запись в файл строки
-            f.write(row[0] + '\n')
+            try:
+                f.write(row[0] + '\n')
+            except Exception as e:
+                writing_to_log_file(name_log, f'ошибка записи в файл {row[0]} - {e}')    
         cnt += 1 # считаем строки
     
     with zipfile.ZipFile(file_zip, 'a') as myzip:
