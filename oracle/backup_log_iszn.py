@@ -1,5 +1,6 @@
 import shutil, os, re
-import datetime as dt
+# import datetime as dt
+from datetime import date, timedelta
 import zipfile
 from generating_report_files import *
 
@@ -9,15 +10,18 @@ path_y = r'Y:/'
 os.chdir(path_y)
 name_log = 'backup_log_iszn'
 mail = 'IVAbdulganiev@yanao.ru'
+yesterday = str(date.today() - timedelta(days=1))
+today = str(date.today())
 
 # ******************************************************
 def file_list(file_start, file_end, path_log):
     c = os.listdir()
     file_extension = '.' + file_end
     file_find = r'^' + file_start
-    not_file = file_start + str(dt.date.today()) + file_extension
+    not_file_yesterday = file_start + yesterday + file_extension
+    not_file_today = file_start + today + file_extension
     for file in c:
-        if re.findall(file_find, file) and file.endswith(file_extension) and file != not_file:
+        if re.findall(file_find, file) and file.endswith(file_extension) and file not in (not_file_yesterday, not_file_today):
             text = f'**** {file}'
             writing_to_log_file(name_log, text)
             archive = file + '.zip'
@@ -62,8 +66,8 @@ dict_logs = {
     'smev_to_file_' : 'file', 
     'smev2_in_' : 'smev', 
     'smev2_out_' : 'smev', 
-    # 'smev3_in_' : 'smev', 
-    # 'smev3_out_' : 'smev', 
+    'smev3_in_' : 'smev', 
+    'smev3_out_' : 'smev', 
     'Statistics_' : 'Statistics',
     'ZAGS_GGS_' : 'ZAGZ', 
     'ZAGZ_' : 'ZAGZ', 
@@ -83,6 +87,11 @@ dict_logs = {
     'EKJ_YD_wants_to_participate_' : 'EKJ_YD_wants_to_participate',
     'EKJ_Recipient_' : 'EKJ_Recipient',
     'EKJ_EPB_' : 'EKJ_EPB',
+    'ES_request_' : 'ES_request',
+    'ES_status_' : 'ES_status',
+    'PAN_in_' : 'PAN',
+    'PAN_out_' : 'PAN',
+    'ServerOperationLog_' : 'ServerOperationLog',
 }
 
 text = '****************start****************'

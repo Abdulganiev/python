@@ -220,11 +220,12 @@ MAMA_DUL_TYPE||' '||MAMA_DUL_SER_NOM||' '||MAMA_DUL_DATA||' '||MAMA_DUL_ISSUED||
 PAPA_SNILS,
 PAPA_LAST_NAME||' '||PAPA_FIRST_NAME||' '||PAPA_MIDDLE_NAME||' '||PAPA_BIRTH_DATE,
 PAPA_DUL_TYPE||' '||PAPA_DUL_SER_NOM||' '||PAPA_DUL_DATA||' '||PAPA_DUL_ISSUED||' '||PAPA_BIRTH_PLACE||' '||PAPA_ADR,
-PAPA_OSN||' '||PAPA_OSN_DATA||' '||PAPA_OSN_KOD||' '||PAPA_OSN_NAME||' '||PAPA_OSN_NOM||' '||PAPA_OSN_TYPE||' '||
+PAPA_OSN||' '||PAPA_OSN_DATA||' '||PAPA_OSN_KOD||' '||PAPA_OSN_NAME||' '||PAPA_OSN_NOM||' '||PAPA_OSN_TYPE,
 BIRTH_DOC_TYPE||' '||BIRTH_DOC_KONTORA||' '||BIRTH_DOC_DATA||' '||BIRTH_DOC_SER_NOM,
 SNILS||' '||F||' '||I||' '||O||' '||DR||' '||ADR_FULL,
 CONTACT, 
-REASON FROM {table}''')
+REASON 
+    FROM {table}''')
 
     data = {
         'id района' : [],
@@ -243,6 +244,7 @@ REASON FROM {table}''')
         'ФИО и дата рождения отца' : [] ,
         'Данные ДУЛ отца' : [] ,
         'Основание для отца' : [] ,
+        'Больница' : [],
         'Данные о родителе из больницы' : [] ,
         'Контактные данные' : [] ,
         'Причина' : [] ,
@@ -265,9 +267,10 @@ REASON FROM {table}''')
         data['ФИО и дата рождения отца'].append(row[13]),
         data['Данные ДУЛ отца'].append(row[14]),
         data['Основание для отца'].append(row[15]),
-        data['Данные о родителе из больницы'].append(row[16]),
-        data['Контактные данные'].append(row[17]),
-        data['Причина'].append(row[18])
+        data['Больница'].append(row[16]),
+        data['Данные о родителе из больницы'].append(row[17]),
+        data['Контактные данные'].append(row[18]),
+        data['Причина'].append(row[19])
         
     name_def = 'Претенденты на ЭС подарок новорожденному найдены в исзн'
     generating_report_files(data, log, name_def, test, mail)
@@ -299,21 +302,28 @@ where t2.region_id is null'''
     cnt = curs.fetchone()[0]
     writing_to_log_file(log, f'НЕ найдено {cnt} записей в исзн')
 
-    curs.execute(f'''SELECT region_id, 
+    curs.execute(f'''SELECT 
+region_id, 
 '0'||region_id||' - '||uszn.pkTSrv.GetRegionName(region_id)||' - претендент на ЭС подарок НЕ найдены в исзн' as name,
 uszn.pkTSrv.GetRegionName(region_id) as MO,
-'' as people_id,
-BABY_SNILS, BABY_LAST_NAME||' '||BABY_FIRST_NAME||' '||BABY_MIDDLE_NAME||' '||BABY_BIRTH_DATE, BABY_SEX, BABY_BIRTH_PLACE,
+'' as people_id, --id родителя
+BABY_SNILS, 
+BABY_LAST_NAME||' '||BABY_FIRST_NAME||' '||BABY_MIDDLE_NAME||' '||BABY_BIRTH_DATE, 
+BABY_SEX, -- Пол ребенка
+BABY_BIRTH_PLACE,
 ZAGZ||' '||AZ_DATE||' '||AZ_NUM||' '||SV_SER||' '||SV_NUM||' '||SV_DATE,
-MAMA_SNILS, MAMA_LAST_NAME||' '||MAMA_FIRST_NAME||' '||MAMA_MIDDLE_NAME||' '||MAMA_BIRTH_DATE,
+MAMA_SNILS, -- СНИЛС матери 
+MAMA_LAST_NAME||' '||MAMA_FIRST_NAME||' '||MAMA_MIDDLE_NAME||' '||MAMA_BIRTH_DATE,
 MAMA_DUL_TYPE||' '||MAMA_DUL_SER_NOM||' '||MAMA_DUL_DATA||' '||MAMA_DUL_ISSUED||' '||MAMA_BIRTH_PLACE||' '||MAMA_ADR,
-PAPA_SNILS, PAPA_LAST_NAME||' '||PAPA_FIRST_NAME||' '||PAPA_MIDDLE_NAME||' '||PAPA_BIRTH_DATE,
-PAPA_DUL_TYPE||' '||PAPA_DUL_SER_NOM||' '||PAPA_DUL_DATA||' '||PAPA_DUL_ISSUED||' '||PAPA_BIRTH_PLACE||' '||PAPA_ADR,
-PAPA_OSN||' '||PAPA_OSN_DATA||' '||PAPA_OSN_KOD||' '||PAPA_OSN_NAME||' '||PAPA_OSN_NOM||' '||PAPA_OSN_TYPE,
-BIRTH_DOC_TYPE||' '||BIRTH_DOC_KONTORA||' '||BIRTH_DOC_DATA||' '||BIRTH_DOC_SER_NOM,
-SNILS||' '||F||' '||I||' '||O||' '||DR||' '||ADR_FULL,
-CONTACT, 
-REASON FROM {table}''')
+PAPA_SNILS, -- СНИЛС отца 
+PAPA_LAST_NAME||' '||PAPA_FIRST_NAME||' '||PAPA_MIDDLE_NAME||' '||PAPA_BIRTH_DATE,
+PAPA_DUL_TYPE||' '||PAPA_DUL_SER_NOM||' '||PAPA_DUL_DATA||' '||PAPA_DUL_ISSUED||' '||PAPA_BIRTH_PLACE||' '||PAPA_ADR, -- Данные ДУЛ отца
+PAPA_OSN||' '||PAPA_OSN_DATA||' '||PAPA_OSN_KOD||' '||PAPA_OSN_NAME||' '||PAPA_OSN_NOM||' '||PAPA_OSN_TYPE, -- Основание для отца
+BIRTH_DOC_TYPE||' '||BIRTH_DOC_KONTORA||' '||BIRTH_DOC_DATA||' '||BIRTH_DOC_SER_NOM, -- 
+SNILS||' '||F||' '||I||' '||O||' '||DR||' '||ADR_FULL, -- Данные о родителе из больницы
+CONTACT, -- Контактные данные
+REASON -- Причина
+  FROM {table}''')
 
     data = {
         'id района' : [],
@@ -331,7 +341,8 @@ REASON FROM {table}''')
         'СНИЛС отца' : [] ,
         'ФИО и дата рождения отца' : [] ,
         'Данные ДУЛ отца' : [] ,
-        'Основание для отца' 
+        'Основание для отца'  : [] ,
+        'Больница' : [],
         'Данные о родителе из больницы' : [] ,
         'Контактные данные' : [] ,
         'Причина' : [] ,
@@ -354,9 +365,10 @@ REASON FROM {table}''')
         data['ФИО и дата рождения отца'].append(row[13]),
         data['Данные ДУЛ отца'].append(row[14]),
         data['Основание для отца'].append(row[15]),
-        data['Данные о родителе из больницы'].append(row[16]),
-        data['Контактные данные'].append(row[17]),
-        data['Причина'].append(row[18])
+        data['Больница'].append(row[16]),
+        data['Данные о родителе из больницы'].append(row[17]),
+        data['Контактные данные'].append(row[18]),
+        data['Причина'].append(row[19])
     
     if cnt > 0:
         name_def = 'Претенденты на ЭС подарок новорожденному НЕ найдены в исзн'
@@ -424,7 +436,8 @@ REASON FROM {table}''')
 #****************************************************************************************************
 def zdrav_backup(file):
     new_file_name = f'{today} - {file}'
-    os.replace(file, f'{path_backup}{new_file_name}')
+    if test == 0:
+        os.replace(file, f'{path_backup}{new_file_name}')
     writing_to_log_file(log, f'Файл {file} перемещен в {path_backup} и переименован в {new_file_name}')
 
 #****************************************************************************************************

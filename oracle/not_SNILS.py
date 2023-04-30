@@ -50,7 +50,7 @@ writing_to_log_file(name_log, f'Количество записей - {len(data)
 
 for mo in sorted(set(data['name'])):
     cnt = data[data['name'].isin([mo])].count()[0]
-    text = f'{mo} - {cnt} строк'
+    text = f'{mo} - {cnt} человек'
     writing_to_log_file(name_log, text)
     
 generating_report_files(data, name_log, name_def, test, mail)

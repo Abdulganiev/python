@@ -389,6 +389,69 @@ def connect_oracle_large_family():
     return curs
 
 # *****************************************************************
+def connect_oracle_public_service():
+    mail = 'IVAbdulganiev@yanao.ru,300195@mail.ru'
+    name_log = 'access_report_public_service'
+
+    #***************************************************************
+    path = r'd:/python/schedule/access_public_service.txt'
+    with open(path) as f:
+        access = json.load(f)
+    
+    driver = r'd:/python/schedule/ojdbc14.jar'
+    path_base = access['path_base']
+    password = access['password']
+    login = access['login']
+    port = access['port']
+    sid = access['sid']
+
+    try:
+        conn = jaydebeapi.connect(
+            'oracle.jdbc.driver.OracleDriver',
+            f'jdbc:oracle:thin:{login}/{password}@{path_base}:{port}/{sid}',
+            [login, password],
+            driver)
+    except Exception as e:
+        text = f'произошла ошибка при вызове функции connect_oracle_public_service - {e}'
+        alarm_log(mail, name_log, text)
+
+    curs = conn.cursor()
+
+    return curs
+
+# *****************************************************************
+# *****************************************************************
+def connect_oracle_ecert():
+    mail = 'IVAbdulganiev@yanao.ru,300195@mail.ru'
+    name_log = 'connect_oracle_ecert'
+
+    #***************************************************************
+    path = r'd:/python/schedule/access_ecert.txt'
+    with open(path) as f:
+        access = json.load(f)
+    
+    driver = r'd:/python/schedule/ojdbc14.jar'
+    path_base = access['path_base']
+    password = access['password']
+    login = access['login']
+    port = access['port']
+    sid = access['sid']
+
+    try:
+        conn = jaydebeapi.connect(
+            'oracle.jdbc.driver.OracleDriver',
+            f'jdbc:oracle:thin:{login}/{password}@{path_base}:{port}/{sid}',
+            [login, password],
+            driver)
+    except Exception as e:
+        text = f'произошла ошибка при вызове функции connect_oracle_ecert - {e}'
+        alarm_log(mail, name_log, text)
+
+    curs = conn.cursor()
+
+    return curs
+
+# *****************************************************************
 def generating_report_files(df, name_log, name_def, test, mail):
     data = pd.DataFrame(df)
     files = ''
