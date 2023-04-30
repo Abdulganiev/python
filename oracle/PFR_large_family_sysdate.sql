@@ -1,0 +1,43 @@
+select 
+    ROW_NUMBER() OVER(ORDER BY date_start) as num,
+    m_desc as mother,
+    m_snils as mother_snils,
+    f_desc as father,
+    f_snils as father_snils,
+    children,
+    'Да' as yes,
+    date_start
+from
+(select t1.region_id, t1.coll_id,
+       t3.people_id as m_id, t3.people_desc as m_desc, uszn.pkPerson.GetPersonalReq(t3.region_id, t3.people_id, 25) as m_snils,
+       t4.people_id as f_id, t4.people_desc as f_desc, uszn.pkPerson.GetPersonalReq(t4.region_id, t4.people_id, 25) as f_snils,
+       uszn.StrCommaConcat(distinct t5.people_desc||', '||uszn.pkPerson.GetPersonalReq(t5.region_id, t5.people_id, 25)||CHR(10)) as children
+      , min(t2.date_start) as date_start
+ from uszn.v_coll_membership_periods t1
+      inner join
+      uszn.r_categories_assigned t2
+   on  t1.region_id in (58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70)
+       and t1.coll_class_id=6 and
+       t1.region_id=t2.pc_region_id and t1.coll_id=t2.pc_id
+       and sysdate between t2.date_start and t2.date_end and
+       (t2.pccat_region_id, t2.pccat_id) in ((0, 661), (0, 515))
+      left join
+      uszn.v_coll_membership_periods t3
+   on t1.region_id=t3.region_id and t1.coll_id=t3.coll_id and
+      t3.role_class_id = 8 and sysdate between t3.date_start and t3.date_end
+      left join
+      uszn.v_coll_membership_periods t4
+   on t1.region_id=t4.region_id and t1.coll_id=t4.coll_id and
+      t4.role_class_id = 9 and sysdate between t4.date_start and t4.date_end
+      inner join
+      uszn.v_coll_membership_periods t5
+   on t1.region_id=t5.region_id and t1.coll_id=t5.coll_id and
+      t5.role_class_id = 10 and sysdate between t5.date_start and t5.date_end
+      inner join
+      uszn.r_categories_assigned t6
+   on t5.region_id=t6.pc_region_id and t5.people_id=t6.pc_id
+      and sysdate between t6.date_start and t2.date_end and
+      (t6.pccat_region_id, t6.pccat_id) in ((0, 485), (0, 1059))
+group by t1.region_id, t1.coll_id,
+       t3.people_id, t3.people_desc, uszn.pkPerson.GetPersonalReq(t3.region_id, t3.people_id, 25),
+       t4.people_id, t4.people_desc, uszn.pkPerson.GetPersonalReq(t4.region_id, t4.people_id, 25))
