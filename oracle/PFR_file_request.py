@@ -36,7 +36,7 @@ def PFR_file_request_name():
     return curs.fetchone()
 
 #***************************************************************
-cats_id = [731,732,725,723,727,730,724,728,1108,729,726,1116,1109]
+cats_id = [732,725,723,727,730,724,728,1108,729,726,1116,1109]
 categories = {}
 for cat_id in cats_id:
     cat_name_id = PFR_file_request_file(cat_id)

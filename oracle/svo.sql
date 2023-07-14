@@ -35,12 +35,12 @@ select
                            case when upper(member_r) like upper('%Супруг%') and id = passport_id then passport_id else null end as passport_fam,
 
                            case when upper(member_coll) like upper('%Супруг%') and upper(member_r) not like upper('%Супруг%') and
-                                     (upper(member_coll) like upper('%Дочь%') or upper(member_coll) like upper('%Сын%') and
-									                    upper(member_coll) like upper('%Падчерица%') or upper(member_coll) like upper('%Пасынок%')) and age < 18 then member_id else null end as fam_ch_nes,
+                                     (upper(member_coll) like upper('%Дочь%')      or upper(member_coll) like upper('%Сын%') and
+									  upper(member_coll) like upper('%Падчерица%') or upper(member_coll) like upper('%Пасынок%')) and age < 18 then member_id else null end as fam_ch_nes,
 
                            case when upper(member_coll) like upper('%Супруг%') and upper(member_r) not like upper('%Супруг%') and
-                                     (upper(member_coll) like upper('%Дочь%') or upper(member_coll) like upper('%Сын%') and
-									                    upper(member_coll) like upper('%Падчерица%') or upper(member_coll) like upper('%Пасынок%')) and age < 23 then member_id else null end as fam_ch,
+                                     (upper(member_coll) like upper('%Дочь%')      or upper(member_coll) like upper('%Сын%') and
+									  upper(member_coll) like upper('%Падчерица%') or upper(member_coll) like upper('%Пасынок%')) and age < 23 then member_id else null end as fam_ch,
 
                            case when upper(member_coll) like upper('%Отец%') or upper(member_coll) like upper('%Мать%')  then id else null end as fam_parents,
 
@@ -65,19 +65,19 @@ select
 									 (upper(member_coll) like upper('%Дочь%') or upper(member_coll) like upper('%Сын%')) and age < 18 then member_id else null end as fam_ch_old_nes,
                            age,
 						   case when age is null then coll_id else null end as loner,
-                           member_r,
-						   people_id_r						   
+                           member_r, 
 						   member_coll
                         from
                           (select distinct t1.region_id, t1.coll_id, t3.doc_id, t1.region_id||'-'||t1.coll_id as id, t1.people_id, t1.snils,
                                   t1.cat, t1.cat1, t1.cat2, t1.cat3, t1.From_To,
                                   t2.age,
                                   case when t2.people_id is null then null else t1.region_id||'-'||t2.people_id end as member_id,
-								  t2.people_id as people_id_r,
                                   case when t3.coll_id is null then null else t3.region_id||'-'||t3.coll_id end as passport_id,
-                                  (select a.relation_name from uszn.v_pd_coll_role_relations a where a.region_id=t1.region_id and a.whom_id=t1.people_id and a.people_coll_id=t1.coll_id
+                                  (select a.relation_name from uszn.v_pd_coll_role_relations a 
+								    where a.region_id=t1.region_id and a.whom_id=t1.people_id and a.people_coll_id=t1.coll_id
                                           and a.who_id=t2.people_id) as member_r,
-                                  (select uszn.StrCommaConcat(a.relation_name) from uszn.v_pd_coll_role_relations a where a.region_id=t1.region_id and a.whom_id=t1.people_id and a.people_coll_id=t1.coll_id) as member_coll
+                                  (select uszn.StrCommaConcat(a.relation_name) from uszn.v_pd_coll_role_relations a 
+								    where a.region_id=t1.region_id and a.whom_id=t1.people_id and a.people_coll_id=t1.coll_id) as member_coll
                            from
                               (select region_id, coll_id, people_id, snils, max(cat1) as cat1, max(cat2) as cat2, max(cat3) as cat3, max(From_To) as From_To, max(cat) as cat
                                 from
@@ -85,7 +85,8 @@ select
                                         uszn.pkCat.HasCategory(a1.id, a1.region_id, 282, 0, to_date('01.02.2022'), sysdate) as cat1,
                                         uszn.pkCat.HasCategory(a1.id, a1.region_id, 283, 0, to_date('01.02.2022'), sysdate) as cat2,
                                         uszn.pkCat.HasCategory(a1.id, a1.region_id, 284, 0, to_date('01.02.2022'), sysdate) as cat3,
-                                        uszn.pkPerson.GetPCReqValueDate(a1.region_id, a1.id, 20069) as From_To,
+                                        uszn.pkPerson.GetDocReqValueDate(a1.region_id, 20069, uszn.pkPerson.GetLastDocInstanceID(a1.region_id, a1.id, 20060)) as From_To,
+										uszn.pkPerson.GetLastDocInstanceID(a1.region_id, a1.id, 20060) as doc_id,
                                         /*case uszn.pkPerson.GetPCReqValueInt(a1.region_id, a1.id, 20066)
                                           when 104000196 then 'Доброволец'
                                           when 104000197 then 'Участник отряда БАРС'

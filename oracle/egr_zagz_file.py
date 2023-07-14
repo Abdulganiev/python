@@ -8,6 +8,8 @@ name_def = 'Данные ЕГР ЗАГС файл'
 test = 0
 mail = 'IVAbdulganiev@yanao.ru'
 file_name = name_log + '.xml' # имя файла
+cnt = 0
+con = 0
 
 #***************************************************************
 def zags_sm_sql(curs):
@@ -63,8 +65,6 @@ def zags_sm_remove(file_name, name_log):
 
 #***************************************************************
 writing_to_log_file(name_log, f'********start*********************************')
-cnt = 0
-con = 0
 
 try:
     curs = connect_oracle()

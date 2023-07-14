@@ -1,19 +1,10 @@
 from generating_report_files import *
-import re
 
 #***************************************************************
 name_log = 'egr_zagz'
 name_def = 'Данные ЕГР ЗАГС'
 test = 0
 mail = 'IVAbdulganiev@yanao.ru'
-
-#***************************************************************
-def dat(x):
-    try:
-        x = str(x).replace(' 00:00:00', '')
-        return re.sub(r'(\d{4})-(\d{2})-(\d{2})', r'\3.\2.\1', x)
-    except:
-        return x
 
 #***************************************************************
 def zags_sm(curs):
@@ -65,10 +56,8 @@ except Exception as e:
 
 try:
     generating_report_files(data, name_log, name_def, test, mail)
-    # writing_to_log_file(name_log, f'{data}')
 except Exception as e:    
     text = f'произошла ошибка при вызове функции generating_report_files() - {e}'
-    # text = f'произошла ошибка при вызове функции generating_report_files() - {e} \n {data}'
     alarm_log(mail, name_log, text)   
 
 writing_to_log_file(name_log, f'******end************************************')

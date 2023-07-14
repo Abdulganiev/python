@@ -7,9 +7,6 @@ test = 0
 mail = 'IVAbdulganiev@yanao.ru'
 
 #***************************************************************
-curs = connect_oracle()
-
-#***************************************************************
 def PFR_file_request():
     with open('PFR_file_6531.sql', 'r', encoding='utf8') as f:
         sql = f.read()
@@ -24,16 +21,29 @@ def PFR_file_request_name():
     return curs.fetchone()
 
 #***************************************************************
-
-file_name = PFR_file_request_name() # имя файла типа ЗАПРОС
-file_zip = f'Запрос 6_5_3_1 {file_name[0]}.zip' # имя архива
+try:
+    curs = connect_oracle()
+except Exception as e:
+    text = f'произошла ошибка при вызове функции connect_oracle() - {e}'
+    alarm_log(mail, name_log, text)
 
 try:
+    file_name = PFR_file_request_name() # имя файла типа ЗАПРОС
+except Exception as e:
+    text = f'произошла ошибка при вызове функции PFR_file_request_name() - {e}'
+    alarm_log(mail, name_log, text)
+
+try:
+    file_zip = f'Запрос 6_5_3_1 {file_name[0]}.zip' # имя архива
     os.remove(file_zip)
 except:
     pass
 
-data = PFR_file_request()
+try:
+    data = PFR_file_request()
+except Exception as e:
+    text = f'произошла ошибка при вызове функции PFR_file_request() - {e}'
+    alarm_log(mail, name_log, text)
     
 path = f'{file_name[0]}' # путь к файлу
     

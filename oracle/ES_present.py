@@ -20,52 +20,6 @@ def movi_file(file):
     os.replace(file, f'{path_backup}/{new_file_name}')
     writing_to_log_file(log, f'Файл {file} перемещен в backup и переименован в {new_file_name}')
 
-#***************************************************************
-def write_file(file):
-    try:
-        xl = pd.read_excel(file)
-        writing_to_log_file(log, f'Файл {file} записан в dataframe')
-        return xl
-    except Exception as e:
-        writing_to_log_file(log, f'Alarm: \n {e}')
-
-#***************************************************************
-def dat(x):
-    try:
-        x = str(x).replace(' 00:00:00', '')
-        return re.sub(r'(\d{4})-(\d{2})-(\d{2})', r'\3.\2.\1', x)
-    except:
-        return x
-    
-#***************************************************************
-def up(x):
-    try:
-        return x.upper()
-    except:
-        return x
-    
-#***************************************************************
-def mo_id(x):
-    try:
-        mo = {
-        'Новый Уренгой' : 58,
-        'Красноселькупский район' : 59,
-        'Салехард' : 60,
-        'Приуральский район' : 61,
-        'Лабытнанги' : 62,
-        'Надымский район' : 63,
-        'Губкинский' : 64,
-        'Муравленко' : 65,
-        'Ноябрьск' : 66,
-        'Пуровский район' : 67,
-        'Ямальский район' : 68,
-        'Шурышкарский район' : 69,
-        'Тазовский район' : 70,
-        }
-        return mo[x]
-    except:
-        return x
-
 #***************************************************************    
 def zdrav_insert_temp(xl):
     table = 'uszn.temp$_zdrav_prezent_temp'

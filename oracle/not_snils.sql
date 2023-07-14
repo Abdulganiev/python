@@ -1,5 +1,5 @@
 select distinct pc.region_id,
-       '0'||pc.region_id||' - '||uszn.pkTSrv.GetRegionName(pc.region_id)||' - нет СНИЛС' as name,
+       '0'||pc.region_id||' - '||uszn.pkTSrv.GetRegionName(pc.region_id)||' - нет СНИЛС на '||sysdate||' - '||count(distinct pc.id) over(partition BY pc.region_id) as name,
        uszn.pkTSrv.GetRegionName(pc.region_id) as MO,
        pc.region_id||'-'||pc.id as id,
        pc.pc_desc,

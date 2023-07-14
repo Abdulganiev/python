@@ -16,9 +16,8 @@ from
  uszn.v_people_and_colls t1
  inner join
  uszn.temp$_death t3
-on Translate(UPPER(t1.last_name), 'Ё', 'Е')   = Translate(UPPER(t3.last_name), 'Ё', 'Е')   and
-   Translate(UPPER(t1.first_name), 'Ё', 'Е')  = Translate(UPPER(t3.first_name), 'Ё', 'Е')  and
-   Translate(UPPER(t1.middle_name), 'Ё', 'Е') = Translate(UPPER(t3.middle_name), 'Ё', 'Е') and
+on REPLACE(REPLACE(REPLACE(UPPER(t1.last_name||t1.first_name||t1.middle_name), 'Ё', 'Е'), ' ', ''), '-', '') =
+   REPLACE(REPLACE(REPLACE(UPPER(t3.last_name||t3.first_name||t3.middle_name), 'Ё', 'Е'), ' ', ''), '-', '') and
    t1.birth_date = uszn.ToDateDef(t3.birth_date) and
    t1.death_date is null and
    t3.last_name is not null and

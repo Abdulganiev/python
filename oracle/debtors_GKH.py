@@ -1,10 +1,12 @@
 from generating_report_files import *
 
 #***************************************************************
-curs = connect_oracle()
+name_log = 'debtors_GKH'
+name_def = 'Должники ГИС ЖКХ'
+test = 0
+mail = 'IVAbdulganiev@yanao.ru'
 
 #***************************************************************
-
 def debtors_GKH():
     with open('debtors_GKH.sql', 'r', encoding='utf8') as f:
         sql = f.read()
@@ -38,11 +40,16 @@ def debtors_GKH():
     return data
 
 #***************************************************************
+try:
+    curs = connect_oracle()
+except Exception as e:
+    text = f'произошла ошибка при вызове функции connect_oracle() - {e}'
+    alarm_log(mail, name_log, text)    
 
-data = debtors_GKH()
-name_log = 'debtors_GKH'
-name_def = 'Должники ГИС ЖКХ'
-test = 1
-mail = 'IVAbdulganiev@yanao.ru'
-
+try:
+    data = debtors_GKH()
+except Exception as e:
+    text = f'произошла ошибка при вызове функции debtors_GKH() - {e}'
+    alarm_log(mail, name_log, text)    
+    
 generating_report_files(data, name_log, name_def, test, mail)

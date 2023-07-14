@@ -17,11 +17,13 @@ from email.mime.image import MIMEImage # Изображения
 from email.mime.audio import MIMEAudio # Аудио
 from email.mime.multipart import MIMEMultipart # Многокомпонентный объект
 
+# *****************************************************************
+path_backup = r'd:/python/schedule/backup/'
+mail = 'IVAbdulganiev@yanao.ru'
+today = dt.date.today()
 
 # *****************************************************************
 def report_1gmu(df, file_name, mail, name_log):
-    today = dt.date.today()
-
     data = pd.DataFrame(df)
     data.to_excel(file_name, index=False)
     text = '1-ГМУ ' + file_name
@@ -34,10 +36,7 @@ def report_1gmu(df, file_name, mail, name_log):
 
 # *****************************************************************
 def report_death(df, region_id, id):
-    mail = 'IVAbdulganiev@yanao.ru'
     name_log = 'checking_death'
-
-    today = dt.date.today()
     text = f'0{region_id} - Данные по умершему в МО-{region_id} док-{id}'
     file_name = text + '.xlsx'
 
@@ -58,7 +57,6 @@ def alarm_log(mail, log, text):
 
 # *****************************************************************
 def generating_list_GKV_kv(name_log, text, file_name, test, mail):
-    today = dt.date.today()
     new_file_name = f'{today} - {file_name}'
     text = f'mail - {mail} \n{text}'
 
@@ -69,7 +67,6 @@ def generating_list_GKV_kv(name_log, text, file_name, test, mail):
 # *****************************************************************
 def generating_report_GKV_kv(df, name_log, name, region_id, mail):
     data = pd.DataFrame(df)
-    today = dt.date.today()
     file_name = f'{name}.xlsx'
     text = f'{name} на {today}'
     new_file_name = f'{today} - {file_name}'
@@ -92,7 +89,6 @@ def generating_report_GKV_kv(df, name_log, name, region_id, mail):
 
 # *****************************************************************
 def generating_report_GKV(df, name_log, name, mail):
-    today = dt.date.today()
     file_name = f'{name}.xlsx'
     text = f'{name} на {today}'
     new_file_name = f'{today} - {file_name}'
@@ -204,7 +200,6 @@ def generating_mail_mo(region_id, mail, test):
 def generating_report_GSP(df, name_log, name, test):
     data = pd.DataFrame(df)
 
-    today = dt.date.today()
     file_name = f'{name}.xlsx'
     
     data.to_excel(file_name, index=False)
@@ -420,7 +415,6 @@ def connect_oracle_public_service():
     return curs
 
 # *****************************************************************
-# *****************************************************************
 def connect_oracle_ecert():
     mail = 'IVAbdulganiev@yanao.ru,300195@mail.ru'
     name_log = 'connect_oracle_ecert'
@@ -450,6 +444,39 @@ def connect_oracle_ecert():
     curs = conn.cursor()
 
     return curs
+
+# *****************************************************************
+def movi_vipnet(test, file, name_log, name_def):
+    if test == 1:
+        path = 'c:/VipoNet_out1/'
+    else:
+        path = 'c:/VipoNet_out/'
+    try:
+      shutil.move(file, path)
+    except:
+      send_email('IVAbdulganiev@yanao.ru', f'{name_def} - ошибка переноса файла', msg_text=file)
+      text = f'{name_def} - ошибка переноса файла {file} в папку {path}'
+      writing_to_log_file(name_log, text)      
+
+# *****************************************************************
+def copy_vipnet(test, file, name_log, name_def):
+    if test == 1:
+        path = 'c:/VipoNet_out1/'
+    else:
+        path = 'c:/VipoNet_out/'
+    try:
+      shutil.copy(file, path)
+    except:
+      send_email('IVAbdulganiev@yanao.ru', f'{name_def} - ошибка копирования файла', msg_text=file)
+      text = f'{name_def} - ошибка копирования файла {file} в папку {path}'
+      writing_to_log_file(name_log, text)      
+
+#***************************************************************
+def backup_file(test, file, name_log, name_def):
+    new_file_name = f'{today} - {file}'
+    if test == 0:
+        shutil.move(file, f'{path_backup}/{new_file_name}')
+        writing_to_log_file(name_log, f'Файл {file} перемещен в {path_backup} и переименован в {new_file_name}')
 
 # *****************************************************************
 def generating_report_files(df, name_log, name_def, test, mail):
@@ -580,3 +607,167 @@ def generating_report_files_PFR_2(name_log, name_def, test, mail, text):
     else:
         send_email(mail, f'Alarm {name_def}', msg_text=text)
         writing_to_log_file(name_log, 'Письмо "Alarm" отправлено')
+
+# ***************************************************************************************
+def report_temp_table(name_log, mail, table, file_sql):
+
+    curs = connect_oracle()
+
+    try:
+        curs.execute(f'DROP TABLE {table}')
+    except:
+        pass
+
+    try:
+        with open(file_sql, 'r', encoding='utf8') as f:
+            sql = f.read()
+        curs.execute(sql)
+    except Exception as e:
+        alarm = str(e)
+        text = f'alarm - {alarm}'
+        writing_to_log_file(name_log, text)
+        send_email(mail, f'Alarm - {name_log}', msg_text=text)
+        return
+    
+    curs.execute(f'SELECT count(*) FROM {table}')
+
+    cnt = str(curs.fetchall()[0][0])
+
+    try:
+        curs.execute(f'grant select on {table} to USZN_TSRV_ROLE_000000000003')
+    except Exception as e:
+        alarm = str(e)
+        text = f'alarm - {alarm}'
+        writing_to_log_file(name_log, text)
+        send_email(mail, f'Alarm - {name_log}', msg_text=text)
+
+    try:    
+        curs.execute(f'grant select on {table} to USZN_TSRV_ROLE_000000000004')
+    except Exception as e:
+        alarm = str(e)
+        text = f'alarm - {alarm}'
+        writing_to_log_file(name_log, text)
+        send_email(mail, f'Alarm - {name_log}', msg_text=text)
+
+    try:    
+        curs.execute(f'grant select on {table} to USZN_TSRV_ROLE_000000000008')
+    except Exception as e:
+        alarm = str(e)
+        text = f'alarm - {alarm}'
+        writing_to_log_file(name_log, text)
+        send_email(mail, f'Alarm - {name_log}', msg_text=text)
+
+    try:    
+        curs.execute(f'grant select on {table} to USZN_TSRV_ROLE_000000000010')
+    except:
+        alarm = str(e)
+        text = f'alarm - {alarm}'
+        writing_to_log_file(name_log, text)
+        send_email(mail, f'Alarm - {name_log}', msg_text=text)
+
+    writing_to_log_file(name_log, cnt)
+    send_email(mail, name_log, msg_text=cnt)
+
+#***************************************************************
+def write_file(file):
+    try:
+        xl = pd.read_excel(file)
+        writing_to_log_file(log, f'Файл {file} записан в dataframe')
+        return xl
+    except Exception as e:
+        writing_to_log_file(log, f'Alarm: \n {e}')
+
+#***************************************************************
+def dat(x):
+    try:
+        x = str(x).replace(' 00:00:00', '')
+        return re.sub(r'(\d{4})-(\d{2})-(\d{2})', r'\3.\2.\1', x)
+    except:
+        return x
+    
+#***************************************************************
+def up(x):
+    try:
+        return x.upper()
+    except:
+        return x
+    
+#***************************************************************
+def mo_id(x):
+    try:
+        mo = {
+        'Новый Уренгой' : 58,
+        'Красноселькупский район' : 59,
+        'Салехард' : 60,
+        'Приуральский район' : 61,
+        'Лабытнанги' : 62,
+        'Надымский район' : 63,
+        'Губкинский' : 64,
+        'Муравленко' : 65,
+        'Ноябрьск' : 66,
+        'Пуровский район' : 67,
+        'Ямальский район' : 68,
+        'Шурышкарский район' : 69,
+        'Тазовский район' : 70,
+        }
+        return mo[x]
+    except:
+        return 104
+
+# *************************************************
+def num_to_str(x):
+    try:
+        return str(int(x))
+    except:
+        x
+
+# *************************************************
+def snils(x):
+    try:
+        x = num_to_str(x)
+        if len(x) == 10:
+            x = '0'+ x
+        elif len(x) == 9:
+            x = '00'+ x
+        return re.sub(r'(\d{3})(\d{3})(\d{3})(\d{2})', r'\1-\2-\3 \4', x)
+    except:
+        return x
+
+# *************************************************
+def replace_nat(x):
+    try:
+        return x.replace('NaT', '')
+    except:
+        return x
+
+# *************************************************    
+def sfr_uszn_kod_name(x, i):
+    mo = {
+   2575.000002 : [58, 'Управление по труду и социальной защите населения Администрации города Новый Уренгой'],
+   2575.000159 : [58, 'Департамент социальной политики Администрации города Новый Уренгой'],
+   2575.000003 : [59, 'Управление по труду и социальной защите населения Администрации Красноселькупского района'],
+   2575.000004 : [60, 'Департамент по труду и социальной защите населения Администрации муниципального образования город Салехард'],
+   2575.000048 : [61, 'Управление по труду и социальной защите населения Администрации Приуральского района'],
+   2575.000151 : [62, 'Муниципальное учреждение Управление по труду и социальной защите населения Администрации города Лабытнанги'],
+   2575.000005 : [63, 'Управление социальных программ Администрации Надымского район'],
+   2575.000006 : [64, 'Муниципальное учреждение “Управление по труду и социальной защите населения Администрации города Губкинского”'],
+   2575.000141 : [65, 'Управление социальной защиты населения Администрации города Муравленко'],
+   2575.000108 : [66, 'Управление социальной защиты населения Администрации города Ноябрьска'],
+   2575.000125 : [67, 'Управление социальной политики администрации Пуровского района'],
+   2575.000080 : [68, 'Департамент социальной защиты населения Администрации Ямальский район'],
+   2575.000081 : [69, 'Департамент социальной защиты населения Администрации муниципального образования Шурышкарский район'],
+   2575.000082 : [70, 'Департамент социального развития Администрации Тазовского района'],
+   2575.000001 : [71, 'Департамент социальной защиты населения Ямало-Ненецкого автономного округа']
+    }
+    if i == 0:
+        return mo[x][i]
+    elif i == 1:
+        return mo[x][i]
+    
+# *************************************************
+def kod_sfr_uszn_id(x):
+    return sfr_uszn_kod_name(x, 0)
+
+# *************************************************
+def kod_sfr_uszn_name(x):
+    return sfr_uszn_kod_name(x, 1)

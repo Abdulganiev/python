@@ -80,7 +80,6 @@ start_time = time.time()
 start_time_1 = time.time()
 
 #*********************************************
-
 for row in data.itertuples(index=False):
     try:
         processing(curs, row[0], row[1])
