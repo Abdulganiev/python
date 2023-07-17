@@ -402,7 +402,7 @@ for file in c:
     if file.endswith(".xlsx") or file.endswith(".xltx"):
         writing_to_log_file(log, f'Файл поступил - {file}')
 #         print(file)
-        xl = write_file(file)
+        xl = write_file(file, log)
         try:
             zdrav_backup(file)
         except Exception as e:
