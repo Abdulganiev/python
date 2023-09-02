@@ -16,40 +16,42 @@ def creating_table(): # создание временное таблицы
   if cnt == 0:
     with open('requests_pfr_power_create.sql', 'r', encoding='utf8') as f:
       sql = f.read()
-    curs.execute(sql)
+      curs.execute(sql)
 
 # ********************************************************
 def deleting_collection():
-  curs.execute('DELETE uszn.r_pc_collection_items WHERE collection_region_id=104 and collection_id in (71,72,73,74)')
+  sql = f'DELETE uszn.r_pc_collection_items WHERE collection_region_id=104 and collection_id in (71,72,73,74)'
+  curs.execute(sql)
 
 # ********************************************************
 def loading_data_1():
     with open('requests_pfr_power_load_1.sql', 'r', encoding='utf8') as f:
       sql = f.read()
-    curs.execute(sql)
+      curs.execute(sql)
 
 # ********************************************************************
 def loading_data_2():
     with open('requests_pfr_power_load_2.sql', 'r', encoding='utf8') as f:
       sql = f.read()
-    curs.execute(sql)
+      curs.execute(sql)
 
 # ********************************************************************
 def loading_data_3():
     with open('requests_pfr_power_load_3.sql', 'r', encoding='utf8') as f:
       sql = f.read()
-    curs.execute(sql)
+      curs.execute(sql)
 
 # ********************************************************************
 def loading_data_4():
     with open('requests_pfr_power_load_4.sql', 'r', encoding='utf8') as f:
       sql = f.read()
-    curs.execute(sql)
+      curs.execute(sql)
 
 # ********************************************************************
 def count_table(): # проверка временной таблицы на наличие записей
+  sql = f'SELECT count(*) FROM uszn.temp$_pfr_power'
   try:
-    curs.execute('SELECT count(*) FROM uszn.temp$_pfr_power')
+    curs.execute(sql)
     return int(curs.fetchall()[0][0])
   except:
     return 0
@@ -107,28 +109,28 @@ except Exception as e:
 try:
   loading_data_1()
 except Exception as e:
-  text = f'произошла ошибка при вызове функции loading_data_1() - {e}'
+  text = f'произошла ошибка при вызове функции loading_data_1 - {e}'
   alarm_log(mail, log, text)
 
 # ********************************************************
 try:
   loading_data_2()
 except Exception as e:
-  text = f'произошла ошибка при вызове функции loading_data_2() - {e}'
+  text = f'произошла ошибка при вызове функции loading_data_2 - {e}'
   alarm_log(mail, log, text)
 
 # ********************************************************
 try:
   loading_data_3()
 except Exception as e:
-  text = f'произошла ошибка при вызове функции loading_data_3() - {e}'
+  text = f'произошла ошибка при вызове функции loading_data_3 - {e}'
   alarm_log(mail, log, text)
 
 # ********************************************************
 try:
   loading_data_4()
 except Exception as e:
-  text = f'произошла ошибка при вызове функции loading_data_4() - {e}'
+  text = f'произошла ошибка при вызове функции loading_data_4 - {e}'
   alarm_log(mail, log, text)
 
 # ********************************************************
@@ -143,5 +145,5 @@ except Exception as e:
 try:
   send_email(mail, 'Коллекции для ПФР работа обновлены', msg_text=text)
 except Exception as e:
-  text = f'произошла ошибка при вызове функции send_email() - {e}'
+  text = f'произошла ошибка при вызове функции send_email - {e}'
   alarm_log(mail, log, text)

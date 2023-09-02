@@ -9,7 +9,7 @@ pd.options.mode.chained_assignment = None
 # *************************************************
 log = 'prf_4454'
 mail = 'IVAbdulganiev@yanao.ru'
-path = 'd:\\python\\schedule\\prf_4454'
+path = 'd:/python/schedule/prf_4454'
 name_def = 'prf_4454'
 today = datetime.now().strftime('%d.%m.%Y')
 test = 0
@@ -17,31 +17,57 @@ a = 0
 
 # *************************************************
 def load_files():
+    writing_to_log_file(log, '***********start****************************')
     a = 0
     c = os.listdir(path)
     for file in c:
-        writing_to_log_file(log, '***************************************')
         writing_to_log_file(log, f'Файл поступил - {file}')
         if file.endswith('.zip'):
-            with zipfile.ZipFile(path + '\\' + file) as zf:
+            writing_to_log_file(log, f'распаковка {file}')
+            with zipfile.ZipFile(path + '/' + file) as zf:
                 zf.extractall(path)
-            os.remove(path + '\\' + file)        
-        
+            writing_to_log_file(log, f'удаление {file}')
+            os.remove(path + '/' + file)        
+
+    writing_to_log_file(log, '********обработка файлов********')
     c = os.listdir(path)
     for file in c:
-        writing_to_log_file(log, f'Файл поступил - {file}')
+        writing_to_log_file(log, f'обработка файла - {file}')
         if file.endswith('.xlsx'):
             a += 1
-            xl = pd.read_excel(path + '\\' + file)
+            xl = pd.read_excel(path + '/' + file)
             writing_to_log_file(log, f'Файл {file} записан в dataframe')
-            load_base(xl, a)
-            backup_file(test, file, log, name_def)
+            
+            try:
+                load_base(xl, a)
+            except Exception as e:
+                text = f'произошла ошибка при вызове функции load_base() - {e} - {file} - {a}'
+                alarm_log(mail, log, text)
+
+            try:
+                backup_file_pfr_4454(test, file, log, name_def, path)
+                writing_to_log_file(log, f'Файл {file} в backup')
+            except Exception as e:
+                text = f'произошла ошибка при вызове функции backup_file_pfr_4454() - {e} - {file} - {a}'
+                alarm_log(mail, log, text)
+
         elif file.endswith('.csv'):
             a += 1
-            xl = pd.read_csv(path + '\\' + file, sep=';' , encoding='cp1251')
+            xl = pd.read_csv(path + '/' + file, sep=';' , encoding='cp1251')
             writing_to_log_file(log, f'Файл {file} записан в dataframe')
-            load_base(xl, a)
-            backup_file(test, file, log, name_def)
+            
+            try:
+                load_base(xl, a)
+            except Exception as e:
+                text = f'произошла ошибка при вызове функции load_base() - {e} - {file} - {a}'
+                alarm_log(mail, log, text)
+            
+            try:
+                backup_file_pfr_4454(test, file, log, name_def, path)
+                writing_to_log_file(log, f'Файл {file} в backup')
+            except Exception as e:
+                text = f'произошла ошибка при вызове функции backup_file_pfr_4454() - {e} - {file} - {a}'
+                alarm_log(mail, log, text)
 
 # *************************************************            
 def load_base(xl, v):
@@ -66,18 +92,18 @@ def load_base(xl, v):
     xl['Наименование УСЗН'] = xl['Код ОНМСЗ'].apply(kod_sfr_uszn_name)
 
     xl.fillna('', inplace=True)
-    writing_to_log_file(log, '*******************************************')
     current_date = dt.datetime.now().date()
     mo_range = range(58,71)
     names = set()
     
     for i in mo_range:
-        name = '0'+str(i)+'_pfr_posobie_'+str(current_date)+f'_{v}.xlsx'
+        name = '0' + str(i) + '_pfr_posobie_' + str(current_date) + f'_{v}.xlsx'
         xl[xl['Код УСЗН'].isin([i])].to_excel(name, index=False)
         names.add(name)
     
     for file in names:
         movi_vipnet(test, file, log, name_def)
+        writing_to_log_file(log, f'файл {file} отправлен в УСЗН')
     
 # *************************************************
 try:

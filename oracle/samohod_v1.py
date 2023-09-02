@@ -66,30 +66,32 @@ def v1(xl):
 
 #****************************************************************************************************
 def v1_table_all():
-    writing_to_log_file(log, 'Загрузка данных в uszn.temp$_snowmobile_all')
-    
-    curs.execute('SELECT count(*) FROM uszn.temp$_snowmobile_all')
+    table = 'uszn.temp$_snowmobile_all'
+    writing_to_log_file(log, f'Загрузка данных в {table}')
+        
+    curs.execute(f'SELECT count(*) FROM {table}')
     cnt = curs.fetchone()[0]
-    writing_to_log_file(log, f'Количество записей в uszn.temp$_snowmobile_all перед загрузкой - {cnt}')
+    writing_to_log_file(log, f'Количество записей в {table} перед загрузкой - {cnt}')
 
-    curs.execute('''INSERT INTO uszn.temp$_snowmobile_all (CarNumber, Brand, Name, YearRelease, Owner, Address, IdentityDoc, Who, DateIssue, BirthDate, RegDate, UploadDate)
+    curs.execute(f'''INSERT INTO {table} (CarNumber, Brand, Name, YearRelease, Owner, Address, IdentityDoc, Who, DateIssue, BirthDate, RegDate, UploadDate)
                     SELECT t1.CarNumber, t1.Brand, t1.Name, t1.YearRelease, t1.Owner, t1.Address, t1.IdentityDoc, t1.Who, t1.DateIssue, t1.BirthDate, t1.RegDate, t1.UploadDate
                     FROM uszn.temp$_snowmobile_temp t1
-                         LEFT JOIN uszn.temp$_snowmobile_all t2
+                         LEFT JOIN {table} t2
                     on t1.uploaddate = t2.uploaddate
                     WHERE t2.uploaddate is null''')
 
-    curs.execute('SELECT count(*) FROM uszn.temp$_snowmobile_all')
+    curs.execute(f'SELECT count(*) FROM {table}')
     cnt = curs.fetchone()[0]
-    writing_to_log_file(log, f'Количество записей в uszn.temp$_snowmobile_all после загрузки - {cnt}')
+    writing_to_log_file(log, f'Количество записей в {table} после загрузки - {cnt}')
 
 #****************************************************************************************************
 def v1_table_del():
-    writing_to_log_file(log, 'Удаление таблицы uszn.temp$_snowmobile_del')
-    curs.execute('DROP TABLE uszn.temp$_snowmobile_del')
+    table = 'uszn.temp$_snowmobile_del'
+    writing_to_log_file(log, f'Удаление таблицы {table}')
+    curs.execute(f'DROP TABLE {table}')
 
-    writing_to_log_file(log, 'Создание таблицы uszn.temp$_snowmobile_del из загрузка в нее данных')
-    curs.execute('''CREATE TABLE uszn.temp$_snowmobile_del AS
+    writing_to_log_file(log, f'Создание таблицы {table} из загрузка в нее данных')
+    curs.execute(f'''CREATE TABLE {table} AS
                     SELECT 
                      t1.CarNumber,
                      t1.Brand,
@@ -107,16 +109,17 @@ def v1_table_del():
                      ON t1.carnumber = t2.carnumber
                     WHERE t2.carnumber is null''')
 
-    curs.execute('SELECT count(*) FROM uszn.temp$_snowmobile_del')
+    curs.execute(f'SELECT count(*) FROM {table}')
     cnt = curs.fetchone()[0]
-    writing_to_log_file(log, f'Количество записей в uszn.temp$_snowmobile_del после загрузки - {cnt}')
+    writing_to_log_file(log, f'Количество записей в {table} после загрузки - {cnt}')
 
 #****************************************************************************************************
 def v1_table_new():
-    writing_to_log_file(log, 'Удаление таблицы uszn.temp$_snowmobile_new')
-    curs.execute('DROP TABLE uszn.temp$_snowmobile_new')
+    table = 'uszn.temp$_snowmobile_new'
+    writing_to_log_file(log, f'Удаление таблицы {table}')
+    curs.execute(f'DROP TABLE {table}')
 
-    curs.execute('''CREATE TABLE uszn.temp$_snowmobile_new AS
+    curs.execute(f'''CREATE TABLE {table} AS
                     SELECT
                      t1.CarNumber,
                      t1.Brand,
@@ -134,9 +137,9 @@ def v1_table_new():
                      ON t1.carnumber = t2.carnumber
                     WHERE t2.carnumber is null''')
 
-    curs.execute('SELECT count(*) FROM uszn.temp$_snowmobile_new')
+    curs.execute(f'SELECT count(*) FROM {table}')
     cnt = curs.fetchone()[0]
-    writing_to_log_file(log, f'Количество записей в uszn.temp$_snowmobile_new после загрузки - {cnt}')
+    writing_to_log_file(log, f'Количество записей в {table} после загрузки - {cnt}')
 
 #****************************************************************************************************
 def v1_table_chahge():
@@ -272,11 +275,12 @@ def v1_drop():
 
 #**************************************************************************************************
 def v1_insert(xl):
-    writing_to_log_file(log, f'Загрузка данных в uszn.temp$_snowmobile_temp')
+    table = 'uszn.temp$_snowmobile_temp'
+    writing_to_log_file(log, f'Загрузка данных в {table}')
     
-    curs.execute('SELECT count(*) FROM uszn.temp$_snowmobile_temp')
+    curs.execute(f'SELECT count(*) FROM {table}')
     cnt = curs.fetchone()[0]
-    writing_to_log_file(log, f'В uszn.temp$_snowmobile_temp было {cnt} записей')
+    writing_to_log_file(log, f'В {table} было {cnt} записей')
 
     xl.drop(labels = [0,1,2],axis = 0, inplace = True)
     xl.dropna(thresh=3, inplace = True)
@@ -291,12 +295,12 @@ def v1_insert(xl):
     xl['Unnamed: 10'] = xl['Unnamed: 10'].apply(dat)
 
     for data in xl.itertuples(index=False):
-        curs.execute('''INSERT INTO uszn.temp$_snowmobile_temp (CarNumber, Brand, Name, YearRelease, Owner, Address, IdentityDoc, Who, DateIssue, BirthDate, RegDate, UploadDate) 
+        curs.execute(f'''INSERT INTO {table} (CarNumber, Brand, Name, YearRelease, Owner, Address, IdentityDoc, Who, DateIssue, BirthDate, RegDate, UploadDate) 
         values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, to_date(sysdate, 'dd.mm.yyyy'))''', [data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7], data[8], data[9], data[10]])
 
-    curs.execute('SELECT count(*) FROM uszn.temp$_snowmobile_temp')
+    curs.execute(f'SELECT count(*) FROM {table}')
     cnt = curs.fetchone()[0]
-    writing_to_log_file(log, f'В uszn.temp$_snowmobile_temp стало {cnt} записей')
+    writing_to_log_file(log, f'В {table} стало {cnt} записей')
 
 #****************************************************************************************************
 def dat(x):

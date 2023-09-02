@@ -1,4 +1,4 @@
-import shutil, zipfile, os, jaydebeapi, json
+import shutil, zipfile, os, jaydebeapi, json, re
 import pandas as pd
 from pandas.io.excel import ExcelWriter
 from datetime import datetime
@@ -18,7 +18,6 @@ from email.mime.audio import MIMEAudio # Аудио
 from email.mime.multipart import MIMEMultipart # Многокомпонентный объект
 
 # *****************************************************************
-path_backup = r'd:/python/schedule/backup/'
 mail = 'IVAbdulganiev@yanao.ru'
 today = dt.date.today()
 
@@ -466,17 +465,40 @@ def copy_vipnet(test, file, name_log, name_def):
         path = 'c:/VipoNet_out/'
     try:
       shutil.copy(file, path)
-    except:
-      send_email('IVAbdulganiev@yanao.ru', f'{name_def} - ошибка копирования файла', msg_text=file)
-      text = f'{name_def} - ошибка копирования файла {file} в папку {path}'
+    except Exception as e:
+      send_email(mail, f'{name_def} - ошибка копирования файла', msg_text=file)
+      text = f'{name_def} - ошибка копирования файла {file} в папку {path} - {e}'
       writing_to_log_file(name_log, text)      
 
 #***************************************************************
 def backup_file(test, file, name_log, name_def):
     new_file_name = f'{today} - {file}'
-    if test == 0:
+    if test == 1:
+        path_backup = r'd:/python/schedule/backup1/'
+    else:
+        path_backup = r'd:/python/schedule/backup/'
+    try:
         shutil.move(file, f'{path_backup}/{new_file_name}')
         writing_to_log_file(name_log, f'Файл {file} перемещен в {path_backup} и переименован в {new_file_name}')
+    except Exception as e:
+        send_email(mail, f'{name_def} - ошибка переноса файла', msg_text=file)
+        text = f'{name_def} - ошибка переноса файла {file} в папку {path_backup} - {e}'
+        writing_to_log_file(name_log, text)      
+
+#***************************************************************
+def backup_file_pfr_4454(test, file, name_log, name_def, path):
+    new_file_name = f'{today} - {file}'
+    if test == 1:
+        path_backup = r'd:/python/schedule/backup1/'
+    else:
+        path_backup = r'd:/python/schedule/backup/'
+    try:
+        shutil.move(f'{path}/{file}', f'{path_backup}/{new_file_name}')
+        writing_to_log_file(name_log, f'Файл {file} перемещен в {path_backup} и переименован в {new_file_name}')
+    except Exception as e:
+        send_email(mail, f'{name_def} - ошибка переноса файла', msg_text=file)
+        text = f'{name_def} - ошибка переноса файла {file} в папку {path_backup} - {e}'
+        writing_to_log_file(name_log, text)      
 
 # *****************************************************************
 def generating_report_files(df, name_log, name_def, test, mail):
@@ -782,3 +804,12 @@ def kod_sfr_uszn_id(x):
 # *************************************************
 def kod_sfr_uszn_name(x):
     return sfr_uszn_kod_name(x, 1)
+
+# *****************************************************************
+def movi_file(file, name_log, name_def, path_in, path_to):
+    try:
+      shutil.move(f'{path_in}{file}', path_to)
+    except:
+      send_email('IVAbdulganiev@yanao.ru', f'{name_def} - ошибка переноса файла', msg_text=file)
+      text = f'{name_def} - ошибка переноса файла {path_in}{file} в папку {path_to}'
+      writing_to_log_file(name_log, text)      

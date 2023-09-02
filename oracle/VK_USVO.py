@@ -20,15 +20,20 @@ def vk_insert_temp(xl):
     cnt = curs.fetchone()[0]
     writing_to_log_file(log, f'В {table} перед загрузкой {cnt} записей')
     
-    for data in xl.itertuples(index=False):
-        curs.execute(f'{sql}', list(data))
+    if test == 0:
+        for data in xl.itertuples(index=False):
+            try:
+                curs.execute(f'{sql}', list(data))
+            except Exception as e:
+                text = f'произошла ошибка при вызове функции backup_file() - {e}'
+                alarm_log(mail, log, text)
     
     curs.execute(f'SELECT count(*) FROM {table}')
     cnt = curs.fetchone()[0]
     writing_to_log_file(log, f'В {table} после загрузки {cnt} записей')
 
 #****************************************************************************************************
-def zdrav_insert():
+def vk_insert():
     table = 'uszn.temp$_vk_load'
     table_new = 'uszn.temp$_vk_new'
     
@@ -38,21 +43,24 @@ def zdrav_insert():
     cnt = curs.fetchone()[0]
     writing_to_log_file(log, f'Количество записей в {table} до загрузки - {cnt}')
 
-    curs.execute(f'''INSERT INTO {table} 
-                     SELECT * FROM {table_new}''')
+    if test == 0:
+        curs.execute(f'''INSERT INTO {table} 
+                         SELECT * FROM {table_new}''')
     
     curs.execute(f'SELECT count(*) FROM {table}')
     cnt = curs.fetchone()[0]
     writing_to_log_file(log, f'Количество записей в {table} после загрузки - {cnt}')
 
-#***************************************************************    
+#****************************************************************************************************
 def vk_new():
     table = 'uszn.temp$_vk_new'
     writing_to_log_file(log, f'Загрузка данных в {table}')
+    
     try:
         curs.execute(f'DROP TABLE {table}')
     except:
         writing_to_log_file(log, f'Таблица {table} еще не создана')
+    
     curs.execute(f'''CREATE TABLE {table} AS
                         SELECT t1.*
                          FROM uszn.temp$_vk_load_temp t1
@@ -78,6 +86,7 @@ def vk_new():
                                         t.*
                                 FROM {table} t order by to_number(t.nom)''')
 
+#****************************************************************************************************
 def uploading_data_uszn(sql):
     data = {
         'УСЗН' : [],
@@ -161,6 +170,7 @@ cnt_file = 0
 os.chdir(path)
 c = os.listdir(os.getcwd())
 for file in c:
+    # print(file)
     if file.endswith(".xlsx") or file.endswith(".xltx"):
         writing_to_log_file(log, f'Файл поступил - {file}')
         xl = write_file(file, log)
@@ -177,7 +187,13 @@ if cnt_file > 0:
            'ADR_REGION', 'ADR_MO', 'ADR_FULL',
            'SNILS', 'INN', 'CONTRACT_DATE', 'CONTRACT_PERIOD', 'VK_DATE_START', 'VK_DATE_END', 'VK_MO',
            'MSP_SINGLE', 'MSP_GOODS', 'MSP_TRAVEL', 'BANK_NAME', 'BANK_BIC', 'BANK_ACCOUNT', 'CONTACTS']
+    
     xl.columns = col
+    xl.dropna(thresh=22, inplace = True)
+    for data in xl.itertuples():
+        if pd.isna(data[1]):
+            xl.drop(index=data[0], inplace = True)
+
     xl['DR'] = xl['DR'].apply(dat)
     xl['DUL_DATE'] = xl['DUL_DATE'].apply(dat)
     xl['VK_DATE_START'] = xl['VK_DATE_START'].apply(dat)
@@ -190,9 +206,6 @@ if cnt_file > 0:
     
     xl = xl.fillna('')
     
-    if xl.iloc[0][0] != 1:
-        xl.drop(index=list(range(0, xl['NOM'][xl['NOM'] == 1].index.tolist()[0])), inplace = True)
-    
     vk_insert_temp(xl)
     vk_new()
-    zdrav_insert()
+    vk_insert()

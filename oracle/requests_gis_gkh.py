@@ -4,11 +4,19 @@ from generating_report_files import *
 log = 'requests_gis_gkh'
 mail = 'IVAbdulganiev@yanao.ru'
 
+# ********************************************************************
+def count_table(): # проверка временной таблицы на наличие записей
+  try:
+    curs.execute('SELECT count(*) FROM uszn.temp$_gkv_gu')
+    return int(curs.fetchall()[0][0])
+  except:
+    return 0
+
 # ********************************************************
 def drop_table(): # удаление временной таблицы
   cnt = count_table()
   if cnt > 0:
-    curs.execute('DROP TABLE uszn.temp$_gkv_gu')
+    curs.execute('DELETE FROM uszn.temp$_gkv_gu')
 
 # ********************************************************
 def creating_table(): # создание временное таблицы
@@ -85,14 +93,6 @@ INSERT INTO uszn.r_ssvc_rq_collection_items(collection_id, collection_region_id,
     WHERE t1.region_id={region_id} and
     t1.num between (SELECT ceil(max(t2.num)/3)*2 FROM uszn.temp$_gkv_gu t2 WHERE t2.region_id=t1.region_id) + 1 and
                    (SELECT max(t2.num)           FROM uszn.temp$_gkv_gu t2 WHERE t2.region_id=t1.region_id)''')
-
-# ********************************************************************
-def count_table(): # проверка временной таблицы на наличие записей
-  try:
-    curs.execute('SELECT count(*) FROM uszn.temp$_gkv_gu')
-    return int(curs.fetchall()[0][0])
-  except:
-    return 0
 
 # ********************************************************************
 def count_collection():

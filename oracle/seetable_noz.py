@@ -29,7 +29,8 @@ see_code = {
 #***************************************************************
 def seetable_noz(server_url, list_row, api_token):
     base = Base(api_token, server_url)
-    base.auth(with_socket_io=True)
+    # base.auth(with_socket_io=True)
+    base.auth()
     
     data = {
         'СНИЛС' : [],

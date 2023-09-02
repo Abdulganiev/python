@@ -27,8 +27,10 @@ def zdrav_insert_temp(xl):
     curs.execute(f'SELECT count(*) FROM {table}')
     cnt = curs.fetchone()[0]
     writing_to_log_file(log, f'В {table} перед загрузкой {cnt} записей')
+
     if xl.iloc[0][0] != 1:
         xl.drop(index=list(range(0, xl['NOM'][xl['NOM'] == 1].index.tolist()[0])), inplace = True)
+
     for data in xl.itertuples(index=False):
         curs.execute(f'''
         INSERT INTO {table} 
@@ -425,6 +427,13 @@ if cnt_file > 0:
 
     xl.columns = col
 
+    xl.dropna(thresh=13, inplace = True)
+
+    for data in xl.itertuples():
+        if pd.isna(data[1]):
+            xl.drop(index=data[0], inplace = True)
+
+
     xl['DR'] = xl['DR'].apply(dat)
     xl['DUL_DATE'] = xl['DUL_DATE'].apply(dat)
     xl['BABY_DR'] = xl['BABY_DR'].apply(dat)
@@ -438,7 +447,7 @@ if cnt_file > 0:
     try:
         zdrav_insert_temp(xl)
     except Exception as e:
-        text = f'произошла ошибка при вызове функции zdrav_insert() - {e}'
+        text = f'произошла ошибка при вызове функции zdrav_insert_temp() - {e}'
         alarm_log(mail, log, text)
 
     try:
