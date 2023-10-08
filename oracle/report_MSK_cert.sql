@@ -15,6 +15,7 @@ select c.*,
 		 uszn.pkPerson.GetDocReqValue(c.region_id, 7742, c.num_zayav) as decision,
 		 uszn.pkPerson.GetDocReqValue(c.region_id, 7741, c.num_zayav) as decision_date,
 		 uszn.pkPerson.GetDocReqValue(c.region_id, 7809, c.num_zayav) as amount,
+		 
 		 uszn.pkPerson.GetBirthDate(c.region_id, uszn.pkPerson.GetDocReqValueInt(c.region_id, 7754, c.num_zayav)) as baby_date_birth,
 		 (select uszn.StrCommaConcat(uszn.pkGen.StripRgnPrefix(c2.value))
            from uszn.all_personal_doc_reqs c1, uszn.all_personal_doc_reqs c2
@@ -22,7 +23,8 @@ select c.*,
 		         c1.value=uszn.pkPerson.GetDocReqValueInt(c.region_id, 7754, c.num_zayav) and
                  c2.class_id=7746 and c1.region_id=c2.region_id and c1.pdoc_id=c2.pdoc_id and c1.order_num=c2.order_num) as baby_account,
 		 uszn.pkPerson.GetDocReqValue(c.region_id, 7754, c.num_zayav) as baby,
-		 uszn.pkPerson.GetDocReqValue(c.region_id, 7757, c.iDIID) as certificate_date
+		 uszn.pkPerson.GetDocReqValue(c.region_id, 7757, c.iDIID) as certificate_date,
+		 uszn.pkPerson.GetDocReqValue(c.region_id, 7755, c.iDIID)||'-'||uszn.pkPerson.GetDocReqValue(c.region_id, 7756, c.iDIID)||' от '||uszn.pkPerson.GetDocReqValue(c.region_id, 7757, c.iDIID) as SV
  from
 (select
       c.region_id,

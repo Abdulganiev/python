@@ -1,6 +1,11 @@
 from generating_report_files import *
 
 # *****************************************************************
+log = 'report_GKV_MO_mm_itog'
+test = 0
+mail = 'IVAbdulganiev@yanao.ru'
+
+# *****************************************************************
 curs = connect_oracle()
 
 # *****************************************************************
@@ -33,14 +38,10 @@ for region_id in range(58, 71):
         data['площадь'].append(row[4])
         
 # *****************************************************************
-log = 'report_GKV_MO_mm_itog'
-test = 0
 period = report_GKV_name()[0]
 name = f'отчет ЖКВ за {period} в разрезе МО'
 
-if test == 1:
-    mail = 'IVAbdulganiev@yanao.ru'
-else:
-    mail = 'IVAbdulganiev@yanao.ru, MSNesteruk@yanao.ru'
+if test == 0:
+    mail = 'IVAbdulganiev@yanao.ru, OVKolpakova@yanao.ru, NMShcherbinina@yanao.ru'
 
 generating_report_GKV(data, log, name, mail)

@@ -1,6 +1,11 @@
 from generating_report_files import *
 
 # *****************************************************************
+log = 'report_GKV_YANAO'
+test = 0
+mail = 'IVAbdulganiev@yanao.ru'
+
+# *****************************************************************
 curs = connect_oracle()
 
 # *****************************************************************
@@ -47,14 +52,11 @@ def report_GKV_name():
 
 data = report_GKV_YANAO_data(report_GKV_YANAO())
 
-log = 'report_GKV_YANAO'
-test = 0
 period = report_GKV_name()[0]
+
 name = f'отчет ЖКВ за {period} в ЯНАО'
 
-if test == 1:
-    mail = 'IVAbdulganiev@yanao.ru'
-else:
-    mail = 'IVAbdulganiev@yanao.ru, MSNesteruk@yanao.ru'
+if test == 0:
+    mail = 'IVAbdulganiev@yanao.ru, OVKolpakova@yanao.ru, NMShcherbinina@yanao.ru'
 
 generating_report_GKV(data, log, name, mail)

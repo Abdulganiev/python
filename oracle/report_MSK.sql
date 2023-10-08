@@ -20,6 +20,36 @@ create table uszn.temp$_msk_resh as
   uszn.pkPerson.GetDocReqValue(region_id, 7755, svid)||'-'||uszn.pkPerson.GetDocReqValue(region_id, 7756, svid)||' от '||uszn.pkPerson.GetDocReqValue(region_id, 7757, svid) as SV,
   to_date(uszn.pkPerson.GetDocReqValue(region_id, 7757, svid)) as SV_data,
   uszn.pkPerson.GetDocReqValue(region_id, 7755, svid) as SV_ser,
+  (case uszn.pkPerson.GetDocReqValueInt(region_id, 7755, svid)
+        when 104000443 then 58
+        when 104000446 then 59
+        when 104000447 then 60
+        when 104000448 then 61
+        when 104000449 then 62
+        when 104000450 then 63
+        when 104000451 then 64
+        when 104000452 then 65
+        when 104000453 then 66
+        when 104000454 then 67
+        when 104000455 then 68
+        when 104000456 then 69
+        when 104000457 then 70
+       end) as id_MO_sert,
+  (case uszn.pkPerson.GetDocReqValueInt(region_id, 7755, svid)
+        when 104000443 then 'г. Новый Уренгой'
+        when 104000446 then 'Красноселькупский район'
+        when 104000447 then 'г. Салехард'
+        when 104000448 then 'Приуральский район'
+        when 104000449 then 'г. Лабытнанги'
+        when 104000450 then 'Надымский район'
+        when 104000451 then 'г. Губкинский'
+        when 104000452 then 'г. Муравленко'
+        when 104000453 then 'г. Ноябрьск'
+        when 104000454 then 'Пуровский район'
+        when 104000455 then 'Ямальский район'
+        when 104000456 then 'Шурышкарский район'
+        when 104000457 then 'Тазовский район'
+       end) as MO_sert,	   
   uszn.pkPerson.GetDocReqValue(region_id, 7756, svid) as SV_num,
   uszn.pkPerson.GetDocReqValue(region_id, 7754, uszn.pkPerson.GetDocReqValueInt(c.region_id, 7765, svid)) as baby,
   region_id||'-'||svid as sv_id,

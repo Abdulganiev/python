@@ -58,7 +58,9 @@ except Exception as e:
     alarm_log(mail, name_log, text)
 
 try:
-    generating_report_GSP(data, name_log, name_file, test)
+    if test == 0:
+        mail = 'IVAbdulganiev@yanao.ru, OVKolpakova@yanao.ru, NMShcherbinina@yanao.ru'
+    generating_report_GSP(data, name_log, name_file, mail)
 except Exception as e:
     text = f'произошла ошибка при вызове функции generating_report_GSP() - {e}'
     alarm_log(mail, name_log, text)

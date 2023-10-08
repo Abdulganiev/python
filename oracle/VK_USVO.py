@@ -25,7 +25,8 @@ def vk_insert_temp(xl):
             try:
                 curs.execute(f'{sql}', list(data))
             except Exception as e:
-                text = f'произошла ошибка при вызове функции backup_file() - {e}'
+                test_sql = list(data)
+                text = f'произошла ошибка при вызове функции vk_insert_temp() - {e} {sql} {test_sql}'
                 alarm_log(mail, log, text)
     
     curs.execute(f'SELECT count(*) FROM {table}')
@@ -65,7 +66,7 @@ def vk_new():
                         SELECT t1.*
                          FROM uszn.temp$_vk_load_temp t1
                               LEFT JOIN uszn.temp$_vk_load t2
-                         ON t1.SNILS = t2.SNILS
+                         ON replace(replace(t1.SNILS, '-', ''), ' ', '') = replace(replace(t2.SNILS, '-', ''), ' ', '')
                          WHERE t2.SNILS is null order by to_number(t1.nom)''')
     try:
         curs.execute(f'SELECT count(*) FROM {table}')
@@ -196,6 +197,7 @@ if cnt_file > 0:
 
     xl['DR'] = xl['DR'].apply(dat)
     xl['DUL_DATE'] = xl['DUL_DATE'].apply(dat)
+    xl['CONTRACT_DATE'] = xl['CONTRACT_DATE'].apply(dat)
     xl['VK_DATE_START'] = xl['VK_DATE_START'].apply(dat)
     xl['VK_DATE_END'] = xl['VK_DATE_END'].apply(dat)
     xl['VK_DATE_END'] = xl['VK_DATE_END'].apply(replace_nan)
