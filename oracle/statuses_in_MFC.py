@@ -1,60 +1,35 @@
 from generating_report_files import *
 
 #***************************************************************
+mail = 'IVAbdulganiev@yanao.ru'
+name_log = 'statuses_in_MFC'
+
+#***************************************************************
 def statuses_in_MFC():
-    curs.execute('''
-select 
-    count(*)    
- from uszn.r_smev2_calls b1
- inner join
- (select c1.region_id, max(c1.id) as id -- находим у этих сообщений макс ИД отправлений
-   from uszn.r_smev2_calls c1
-    inner join
- (select t1.region_id, t1.id -- находим для этих отправлений сообщения СМЭВ2
-   from uszn.r_smev2_requests t1
-     inner join
-    (select id, region_id, request_id -- находим все отправления с ошибками
-      from uszn.r_smev2_calls
-       where error_message is not null and date_created > to_date('01.12.2021')) t2
-     on t1.region_id=t2.region_id and t1.id=t2.request_id) c2
-  on c1.region_id=c2.region_id and c1.request_id=c2.id
- group by c1.region_id) b2
- on b1.region_id=b2.region_id and b1.id=b2.id
- where b1.error_message is not null''')
+    with open('statuses_in_MFC_cnt.sql', 'r', encoding='utf8') as f:
+      sql = f.read()
+    curs.execute(sql)
 
     cnt = curs.fetchone()[0]
     
     if cnt > 0:
-        curs.execute('''
-update uszn.all_smev2_out_messages
-  set next_send_time=sysdate
-where (region_id, id) in
-
-(select b1.region_id, b1.request_id
- from uszn.r_smev2_calls b1
- inner join
- (select c1.region_id, max(c1.id) as id -- находим у этих сообщений макс ИД отправлений
-   from uszn.r_smev2_calls c1
-    inner join
- (select t1.region_id, t1.id -- находим для этих отправлений сообщения СМЭВ2
-   from uszn.r_smev2_requests t1
-     inner join
-    (select id, region_id, request_id -- находим все отправления с ошибками
-      from uszn.r_smev2_calls
-       where error_message is not null and date_created > to_date('01.12.2021')) t2
-     on t1.region_id=t2.region_id and t1.id=t2.request_id) c2
-  on c1.region_id=c2.region_id and c1.request_id=c2.id
- group by c1.region_id, c1.request_id) b2
- on b1.region_id=b2.region_id and b1.id=b2.id
- where b1.error_message is not null)''')
+      with open('statuses_in_MFC.sql', 'r', encoding='utf8') as f:
+        sql = f.read()
+      curs.execute(sql)
 
     return cnt
 
 #***************************************************************
+try:
+  curs = connect_oracle()
+except Exception as e:
+  text = f'произошла ошибка при вызове функции connect_oracle() - {e}'
+  alarm_log(mail, name_log, text)
 
-curs = connect_oracle()
-
-cnt = str(statuses_in_MFC())
-
-writing_to_log_file('statuses_in_MFC', cnt)
-send_email('IVAbdulganiev@yanao.ru', 'Статусы в МФЦ отработаны', msg_text=cnt)
+try:
+  cnt = str(statuses_in_MFC())
+  writing_to_log_file(name_log, cnt)
+  send_email(mail, 'Статусы в МФЦ отработаны', msg_text=cnt)
+except Exception as e:
+  text = f'произошла ошибка при вызове функции statuses_in_MFC() - {e}'
+  alarm_log(mail, name_log, text)

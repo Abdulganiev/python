@@ -467,13 +467,11 @@ def copy_vipnet(test, file, name_log, name_def):
       writing_to_log_file(name_log, text)      
 
 #***************************************************************
-def backup_file(test, file, name_log, name_def):
+def backup_file(test, file, name_log, name_def, path_backup = r'd:/python/schedule/backup/'):
     os.chmod(file, stat.S_IWRITE)
     new_file_name = f'{today}_{sec} - {file}'
     if test == 1:
         path_backup = r'd:/python/schedule/backup1/'
-    else:
-        path_backup = r'd:/python/schedule/backup/'
     try:
         shutil.move(file, f'{path_backup}/{new_file_name}')
         writing_to_log_file(name_log, f'Файл {file} перемещен в {path_backup} и переименован в {new_file_name}')
@@ -715,8 +713,18 @@ def write_file(file, log):
         writing_to_log_file(log, f'Alarm: \n {e}')
 
 #***************************************************************
+def write_file_object(file, log):
+    try:
+        xl = pd.read_excel(file, dtype="object")
+        writing_to_log_file(log, f'Файл {file} записан в dataframe')
+        return xl
+    except Exception as e:
+        writing_to_log_file(log, f'Alarm: \n {e}')
+
+#***************************************************************
 def dat(x):
     try:
+        x = str(x).replace('\n', '')
         x = str(x).replace(' 00:00:00', '')
         return re.sub(r'(\d{4})-(\d{2})-(\d{2})', r'\3.\2.\1', x)
     except:
@@ -732,10 +740,12 @@ def up(x):
 #***************************************************************
 def mo_id(x):
     x = x.upper()
+    x = x.replace('МО ', '')
+    x = x.replace('Р-Н', '')
+    x = x.replace('РАЙОН', '')
     x = x.replace('Г.', '')
     x = x.replace(' ', '')
     x = x.replace('-', '')
-    x = x.replace('РАЙОН', '')
     
     try:
         mo = {
@@ -764,7 +774,14 @@ def num_to_str(x):
     try:
         return str(int(x))
     except:
-        x
+        return x
+
+# *************************************************
+def num_int_to_str(x):
+    try:
+        return str(x)
+    except:
+        return x
 
 # *************************************************
 def snils(x):
@@ -789,6 +806,7 @@ def replace_nat(x):
 def replace_nan(x):
     try:
         return x.replace('nan', '')
+        return x.replace('None', '')
     except:
         return x
 

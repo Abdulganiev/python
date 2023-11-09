@@ -13,12 +13,7 @@ except Exception as e:
     alarm_log(mail, name_log, text)    
 
 #***************************************************************
-def out_gu(id):
-    with open('1-GMU-pred.sql', 'r', encoding='utf8') as f:
-        sql = f.read()
-    sql = sql.replace('{SERVICE}', f'{id}')
-    curs.execute(sql)
-    
+def file_gu(id):
     with open('1-GMU-file.sql', 'r', encoding='utf8') as f:
         sql = f.read()
     sql = sql.replace('{SERVICE}', f'{id}')
@@ -26,14 +21,9 @@ def out_gu(id):
     file_name = curs.fetchall()[0][0] + '.xlsx'
     file_name = file_name.replace('"', '')
     
-    with open('1-GMU-out.sql', 'r', encoding='utf8') as f:
-        sql = f.read()
-    curs.execute(sql)
-    data = pd.DataFrame(curs.fetchall())    
-    
-    report_1gmu(data, file_name, mail, name_log)
+    return file_name
 
-#***************************************************************
+#***************************************************************  
 def find_gu():
     with open('1-GMU-find.sql', 'r', encoding='utf8') as f:
         sql = f.read()
@@ -41,6 +31,34 @@ def find_gu():
     df = curs.fetchall()
     return df
 
+#***************************************************************
+def out_gu(id):
+    with open('1-GMU-pred.sql', 'r', encoding='utf8') as f:
+        sql = f.read()
+    sql = sql.replace('{SERVICE}', f'{id}')
+    curs.execute(sql)
+    
+    with open('1-GMU-out.sql', 'r', encoding='utf8') as f:
+        sql = f.read()
+    curs.execute(sql)
+    data = pd.DataFrame(curs.fetchall())
+    
+    return data
+
+#***************************************************************
+def fact_gu(id):
+    with open('1-GMU-pred_fact.sql', 'r', encoding='utf8') as f:
+        sql = f.read()
+    sql = sql.replace('{SERVICE}', f'{id}')
+    curs.execute(sql)
+    
+    with open('1-GMU-out_fact.sql', 'r', encoding='utf8') as f:
+        sql = f.read()
+    curs.execute(sql)
+    data = pd.DataFrame(curs.fetchall())
+    
+    return data
+    
 #***************************************************************
 writing_to_log_file(name_log, f'***************************************************************')
 
@@ -52,7 +70,11 @@ except Exception as e:
 
 for row in data_find.itertuples(index=False):
     try:
-        out_gu(row[0])
+        file_name = file_gu(row[0])
+        df_1 = out_gu(row[0])
+        df_2 = fact_gu(row[0])
+        data = pd.concat([df_1, df_2], ignore_index=True)
+        report_1gmu(data, file_name, mail, name_log)
     except Exception as e:
         text = f'произошла ошибка при вызове функции out_gu() - {e}'
         alarm_log(mail, name_log, text)

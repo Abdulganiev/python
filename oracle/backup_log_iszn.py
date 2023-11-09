@@ -92,6 +92,7 @@ dict_logs = {
     'PAN_in_' : 'PAN',
     'PAN_out_' : 'PAN',
     'ServerOperationLog_' : 'ServerOperationLog',
+    'sfr_power_' : 'sfr_power',
 }
 
 text = '****************start****************'

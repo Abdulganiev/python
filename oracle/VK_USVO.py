@@ -202,9 +202,9 @@ if cnt_file > 0:
     xl['VK_DATE_END'] = xl['VK_DATE_END'].apply(dat)
     xl['VK_DATE_END'] = xl['VK_DATE_END'].apply(replace_nan)
     xl['MO_ID'] = xl['ADR_MO'].apply(mo_id)
-    xl['INN'] = xl['INN'].apply(num_to_str)
-    xl['BANK_BIC'] = xl['BANK_BIC'].apply(num_to_str)
-    xl['BANK_ACCOUNT'] = xl['BANK_ACCOUNT'].apply(num_to_str)
+    # xl['INN'] = xl['INN'].apply(num_to_str)
+    # xl['BANK_BIC'] = xl['BANK_BIC'].apply(num_to_str)
+    # xl['BANK_ACCOUNT'] = xl['BANK_ACCOUNT'].apply(num_to_str)
     
     xl = xl.fillna('')
     

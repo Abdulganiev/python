@@ -18,8 +18,8 @@ begin
       (select *
          from uszn.all_ssvc_requests
          where state_svc_region_id=104 and state_svc_id={SERVICE}
-		       and date_created BETWEEN TRUNC(ADD_MONTHS(SYSDATE, -1), 'MM') and TRUNC(SYSDATE, 'MM')
-		       and reg_user not like 'ADMIN__'
+           and date_modified BETWEEN TRUNC(ADD_MONTHS(SYSDATE, -1), 'MM') and TRUNC(SYSDATE, 'MM')
+		   and reg_user not like 'ADMIN__'
       )
   loop
     iRegionID := app.region_id;

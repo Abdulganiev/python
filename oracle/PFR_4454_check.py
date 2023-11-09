@@ -44,12 +44,13 @@ def load_files():
                 text = f'произошла ошибка при вызове функции load_base() - {e} - {file} - {a}'
                 alarm_log(mail, log, text)
 
-            try:
-                backup_file_pfr_4454(test, file, log, name_def, path)
-                writing_to_log_file(log, f'Файл {file} в backup')
-            except Exception as e:
-                text = f'произошла ошибка при вызове функции backup_file_pfr_4454() - {e} - {file} - {a}'
-                alarm_log(mail, log, text)
+            # try:
+            backup_file_pfr_4454(test, file, log, name_def, path)
+            writing_to_log_file(log, f'Файл {file} в backup')
+            # except Exception as e:
+            #     text = f'произошла ошибка при вызове функции backup_file_pfr_4454() - {e} - {file} - {a}'
+            #     alarm_log(mail, log, text)
+
 
         elif file.endswith('.csv'):
             a += 1
@@ -62,12 +63,12 @@ def load_files():
                 text = f'произошла ошибка при вызове функции load_base() - {e} - {file} - {a}'
                 alarm_log(mail, log, text)
             
-            try:
-                backup_file_pfr_4454(test, file, log, name_def, path)
-                writing_to_log_file(log, f'Файл {file} в backup')
-            except Exception as e:
-                text = f'произошла ошибка при вызове функции backup_file_pfr_4454() - {e} - {file} - {a}'
-                alarm_log(mail, log, text)
+            # try:
+            backup_file_pfr_4454(test, file, log, name_def, path)
+            writing_to_log_file(log, f'Файл {file} в backup')
+            # except Exception as e:
+            #     text = f'произошла ошибка при вызове функции backup_file_pfr_4454() - {e} - {file} - {a}'
+            #     alarm_log(mail, log, text)
 
 # *************************************************            
 def load_base(xl, v):

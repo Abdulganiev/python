@@ -65,7 +65,8 @@ select
 									 (upper(member_coll) like upper('%Дочь%') or upper(member_coll) like upper('%Сын%')) and age < 18 then member_id else null end as fam_ch_old_nes,
                            age,
 						   case when age is null then coll_id else null end as loner,
-                           member_r, 
+                           member_id,
+						   member_r, 
 						   member_coll
                         from
                           (select distinct t1.region_id, t1.coll_id, t3.doc_id, t1.region_id||'-'||t1.coll_id as id, t1.people_id, t1.snils,

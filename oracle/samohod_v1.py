@@ -74,7 +74,8 @@ def v1_table_all():
     writing_to_log_file(log, f'Количество записей в {table} перед загрузкой - {cnt}')
 
     curs.execute(f'''INSERT INTO {table} (CarNumber, Brand, Name, YearRelease, Owner, Address, IdentityDoc, Who, DateIssue, BirthDate, RegDate, UploadDate)
-                    SELECT t1.CarNumber, t1.Brand, t1.Name, t1.YearRelease, t1.Owner, t1.Address, t1.IdentityDoc, t1.Who, t1.DateIssue, t1.BirthDate, t1.RegDate, t1.UploadDate
+                    SELECT t1.CarNumber, t1.Brand, t1.Name, t1.YearRelease, t1.Owner, t1.Address, t1.IdentityDoc, t1.Who, t1.DateIssue, 
+                           t1.BirthDate, t1.RegDate, t1.UploadDate
                     FROM uszn.temp$_snowmobile_temp t1
                          LEFT JOIN {table} t2
                     on t1.uploaddate = t2.uploaddate

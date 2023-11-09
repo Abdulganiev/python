@@ -1,6 +1,6 @@
 create table uszn.temp$_kind_as_rsd as
 select * from
-(select region_id,
+(select region_id, -- субъекты назначения
         pka_people_coll_id as people_id,
 		uszn.pkPerson.GetPersonalReq(region_id, pka_people_coll_id, 25) AS SNILS,
         pka_kind_name as kind,
@@ -13,7 +13,7 @@ select * from
          and trunc(current_date, 'mm') between rap_date_start and rap_date_end and (pka_kind_region_id, pka_kind_id) in
          ((0, 190), (0, 142), (104, 29), (0, 148), (0, 2), (104, 47), (104, 2), (104, 10), (104, 48), (104, 9), (104, 12), (104, 266))
   union all
- select region_id,
+ select region_id, -- получатели
         pka_payee_pc_id as people_id,
 		uszn.pkPerson.GetPersonalReq(region_id, pka_people_coll_id, 25) AS SNILS,
         pka_kind_name as kind,
@@ -27,7 +27,7 @@ select * from
          and trunc(current_date, 'mm') between rap_date_start and rap_date_end
   union all
   select
-      t1.region_id,
+      t1.region_id, -- выплаты из заявления на РСД
       uszn.pkPerson.GetDocInstancePC(t1.pdoc_id, t1.region_id) as people_id,
 	  uszn.pkPerson.GetPersonalReq(t1.region_id, uszn.pkPerson.GetDocInstancePC(t1.pdoc_id, t1.region_id), 25) AS SNILS,
       uszn.pkGen.RgnPrefix(t3.region_id)||t3.name as kind,
@@ -47,7 +47,7 @@ select * from
            inner join uszn.dic_pc_income_kinds_to_groups t4
       on t3.region_id=0 and t3.region_id=t4.income_kind_region_id and t3.id=t4.income_kind_id and t4.group_region_id=104 and t4.group_id=16
   union all
- select t1.region_id,
+ select t1.region_id, -- выплаты из ПФР на РСД
         t1.people_coll_id as people_id,
 		uszn.pkPerson.GetPersonalReq(t1.region_id, t1.people_coll_id, 25) AS SNILS,
         t2.pkind_name as kind,

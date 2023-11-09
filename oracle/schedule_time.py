@@ -2,7 +2,7 @@ import schedule
 import time, subprocess
 
 #***************************************************************
-name_log = 'VK_USVO'
+name_log = 'schedule_time'
 mail = 'IVAbdulganiev@yanao.ru'
 
 #***************************************************************
@@ -13,6 +13,7 @@ def movi_file():
         text = f'произошла ошибка при вызове функции movi_file() - {e}'
         writing_to_log_file(name_log, text)
 
+#***************************************************************
 def unlock_user_iszn():
     try:
         subprocess.call("python d:/python/schedule/unlock_user_iszn.py", shell=True)
@@ -20,11 +21,21 @@ def unlock_user_iszn():
         text = f'произошла ошибка при вызове функции unlock_user_iszn() - {e}'
         writing_to_log_file(name_log, text)
 
+#***************************************************************
+def seetable_trud_stac():
+    try:
+        subprocess.call("python d:/python/schedule/seetable_trud_stac.py", shell=True)
+    except Exception as e:
+        text = f'произошла ошибка при вызове функции seetable_trud_stac() - {e}'
+        writing_to_log_file(name_log, text)
+
 
 #***************************************************************
 schedule.every(10).seconds.do(movi_file)
 
 schedule.every(15).minutes.do(unlock_user_iszn)
+
+schedule.every(60).minutes.do(seetable_trud_stac)
 
 # schedule.every(10).minutes.do(job) 
 # schedule.every().hour.do(job)
