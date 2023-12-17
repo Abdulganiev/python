@@ -113,6 +113,20 @@ def table_cnt(table):
         text = f'таблицы {table} нету - {e}'
     writing_to_log_file(name_log, text)
     
+#***************************************************************    
+def mvd_backup():
+    table = 'uszn.temp$_mvd_msp_backup'
+    
+    writing_to_log_file(name_log, f'Загрузка данных в {table}')
+    writing_to_log_file(name_log, f'Количество записей в {table} перед загрузкой')
+    table_cnt(table)
+    sql = f'''INSERT INTO {table}
+              SELECT t.*, sysdate as date_backup
+                FROM uszn.temp$_mvd_msp t'''
+    curs.execute(sql)
+    writing_to_log_file(name_log, f'Количество записей в {table} после загрузки')
+    table_cnt(table)
+
 #*****************************************************    
 def mvd_insert_all():
     table = 'uszn.temp$_mvd_msp_all'
@@ -120,7 +134,7 @@ def mvd_insert_all():
     writing_to_log_file(name_log, f'Количество записей в {table} перед загрузкой')
     table_cnt(table)
     
-    sql = f'''INSERT INTO {table} 
+    sql = f'''INSERT INTO {table}
               SELECT t1.*
               FROM uszn.temp$_mvd_msp_temp t1 LEFT JOIN {table} t2
                 on replace(replace(t1.snils, '-', ''), ' ', '') = replace(replace(t2.snils, '-', ''), ' ', '') 
@@ -139,9 +153,12 @@ def mvd_del():
     sql=f'''
     create table {table} as
     select t1.*
-    from uszn.temp$_mvd_msp t1 left join uszn.temp$_mvd_msp_temp t2
+    from (select * from uszn.temp$_mvd_msp where delflg=0 and dateto>sysdate) t1 
+          left join 
+          uszn.temp$_mvd_msp_temp t2
       on replace(replace(t1.snils, '-', ''), ' ', '') = replace(replace(t2.snils, '-', ''), ' ', '') 
-         and t1.cat = t2.cat and t1.mo_id = t2.mo_id
+         and t1.cat = t2.cat 
+         and t1.mo_id = t2.mo_id
       where t2.snils is null
     '''
     curs.execute(sql)
@@ -252,6 +269,17 @@ SELECT   NOM, FAM, IMIA, OTH, DTR, MTR, SNILS, INN, DUL, DUL_SER, DULNOM, DTDOC,
     writing_to_log_file(name_log, f'Количество записей в {table_msp} после загрузки')
     table_cnt(table_msp)
 
+    #******************************
+    table_r = 'uszn.temp$_mvd_msp_r_new'
+    writing_to_log_file(name_log, f'Добавление данные в таблицу {table_r}')
+    writing_to_log_file(name_log, f'Количество записей в {table_r}')
+    table_cnt(table_r)
+
+    curs.execute(f'INSERT INTO {table_r} SELECT * FROM {table}')
+
+    writing_to_log_file(name_log, f'Количество записей в {table_r}')
+    table_cnt(table_r)
+
     #*****************************
     table = 'uszn.temp$_mvd_msp_change'
     writing_to_log_file(name_log, f'Добавление записей в таблице {table_msp} из таблицы {table}')
@@ -272,6 +300,17 @@ SELECT   NOM, FAM, IMIA, OTH, DTR, MTR, SNILS, INN, DUL, DUL_SER, DULNOM, DTDOC,
     writing_to_log_file(name_log, f'Количество записей в {table_msp} после загрузки')
     table_cnt(table_msp)
     
+    #******************************
+    table_r = 'uszn.temp$_mvd_msp_r_change'
+    writing_to_log_file(name_log, f'Добавление данные в таблицу {table_r}')
+    writing_to_log_file(name_log, f'Количество записей в {table_r}')
+    table_cnt(table_r)
+
+    curs.execute(f'INSERT INTO {table_r} SELECT * FROM {table}')
+
+    writing_to_log_file(name_log, f'Количество записей в {table_r}')
+    table_cnt(table_r)
+
     #*****************************
     table = 'uszn.temp$_mvd_msp_del'
     writing_to_log_file(name_log, f'Добавление записей в таблице {table_msp} из таблицы {table}')
@@ -291,6 +330,18 @@ SELECT   NOM, FAM, IMIA, OTH, DTR, MTR, SNILS, INN, DUL, DUL_SER, DULNOM, DTDOC,
 
     writing_to_log_file(name_log, f'Количество записей в {table_msp} после загрузки')
     table_cnt(table_msp)
+
+    #******************************
+    table_r = 'uszn.temp$_mvd_msp_r_del'
+    writing_to_log_file(name_log, f'Добавление данные в таблицу {table_r}')
+    writing_to_log_file(name_log, f'Количество записей в {table_r}')
+    table_cnt(table_r)
+
+    curs.execute(f'INSERT INTO {table_r} SELECT * FROM {table}')
+
+    writing_to_log_file(name_log, f'Количество записей в {table_r}')
+    table_cnt(table_r)
+
 
 #****************************************************************************************************
 try: # подключение к серверу
@@ -314,17 +365,26 @@ if alarm_f == 0: # очистка темп
 #****************************************************************************************************
 writing_to_log_file(name_log, '*****************start**********************')
 cnt = 0
+cnt_check = 0
 c = os.listdir(os.getcwd())
+for file in c: # читаем каталог, подсчет всех файлов
+    if file.endswith(".xlsx") or file.endswith(".xltx"): # если есть файлы, то
+        cnt_check += 1
+        writing_to_log_file(name_log, f'Поступил файл - {file}')
+
+writing_to_log_file(name_log, f'Всего файлов - {cnt_check}')
+
 for file in c: # читаем каталог, пишем все файлы в темп
     if file.endswith(".xlsx") or file.endswith(".xltx"): # если есть файлы, то
-        writing_to_log_file(name_log, f'Файл поступил - {file}')
+        writing_to_log_file(name_log, f'---------------')
+        writing_to_log_file(name_log, f'Обработка файла - {file}')
         
         if alarm_f == 0: # запичь файла в датафрейм
             try:
                 xl = write_file_object(file, name_log)
                 alarm_f = 0
             except Exception as e:
-                text = f'произошла ошибка при вызове функции pre_processing() - {e}'
+                text = f'произошла ошибка при вызове функции write_file_object() - {e}'
                 alarm_log(mail, name_log, text)
                 alarm_f = 1
 
@@ -342,7 +402,7 @@ for file in c: # читаем каталог, пишем все файлы в т
                 pre_processing(xl, file)
                 alarm_f = 0
             except Exception as e:
-                text = f'произошла ошибка при вызове функции pre_processing() - {e}'
+                text = f'произошла ошибка при вызове функции pre_processing() - {e} \n {xl}'
                 alarm_log(mail, name_log, text)
                 alarm_f = 1
         
@@ -366,14 +426,23 @@ for file in c: # читаем каталог, пишем все файлы в т
                 alarm_f = 1
         
 #****************************************************************************************************
-if alarm_f == 0 and cnt > 0: # удаляем косяк мвд - тестовые записи
+if alarm_f == 0 and cnt == cnt_check: # удаляем косяк мвд - тестовые записи
+    try:
+        writing_to_log_file(name_log, f'---------------')
+        mvd_backup()
+        alarm_f = 0
+    except Exception as e:
+        text = f'произошла ошибка при вызове функции mvd_backup() - {e}'
+        alarm_log(mail, name_log, text)
+        alarm_f = 1
+
     try:
         del_kosyak()
         alarm_f = 0
     except Exception as e:
         text = f'произошла ошибка при вызове функции del_kosyak() - {e}'
         alarm_log(mail, name_log, text)
-        alarm_f = 1
+        alarm_f = 0
     
     if alarm_f == 0: # загрузка записей на удаление во временную таблицу
         try:

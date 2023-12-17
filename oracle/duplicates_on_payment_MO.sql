@@ -1,21 +1,13 @@
-select 
-    t1.region_id,
-    uszn.pkTSrv.GetRegionName(t1.region_id),
-    t1.pka_people_coll_desc,
-    t1.pka_kind_name,
-    t1.SNILS
-from
-(select
-    distinct t1.region_id,
-             t1.pka_people_coll_desc,
-             t1.pka_kind_name,
-             uszn.pkPerson.GetPersonalReq(t1.region_id, t1.pka_people_coll_id, 25) as SNILS
+select distinct t1.region_id
+
  from uszn.all_asg_periods t1
       inner join
  (select pk.pka_people_coll_desc, pk.pka_kind_name
         from uszn.all_asg_periods pk
-        where pk.region_id not in (104, 71, 72) and pk.pka_is_enabled = 1 and pk.pka_status_num = 0 and
-   (pk.pka_kind_id, pk.pka_kind_region_id) in
+        where pk.region_id not in (104, 71, 72) 
+	and pk.pka_is_enabled = 1 
+	and pk.pka_status_num = 0 
+	and (pk.pka_kind_id, pk.pka_kind_region_id) in
    ((133,0),(22,0),(134,0),(147,0),(132,0),(104,0),(76,104),(21,104),(80,104),(23,104),(78,104),(81,104),(14,104),(141,0),(140,0),(139,0),(99,0),(103,0),
    (98,0),(102,0),(138,0),(175,0),(150,0),(202,104),(203,104),(204,104),(205,104),(160,0),(142,0),(137,0),(9,59),(10,59),(29,104),(53,104),(75,104),
    (58,104),(57,104),(51,0),(165,0),(201,0),(164,0),(170,0),(58,0),(161,0),(48,0),(122,0),(112,104),(63,104),(61,104),(206,104),(66,104),(88,104),
@@ -29,4 +21,4 @@ from
    and uszn.pkPerson.GetPersonalReq(pk.region_id, pk.pka_people_coll_id, 25) not in ('065-286-379 90', '060-316-310 05')
  group by pk.pka_people_coll_desc, pk.pka_kind_name
  having Count(*)>1) t2
- on t1.pka_people_coll_desc=t2.pka_people_coll_desc and t1.pka_kind_name=t2.pka_kind_name) t1
+ on t1.pka_people_coll_desc=t2.pka_people_coll_desc and t1.pka_kind_name=t2.pka_kind_name

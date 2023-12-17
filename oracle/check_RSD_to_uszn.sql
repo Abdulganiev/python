@@ -23,7 +23,7 @@ from uszn.temp$_kind_as_rsd t1
       join
       uszn.r_categories_assigned t3
      on t1.region_id=t3.pc_region_id and t1.people_id=t3.pc_id
-     and trunc(current_date, 'mm') between date_start and date_end and (pccat_id, pccat_region_id) in ((1280,0))
+     and trunc(current_date, 'mm') between t3.date_start and t3.date_end and (t3.pccat_id, t3.pccat_region_id) in ((1280,0))
       left join
       uszn.all_asg_amounts t4
      on t1.region_id=t4.region_id and t1.people_id=t4.pka_people_coll_id

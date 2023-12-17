@@ -9,6 +9,7 @@ pd.options.mode.chained_assignment = None
 # *************************************************
 log = 'prf_4454'
 mail = 'IVAbdulganiev@yanao.ru'
+path_backup = r'd:/python/schedule/backup/PFR_4454_check/'
 path = 'd:/python/schedule/prf_4454'
 name_def = 'prf_4454'
 today = datetime.now().strftime('%d.%m.%Y')
@@ -45,7 +46,7 @@ def load_files():
                 alarm_log(mail, log, text)
 
             # try:
-            backup_file_pfr_4454(test, file, log, name_def, path)
+            backup_file(test, file, log, name_def, path_backup)
             writing_to_log_file(log, f'Файл {file} в backup')
             # except Exception as e:
             #     text = f'произошла ошибка при вызове функции backup_file_pfr_4454() - {e} - {file} - {a}'
@@ -64,7 +65,7 @@ def load_files():
                 alarm_log(mail, log, text)
             
             # try:
-            backup_file_pfr_4454(test, file, log, name_def, path)
+            backup_file(test, file, log, name_def, path_backup)
             writing_to_log_file(log, f'Файл {file} в backup')
             # except Exception as e:
             #     text = f'произошла ошибка при вызове функции backup_file_pfr_4454() - {e} - {file} - {a}'
@@ -113,8 +114,8 @@ except Exception as e:
     text = f'произошла ошибка при вызове функции connect_oracle() - {e}'
     alarm_log(mail, log, text)
 
-try:
-    load_files()
-except Exception as e:
-    text = f'произошла ошибка при вызове функции load_files() - {e}'
-    alarm_log(mail, log, text)
+# try:
+load_files()
+# except Exception as e:
+#     text = f'произошла ошибка при вызове функции load_files() - {e}'
+#     alarm_log(mail, log, text)

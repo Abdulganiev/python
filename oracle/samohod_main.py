@@ -13,7 +13,7 @@ today = dt.date.today()
 #***************************************************************
 def movi_file(file):
     new_file_name = f'{today} - {file}'
-    os.replace(file, f'backup/{new_file_name}')
+    os.replace(file, f'backup/samohod/{new_file_name}')
     writing_to_log_file(log, f'Файл {file} перемещен в backup и переименован в {new_file_name}')
 
 #***************************************************************

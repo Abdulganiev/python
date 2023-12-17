@@ -6,7 +6,7 @@ name_log = 'check_tickets'
 test = 0
 mail = 'IVAbdulganiev@yanao.ru'
 name_def = 'Нет права на авиабилет'
-check = 1
+check = 0
 
 #***************************************************************
 def check_tickets_category(curs):

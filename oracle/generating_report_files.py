@@ -24,16 +24,30 @@ today = dt.date.today()
 sec = time.strftime("%S", time.localtime())
 
 # *****************************************************************
-def report_1gmu(df, file_name, mail, name_log):
+def report_1gmu(df, file_name, mail, name_log, test, path_backup):
+    path_to = r'x:/! ГАСУ/in/'
+    path_in = r'd:/python/schedule/GMU/'
+
     data = pd.DataFrame(df)
-    data.to_excel(file_name, index=False)
-    text = '1-ГМУ ' + file_name
-    send_email(mail, text, msg_text=file_name, files=[file_name])
+    data.to_excel(f'{path_in}{file_name}', index=False)
+    
+    try:
+        os.remove(f'{path_to}{file_name}')
+        text = f'{file_name} в папке {path_to} удален'
+        writing_to_log_file(name_log, text)
+    except:
+        pass
 
-    new_file_name = f'{today} - {file_name}'
-    os.replace(file_name, f'backup/{new_file_name}') 
-
-    writing_to_log_file(name_log, text)      
+    try:
+        shutil.move(f'{path_in}{file_name}', path_to)
+        text = f'{path_in}{file_name} в папке {path_to}'
+        writing_to_log_file(name_log, text)
+        text_mail = f'{file_name} в каталоге отдела в папке ГАСУ/in/'
+        text = f'1-ГМУ {file_name}'
+        send_email(mail, text, msg_text=text_mail)
+    except Exception as e:
+        text = f'Ошибка переноса файла {path_in}{file_name} в папку {path_to} - {e}'
+        writing_to_log_file(name_log, text)      
 
 # *****************************************************************
 def report_death(df, region_id, id):
@@ -53,8 +67,8 @@ def report_death(df, region_id, id):
 
 # ********************************************************
 def alarm_log(mail, log, text):
-  writing_to_log_file(log, text)
-  send_email(mail, log, msg_text=text)
+    writing_to_log_file(log, text)
+    send_email(mail, log, msg_text=text)
 
 # *****************************************************************
 def generating_list_GKV_kv(name_log, text, file_name, test, mail):
@@ -540,7 +554,7 @@ def generating_report_files_PFR(df, name_log, name_def, test, mail):
         path = 'c:/VipoNet_out/'
         writing_to_log_file(name_log, f'path {path}')
     try:
-        path_backup = 'd:/python/schedule/backup/'
+        path_backup = r'd:/python/schedule/backup/na_3/'
         writing_to_log_file(name_log, f'path_backup {path_backup}')
         
         try:
@@ -578,7 +592,7 @@ def generating_report_files_PFR(df, name_log, name_def, test, mail):
 def generating_report_files_PFR_2(name_log, name_def, test, mail, text):
     dt = datetime.now().strftime('%m-%Y')
     new_file = name_def
-    path_backup = 'd:/python/schedule/backup/'
+    path_backup = r'd:/python/schedule/backup/RSD/'
 
     if test == 1:
         path = 'c:/VipoNet_out1/'
@@ -777,6 +791,13 @@ def num_to_str(x):
         return x
 
 # *************************************************
+def staples(x):
+    try:
+        return x.replace('[', '').replace(']', '')
+    except:
+        return x
+
+# *************************************************
 def num_int_to_str(x):
     try:
         return str(x)
@@ -846,8 +867,8 @@ def kod_sfr_uszn_name(x):
 def movi_file(file, name_log, name_def, path_in, path_to):
     os.chmod(file, stat.S_IWRITE)
     try:
-      shutil.move(f'{path_in}{file}', path_to)
+        shutil.move(f'{path_in}{file}', path_to)
     except:
-      send_email(mail, f'{name_def} - ошибка переноса файла', msg_text=file)
-      text = f'{name_def} - ошибка переноса файла {path_in}{file} в папку {path_to}'
-      writing_to_log_file(name_log, text)      
+        send_email(mail, f'{name_def} - ошибка переноса файла', msg_text=file)
+        text = f'{name_def} - ошибка переноса файла {path_in}{file} в папку {path_to}'
+        writing_to_log_file(name_log, text)      

@@ -16,7 +16,7 @@ from
     on t1.region_id=t2.region_id and t1.pka_payee_pc_id=t2.person_id and t1.id=t2.asg_amount_id
        and (t1.pka_kind_id, t1.pka_kind_region_id, t1.rai_item_id, t1.rai_item_region_id) in ((261,104,719,104))
        and (t2.cert_kind_region_id, t2.cert_kind_id) in ((104, 1))
-       and sysdate between t2.date_start and t2.date_end and t2.cert_number is not null and status_id=4
+       and sysdate between t2.date_start and t2.date_end and t2.cert_number is not null and t2.status_id in (1, 4)
        and uszn.pkPerson.GetDocReqValue(t1.region_id, 20162, uszn.pkPerson.GetPCReqValueInt(t1.region_id, t1.pka_payee_pc_id, 20903)) != t2.card_number
   union all
  select t1.region_id, t1.pka_kind_name,
@@ -28,5 +28,5 @@ from
     on t1.region_id=t2.region_id and t1.pka_payee_pc_id=t2.person_id and t1.id=t2.asg_amount_id
        and (t1.pka_kind_id, t1.pka_kind_region_id) in ((325,104))
        and (t2.cert_kind_region_id, t2.cert_kind_id) in ((104, 2))
-       and sysdate between t2.date_start and t2.date_end and t2.cert_number is not null and status_id=4
+       and sysdate between t2.date_start and t2.date_end and t2.cert_number is not null and status_id in (1, 4)
        and uszn.pkPerson.GetDocReqValue(t1.region_id, 20162, uszn.pkPerson.GetPCReqValueInt(t1.region_id, t1.pka_payee_pc_id, 20903)) != t2.card_number)

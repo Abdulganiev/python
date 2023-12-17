@@ -4,6 +4,7 @@ from generating_report_files import *
 #***************************************************************
 log = 'ES_milk'
 mail = 'IVAbdulganiev@yanao.ru'
+path_backup = r'd:/python/schedule/backup/ES_milk/'
 path = r'd:/python/schedule/zdrav_milk/'
 test = 0
 
@@ -25,7 +26,7 @@ for file in c:
             alarm_log(mail, log, text)
 
         try:
-            backup_file(test, file, log, log)
+            backup_file(test, file, log, log, path_backup)
         except Exception as e:
             text = f'произошла ошибка при вызове функции backup() - {e}'
             alarm_log(mail, log, text)

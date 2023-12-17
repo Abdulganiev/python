@@ -8,7 +8,7 @@ from generating_report_files import *
 log = 'ES_present'
 mail = 'IVAbdulganiev@yanao.ru'
 today = dt.date.today()
-path_backup = r'd:/python/schedule/backup/'
+path_backup = r'd:/python/schedule/backup/ES_present/'
 path = r'd:/python/schedule/zdrav/'
 os.chdir(path)
 test = 0

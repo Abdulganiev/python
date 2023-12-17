@@ -17,10 +17,12 @@ begin
   for app in
       (select *
          from uszn.all_ssvc_requests
-         where state_svc_region_id=104 and state_svc_id={SERVICE}
-		       and date_modified BETWEEN TRUNC(ADD_MONTHS(SYSDATE, -1), 'MM') and TRUNC(SYSDATE, 'MM')
+         where (state_svc_region_id, state_svc_id) in
+                 (select region_id, id from uszn.dic_state_services
+                      where folder_id=2 and folder_region_id=104 and id NOT IN (17, 68) and is_actual=1)
+		       and date_created BETWEEN TRUNC(ADD_MONTHS(SYSDATE, -1), 'MM') and TRUNC(SYSDATE, 'MM')
 		       --and reg_user not like 'ADMIN__'
-		       and is_test_request=0
+			   and is_test_request=0
       )
   loop
     iRegionID := app.region_id;

@@ -50,19 +50,28 @@ select
                            case when upper(member_coll) like upper('%Отец%') or upper(member_coll) like upper('%Мать%')  then member_id else null end as parents,
 
                            case when upper(member_coll) not like upper('%Мать%') and upper(member_coll) not like upper('%Отец%') and
+						             upper(member_coll) not like upper('%Брат%') and upper(member_coll) not like upper('%Сестра%') and
                                      upper(member_coll) not like upper('%Супруг%') then id else null end as fam_old,
 
                            case when upper(member_coll) not like upper('%Мать%') and upper(member_coll) not like upper('%Отец%') and
+						             upper(member_coll) not like upper('%Брат%') and upper(member_coll) not like upper('%Сестра%') and
                                      upper(member_coll) not like upper('%Супруг%') and id = passport_id then passport_id else null end as passport_fam_old,
 
 
                            case when upper(member_coll) not like upper('%Мать%') and upper(member_coll) not like upper('%Отец%') and
+						             upper(member_coll) not like upper('%Брат%') and upper(member_coll) not like upper('%Сестра%') and
                                      upper(member_coll) not like upper('%Супруг%') and 
 									 (upper(member_coll) like upper('%Дочь%') or upper(member_coll) like upper('%Сын%')) and age < 23 then member_id else null end as fam_ch_old,
 
                            case when upper(member_coll) not like upper('%Мать%') and upper(member_coll) not like upper('%Отец%') and
+						             upper(member_coll) not like upper('%Брат%') and upper(member_coll) not like upper('%Сестра%') and
                                      upper(member_coll) not like upper('%Супруг%') and 
 									 (upper(member_coll) like upper('%Дочь%') or upper(member_coll) like upper('%Сын%')) and age < 18 then member_id else null end as fam_ch_old_nes,
+									 
+                           case when upper(member_coll) not like upper('%Мать%') and upper(member_coll) not like upper('%Отец%') and
+						             upper(member_coll) not like upper('%Брат%') and upper(member_coll) not like upper('%Сестра%') and
+                                     upper(member_coll) not like upper('%Супруг%') and 
+									 (upper(member_coll) like upper('%Дочь%') or upper(member_coll) like upper('%Сын%')) and age < 23 then member_id else null end as fam_ch_old_nes_23,									 
                            age,
 						   case when age is null then coll_id else null end as loner,
                            member_id,
@@ -74,7 +83,7 @@ select
                                   t2.age,
                                   case when t2.people_id is null then null else t1.region_id||'-'||t2.people_id end as member_id,
                                   case when t3.coll_id is null then null else t3.region_id||'-'||t3.coll_id end as passport_id,
-                                  (select a.relation_name from uszn.v_pd_coll_role_relations a 
+                                  (select MAX(a.relation_name) from uszn.v_pd_coll_role_relations a 
 								    where a.region_id=t1.region_id and a.whom_id=t1.people_id and a.people_coll_id=t1.coll_id
                                           and a.who_id=t2.people_id) as member_r,
                                   (select uszn.StrCommaConcat(a.relation_name) from uszn.v_pd_coll_role_relations a 

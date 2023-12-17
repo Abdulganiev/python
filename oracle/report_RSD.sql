@@ -41,7 +41,9 @@ select * from
        on t1.region_id in (58,59,60,61,62,63,64,65,66,67,68,69,70)
           and t1.class_id=7239 and t2.class_id=7241
           and t1.region_id=t2.region_id and t1.pdoc_id=t2.pdoc_id and t1.id=t2.owner_id
-          and uszn.ToDateDef(t1.value) < = trunc(current_date, 'mm') and uszn.pkPerson.GetDocReqValueDate(t1.region_id, 7245, t1.pdoc_id, t1.order_num) >= trunc(current_date, 'mm')
+          and uszn.ToDateDef(t1.value) < = trunc(current_date, 'mm') 
+		      and (uszn.pkPerson.GetDocReqValueDate(t1.region_id, 7245, t1.pdoc_id, t1.order_num) >= trunc(current_date, 'mm')
+                   or uszn.pkPerson.GetDocReqValueDate(t1.region_id, 7245, t1.pdoc_id, t1.order_num) is null)
            inner join uszn.dic_pc_income_kinds t3
        on t2.value=t3.region_id*1000000+t3.id
            inner join uszn.dic_pc_income_kinds_to_groups t4

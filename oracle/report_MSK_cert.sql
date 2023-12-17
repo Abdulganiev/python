@@ -1,6 +1,9 @@
 CREATE TABLE uszn.temp$_msk_cert
 as
 select c.*,
+       to_char(c.app_date, 'yyyy') as app_year,
+	   uszn.pkPerson.GetPersonalReq(c.region_id, c.people_id, 25) as snils,
+	   uszn.pkXMLUtils.GuidToStr(uszn.pkJUtil.GetGUIDRAW(c.region_id*1000000 + c.people_id)) as people_guid,
 		uszn.pkPerson.GetDocReqValue(c.region_id, 7732, c.num_zayav) as application_date,
 		uszn.pkPerson.GetDocReqValue(c.region_id, 7749, c.num_zayav) as law,
 		(case uszn.pkPerson.GetDocReqValue(c.region_id, 7749, c.num_zayav)

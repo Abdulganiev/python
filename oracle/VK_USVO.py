@@ -5,6 +5,7 @@ from generating_report_files import *
 #***************************************************************
 log = 'VK_USVO'
 mail = 'IVAbdulganiev@yanao.ru'
+path_backup = r'd:/python/schedule/backup/VK/'
 path = r'd:/python/schedule/vk_usvo/'
 test = 0
 
@@ -176,38 +177,38 @@ for file in c:
         writing_to_log_file(log, f'Файл поступил - {file}')
         xl = write_file(file, log)
         try:
-            backup_file(test, file, log, log)
+            backup_file(test, file, log, log, path_backup)
         except Exception as e:
             text = f'произошла ошибка при вызове функции backup_file() - {e}'
             alarm_log(mail, log, text)
         cnt_file += 1
 
-if cnt_file > 0:
-    col = ['NOM', 'F', 'I', 'O', 'DR', 
-           'DUL_TYPE', 'DUL_SER_NOM', 'DUL_KEM', 'DUL_DATE', 'DUL_PLACE', 'DUL_CODE',
-           'ADR_REGION', 'ADR_MO', 'ADR_FULL',
-           'SNILS', 'INN', 'CONTRACT_DATE', 'CONTRACT_PERIOD', 'VK_DATE_START', 'VK_DATE_END', 'VK_MO',
-           'MSP_SINGLE', 'MSP_GOODS', 'MSP_TRAVEL', 'BANK_NAME', 'BANK_BIC', 'BANK_ACCOUNT', 'CONTACTS']
-    
-    xl.columns = col
-    xl.dropna(thresh=22, inplace = True)
-    for data in xl.itertuples():
-        if pd.isna(data[1]):
-            xl.drop(index=data[0], inplace = True)
+        if cnt_file > 0:
+            col = ['NOM', 'F', 'I', 'O', 'DR', 
+                   'DUL_TYPE', 'DUL_SER_NOM', 'DUL_KEM', 'DUL_DATE', 'DUL_PLACE', 'DUL_CODE',
+                   'ADR_REGION', 'ADR_MO', 'ADR_FULL',
+                   'SNILS', 'INN', 'CONTRACT_DATE', 'CONTRACT_PERIOD', 'VK_DATE_START', 'VK_DATE_END', 'VK_MO',
+                   'MSP_SINGLE', 'MSP_GOODS', 'MSP_TRAVEL', 'BANK_NAME', 'BANK_BIC', 'BANK_ACCOUNT', 'CONTACTS']
+            
+            xl.columns = col
+            xl.dropna(thresh=22, inplace = True)
+            for data in xl.itertuples():
+                if pd.isna(data[1]):
+                    xl.drop(index=data[0], inplace = True)
 
-    xl['DR'] = xl['DR'].apply(dat)
-    xl['DUL_DATE'] = xl['DUL_DATE'].apply(dat)
-    xl['CONTRACT_DATE'] = xl['CONTRACT_DATE'].apply(dat)
-    xl['VK_DATE_START'] = xl['VK_DATE_START'].apply(dat)
-    xl['VK_DATE_END'] = xl['VK_DATE_END'].apply(dat)
-    xl['VK_DATE_END'] = xl['VK_DATE_END'].apply(replace_nan)
-    xl['MO_ID'] = xl['ADR_MO'].apply(mo_id)
-    # xl['INN'] = xl['INN'].apply(num_to_str)
-    # xl['BANK_BIC'] = xl['BANK_BIC'].apply(num_to_str)
-    # xl['BANK_ACCOUNT'] = xl['BANK_ACCOUNT'].apply(num_to_str)
-    
-    xl = xl.fillna('')
-    
-    vk_insert_temp(xl)
-    vk_new()
-    vk_insert()
+            xl['DR'] = xl['DR'].apply(dat)
+            xl['DUL_DATE'] = xl['DUL_DATE'].apply(dat)
+            xl['CONTRACT_DATE'] = xl['CONTRACT_DATE'].apply(dat)
+            xl['VK_DATE_START'] = xl['VK_DATE_START'].apply(dat)
+            xl['VK_DATE_END'] = xl['VK_DATE_END'].apply(dat)
+            xl['VK_DATE_END'] = xl['VK_DATE_END'].apply(replace_nan)
+            xl['MO_ID'] = xl['ADR_MO'].apply(mo_id)
+            # xl['INN'] = xl['INN'].apply(num_to_str)
+            # xl['BANK_BIC'] = xl['BANK_BIC'].apply(num_to_str)
+            # xl['BANK_ACCOUNT'] = xl['BANK_ACCOUNT'].apply(num_to_str)
+            
+            xl = xl.fillna('')
+            
+            vk_insert_temp(xl)
+            vk_new()
+            vk_insert()
