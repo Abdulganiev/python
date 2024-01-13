@@ -325,6 +325,7 @@ def writing_to_log_file(file, text):
     # '''функция создания лог файла и записи в него информации'''
     dt = datetime.now().strftime('%Y-%m-%d %X')
     path = f'd:/python/schedule/log/{file}.log'
+    # with open(path, 'a+', encoding='utf8') as file_log:
     with open(path, 'a+') as file_log:
         log = f'{dt} : {text} \n'
         file_log.write(log)
@@ -536,7 +537,7 @@ def generating_report_files(df, name_log, name_def, test, mail):
     else:
         text = 'файлов нет'
         writing_to_log_file(name_log, text)
-        send_email(mail, f'{name_def} - {text}', msg_text='')
+        # send_email(mail, f'{name_def} - {text}', msg_text='')
 
 # *****************************************************************
 
