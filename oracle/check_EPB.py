@@ -7,16 +7,44 @@ test = 0
 mail = 'IVAbdulganiev@yanao.ru'
 name_def = 'Дубликаты ЕПБ'
 check = 0
+range_ = range(58, 71)
 
 #***************************************************************
-def check_EPB(curs):
+def cnt_EPB(region):
+    curs.execute(f'SELECT count(*) FROM uszn.temp$_r_EPB where region_id={region}')
+    cnt = str(curs.fetchall()[0][0])
+    return cnt
+
+#***************************************************************
+def ins_EPB(region):
+    cnt = cnt_EPB(region)
+    text = f'В {region} - {cnt} строк перед удалением'
+    writing_to_log_file(name_log, text)
+
+    curs.execute(f'DELETE FROM uszn.temp$_r_EPB where region_id={region}')
+
+    cnt = cnt_EPB(region)
+    text = f'В {region} - {cnt} строк после удалением'
+    writing_to_log_file(name_log, text)
+
+    with open('check_EPB_insert.sql', 'r', encoding='utf8') as f:
+        sql = f.read()
+        sql = sql.replace('{region}', f'{region}')
+    curs.execute(sql) 
+
+    cnt = cnt_EPB(region)
+    text = f'В {region} - {cnt} строк после загрузки'
+    writing_to_log_file(name_log, text)
+
+#***************************************************************
+def check_EPB():
     with open('check_EPB.sql', 'r', encoding='utf8') as f:
         sql = f.read()
     curs.execute(sql)
     return curs.fetchall()
 
 #***************************************************************
-def check_EPB_MO(curs):
+def check_EPB_MO():
     with open('check_EPB_MO.sql', 'r', encoding='utf8') as f:
         sql = f.read()
     curs.execute(sql)
@@ -34,7 +62,17 @@ except Exception as e:
 
 if check == 0:
     try:
-        mo = check_EPB_MO(curs)
+        for region in range_:
+            ins_EPB(region)
+        check = 0
+    except Exception as e:
+        text = f'произошла ошибка при вызове функции ins_EPB() - {e}'
+        alarm_log(mail, name_log, text)
+        check = 1
+
+if check == 0:
+    try:
+        mo = check_EPB_MO()
         check = 0
     except Exception as e:
         text = f'произошла ошибка при вызове функции check_EPB_MO() - {e}'
@@ -43,7 +81,7 @@ if check == 0:
 
 if check == 0:
     try:
-        d = check_EPB(curs)
+        d = check_EPB()
         data = {
              'id района' : [],
              'name' : [] ,

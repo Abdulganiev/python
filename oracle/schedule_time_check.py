@@ -37,13 +37,13 @@ def check_large_family_duble(): # проверка дубликатов мног
         text = f'произошла ошибка при вызове функции check_large_family_duble() - {e}'
         writing_to_log_file(name_log, text)
 
-try:
-    writing_to_log_file(name_log, f'Запуск процесса check_large_family_duble')
-    schedule.every().day.at("07:10").do(check_large_family_duble)
-    schedule.every().day.at("13:30").do(check_large_family_duble)
-except Exception as e:
-    text = f'Произошла ошибка при вызове функции check_large_family_duble - {e}'
-    writing_to_log_file(name_log, text)
+# try:
+#     writing_to_log_file(name_log, f'Запуск процесса check_large_family_duble')
+#     schedule.every().day.at("07:10").do(check_large_family_duble)
+#     schedule.every().day.at("13:30").do(check_large_family_duble)
+# except Exception as e:
+#     text = f'Произошла ошибка при вызове функции check_large_family_duble - {e}'
+#     writing_to_log_file(name_log, text)
 
 #***************************************************************
 def check_dul_large_family(): # поиск многодетных с кривыми ДУЛ в УСЗН
@@ -70,13 +70,13 @@ def check_doc_large_family(): # названия в удостоверении �
         text = f'произошла ошибка при вызове функции check_doc_large_family() - {e}'
         writing_to_log_file(name_log, text)
 
-try:
-    writing_to_log_file(name_log, f'Запуск процесса check_doc_large_family')
-    schedule.every().day.at("07:30").do(check_doc_large_family)
-    schedule.every().day.at("13:00").do(check_doc_large_family)
-except Exception as e:
-    text = f'Произошла ошибка при вызове функции check_doc_large_family - {e}'
-    writing_to_log_file(name_log, text)
+# try:
+#     writing_to_log_file(name_log, f'Запуск процесса check_doc_large_family')
+#     schedule.every().day.at("07:30").do(check_doc_large_family)
+#     schedule.every().day.at("13:00").do(check_doc_large_family)
+# except Exception as e:
+#     text = f'Произошла ошибка при вызове функции check_doc_large_family - {e}'
+#     writing_to_log_file(name_log, text)
 
 #***************************************************************
 #***************************************************************
