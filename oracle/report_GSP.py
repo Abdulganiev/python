@@ -6,13 +6,6 @@ test = 0
 mail = 'IVAbdulganiev@yanao.ru'
 
 # *****************************************************************
-try:
-    curs = connect_oracle()
-except Exception as e:    
-    text = f'произошла ошибка при вызове функции connect_oracle() - {e}'
-    alarm_log(mail, name_log, text)
-
-# *****************************************************************
 def report_GSP_data():
     with open('report_GSP.sql', 'r', encoding='utf8') as f:
         sql = f.read()
@@ -43,7 +36,15 @@ def report_GSP_name():
     return curs.fetchall()[0][0]
 
 # *****************************************************************
+goto_folder()
+
 writing_to_log_file(name_log, '********start**********************')
+
+try:
+    curs = connect_oracle()
+except Exception as e:    
+    text = f'произошла ошибка при вызове функции connect_oracle() - {e}'
+    alarm_log(mail, name_log, text)
 
 try:
     name_file = report_GSP_name()

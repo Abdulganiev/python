@@ -21,6 +21,8 @@ def PFR_file_request_name():
     return curs.fetchone()
 
 #***************************************************************
+goto_folder()
+
 try:
     curs = connect_oracle()
 except Exception as e:

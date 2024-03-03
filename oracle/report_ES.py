@@ -5,4 +5,6 @@ mail = 'IVAbdulganiev@yanao.ru'
 table = 'uszn.temp$_r_ecert'
 file_sql = 'report_ES.sql'
  
+goto_folder()
+
 report_temp_table(name_log, mail, table, file_sql)

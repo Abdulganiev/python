@@ -6,7 +6,7 @@ select t.pc_id, t.region_id, t.id, t.message_guid, t.adr, t.request_pdoc_id, t.s
        when upper(t.adr) like '%ХАРП%' then 62
        when upper(t.adr) like '%ПРИУРАЛ%' then 61
        when upper(t.adr) like '%НАДЫМ%' then 63
-	   when upper(t.adr) like UPPER('%Лонгьюган%') then 63
+       when upper(t.adr) like UPPER('%Лонгьюган%') then 63
        when upper(t.adr) like '%ГУБК%' then 64
        when upper(t.adr) like '%ПУРПЕ%' then 64
        when upper(t.adr) like '%МУРАВ%' then 65
@@ -18,7 +18,7 @@ select t.pc_id, t.region_id, t.id, t.message_guid, t.adr, t.request_pdoc_id, t.s
        when upper(t.adr) like upper('%Башкортостан%') then 60
        when upper(t.adr) like upper('%Татарстан%') then 60
        when upper(t.adr) like upper('%Дагестан%') then 60
-	   when upper(t.adr) like upper('%Тюмень%') then 60
+       when upper(t.adr) like upper('%Тюмень%') then 60
 
    else 0 end) as mo_out
 from

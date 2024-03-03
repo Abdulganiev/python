@@ -33,6 +33,8 @@ def alarm_aurora():
   return cnt
 
 # ********************************************
+goto_folder()
+
 try:
   curs = connect_oracle()
 except Exception as e:

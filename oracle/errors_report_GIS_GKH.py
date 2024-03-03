@@ -30,6 +30,8 @@ def errors_report_GIS_GKH():
     return data
 
 #***************************************************************
+goto_folder()
+
 try:
   curs = connect_oracle()
 except Exception as e:

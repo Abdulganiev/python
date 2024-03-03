@@ -44,7 +44,7 @@ def seetable_trud_stac(code, server_url, list_row, api_token):
         data['на лечении, чел'].append(row.get('на лечении, чел'))
         data['в том числе детей, чел'].append(row.get('в том числе детей, чел'))
         
-    return pd.DataFrame(data)
+    return pd.DataFrame(data, dtype="object")
 
 #***************************************************************
 def str_delete(table):
@@ -88,6 +88,8 @@ def str_insert(xl, table):
     xl = xl.fillna('')
     xl = xl.fillna(0)
 
+    # writing_to_log_file(name_log, f'{xl}')
+
     writing_to_log_file(name_log, f'Загрузка данных в {table}')
     
     for data in xl.itertuples(index=False):
@@ -102,6 +104,8 @@ def str_insert(xl, table):
     writing_to_log_file(name_log, f'В {table} после загрузки {cnt} записей')
 
 #***************************************************************
+goto_folder()
+
 try:
     curs = connect_oracle()
 except Exception as e:

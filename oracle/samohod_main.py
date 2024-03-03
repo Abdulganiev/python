@@ -9,23 +9,13 @@ from generating_report_files import *
 log = 'samohod'
 mail = 'IVAbdulganiev@yanao.ru'
 today = dt.date.today()
+test = 0
 
-#***************************************************************
-def movi_file(file):
-    new_file_name = f'{today} - {file}'
-    os.replace(file, f'backup/samohod/{new_file_name}')
-    writing_to_log_file(log, f'Файл {file} перемещен в backup и переименован в {new_file_name}')
+patchs = get_platform()
+trek = patchs['trek']
+path_in = patchs['samohod']
+path = f'{trek}/samohod/'
 
-#***************************************************************
-def write_file(file):
-    try:
-        xl = pd.read_excel(file)
-        writing_to_log_file(log, f'Файл {file} записан в dataframe')
-        return xl
-    except Exception as e:
-        text = f'Alarm: \n {e}'
-        alarm_log(mail, log, text)
-    
 #***************************************************************
 def write_df(xl):
     cnt = 0
@@ -55,17 +45,24 @@ def write_df(xl):
         cnt += 1
 
 #***************************************************************
-writing_to_log_file(log, '***************************************')
+writing_to_log_file(log, '*************start*****************')
 
+goto_folder(path_in)
+c = os.listdir(os.getcwd())
+for file in c:
+    movi_file(file, log, log, path_in, path)
+
+goto_folder(path)
 c = os.listdir(os.getcwd())
 for file in c:
     if file.endswith(".xlsx") or file.endswith(".xltx"):
-        writing_to_log_file(log, '***************************************')
+        writing_to_log_file(log, '*************load******************')
         writing_to_log_file(log, f'Файл поступил - {file}')
         wb = openpyxl.load_workbook(file)
         wb.save(file)
         # print(file)
-        xl = write_file(file)
+        xl = write_file(file, log)
         write_df(xl)
-        movi_file(file)
-        send_email(mail, f'Файл от службы на {today} обработан', msg_text=file, files=[])
+        backup_file(test, file, log, log, path_backup = f'{trek}/backup/samohod/', path_out = path)
+        send_email(mail, f'Файл от службы на {today} обработан', msg_text=file)
+writing_to_log_file(log, '*************end******************')

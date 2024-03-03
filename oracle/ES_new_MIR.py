@@ -13,6 +13,8 @@ def ES_new_MIR():
     return curs.fetchall()
 
 #***************************************************************
+goto_folder()
+
 try:
     curs = connect_oracle()
 except Exception as e:
@@ -28,7 +30,7 @@ try:
     writing_to_log_file(name_log, f'Скрипт отработан')
     cnt = len(d)
     writing_to_log_file(name_log, f'Подлежит обработке {cnt} записей')
-except:
+except Exception as e:
     text = f'произошла ошибка при вызове функции ES_new_MIR - {e}'
     alarm_log(mail, name_log, text)
 

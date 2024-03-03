@@ -51,7 +51,10 @@ def check_EPB_MO():
     return curs.fetchall()
 
 #***************************************************************
+goto_folder()
+
 writing_to_log_file(name_log, f'***************************************************************')
+
 try:
     curs = connect_oracle()
     check = 0

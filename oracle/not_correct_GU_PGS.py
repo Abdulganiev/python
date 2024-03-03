@@ -6,6 +6,8 @@ name_log = 'not_correct_GU_PGS'
 mail = 'IVAbdulganiev@yanao.ru'
 
 #***************************************************************
+goto_folder()
+
 try:
     curs = connect_oracle()
     writing_to_log_file(name_log, f'Подключение к базе')

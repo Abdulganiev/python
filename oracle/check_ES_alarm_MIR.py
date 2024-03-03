@@ -43,7 +43,10 @@ def check_ES_alarm_MIR(curs):
     return data
 
 #***************************************************************
+goto_folder()
+
 writing_to_log_file(name_log, f'************************start***************************************')
+
 try:
     curs = connect_oracle()
     check = 0

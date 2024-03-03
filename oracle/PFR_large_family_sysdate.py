@@ -40,6 +40,8 @@ def PFR_large_family_sysdate():
     return data
 
 #***************************************************************
+goto_folder()
+
 writing_to_log_file(name_log, '***********************************')
 
 try:

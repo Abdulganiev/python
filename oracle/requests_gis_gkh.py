@@ -115,6 +115,8 @@ group by t1.id, name''')
       writing_to_log_file(log, f'{region_id}-{col_id}, {col_name} - {col_cnt} количество записей')
 
 # ********************************************************
+goto_folder()
+
 try:
   writing_to_log_file(log, '************************************************')
 except Exception as e:

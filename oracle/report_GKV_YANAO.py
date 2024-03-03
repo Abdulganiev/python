@@ -6,9 +6,6 @@ test = 0
 mail = 'IVAbdulganiev@yanao.ru'
 
 # *****************************************************************
-curs = connect_oracle()
-
-# *****************************************************************
 def report_GKV_YANAO():
     with open('report_GKV_YANAO.sql', 'r', encoding='utf8') as f:
         sql = f.read()
@@ -49,6 +46,9 @@ def report_GKV_name():
     return curs.fetchone()
 
 # *****************************************************************
+goto_folder()
+
+curs = connect_oracle()
 
 data = report_GKV_YANAO_data(report_GKV_YANAO())
 

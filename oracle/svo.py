@@ -10,6 +10,8 @@ table = 'uszn.temp$_svo'
 check = 0
 
 # *****************************************************************
+goto_folder()
+
 try:
     curs = connect_oracle()
 except Exception as e:    

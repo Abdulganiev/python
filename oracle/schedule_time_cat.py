@@ -17,12 +17,12 @@ def seetable_epb(): # Сбор информации о ЕПБ из table.yanao.r
         text = f'произошла ошибка при вызове функции seetable_epb() - {e}'
         writing_to_log_file(name_log, text)
 
-try:
-    writing_to_log_file(name_log, f'Запуск процесса seetable_epb')
-    schedule.every(6).hours.do(seetable_epb)
-except Exception as e:
-    text = f'Произошла ошибка при вызове функции seetable_epb - {e}'
-    writing_to_log_file(name_log, text)
+# try:
+#     writing_to_log_file(name_log, f'Запуск процесса seetable_epb')
+#     schedule.every(6).hours.do(seetable_epb)
+# except Exception as e:
+#     text = f'Произошла ошибка при вызове функции seetable_epb - {e}'
+#     writing_to_log_file(name_log, text)
 
 #***************************************************************
 def seetable_trud_stac(): # сбор отчета для охраны труда
@@ -33,12 +33,12 @@ def seetable_trud_stac(): # сбор отчета для охраны труда
         text = f'произошла ошибка при вызове функции seetable_trud_stac() - {e}'
         writing_to_log_file(name_log, text)
 
-try:
-    writing_to_log_file(name_log, f'Запуск процесса seetable_trud_stac')
-    schedule.every().day.at("05:30").do(seetable_trud_stac)
-except Exception as e:
-    text = f'Произошла ошибка при вызове функции seetable_trud_stac - {e}'
-    writing_to_log_file(name_log, text)
+# try:
+#     writing_to_log_file(name_log, f'Запуск процесса seetable_trud_stac')
+#     schedule.every().day.at("05:30").do(seetable_trud_stac)
+# except Exception as e:
+#     text = f'Произошла ошибка при вызове функции seetable_trud_stac - {e}'
+#     writing_to_log_file(name_log, text)
 
 #***************************************************************
 def category_pfr_trud():
@@ -49,12 +49,12 @@ def category_pfr_trud():
         text = f'произошла ошибка при вызове функции category_pfr_trud() - {e}'
         writing_to_log_file(name_log, text)
 
-try:
-    writing_to_log_file(name_log, f'Запуск процесса category_pfr_trud')
-    schedule.every().day.at("04:30").do(category_pfr_trud)
-except Exception as e:
-    text = f'Произошла ошибка при вызове функции category_pfr_trud - {e}'
-    writing_to_log_file(name_log, text)
+# try:
+#     writing_to_log_file(name_log, f'Запуск процесса category_pfr_trud')
+#     schedule.every().day.at("04:30").do(category_pfr_trud)
+# except Exception as e:
+#     text = f'Произошла ошибка при вызове функции category_pfr_trud - {e}'
+#     writing_to_log_file(name_log, text)
 
 #***************************************************************
 def category_large_family():
@@ -65,12 +65,12 @@ def category_large_family():
         text = f'произошла ошибка при вызове функции category_large_family() - {e}'
         writing_to_log_file(name_log, text)
 
-try:
-    writing_to_log_file(name_log, f'Запуск процесса category_large_family')
-    schedule.every().day.at("03:15").do(category_large_family)
-except Exception as e:
-    text = f'Произошла ошибка при вызове функции category_large_family - {e}'
-    writing_to_log_file(name_log, text)
+# try:
+#     writing_to_log_file(name_log, f'Запуск процесса category_large_family')
+#     schedule.every().day.at("03:15").do(category_large_family)
+# except Exception as e:
+#     text = f'Произошла ошибка при вызове функции category_large_family - {e}'
+#     writing_to_log_file(name_log, text)
 
 #***************************************************************
 def category_svo():
@@ -81,13 +81,13 @@ def category_svo():
         text = f'произошла ошибка при вызове функции category_svo() - {e}'
         writing_to_log_file(name_log, text)
 
-try:
-    writing_to_log_file(name_log, f'Запуск процесса category_svo')
-    schedule.every().day.at("05:30").do(category_svo)
-    schedule.every().day.at("12:30").do(category_svo)
-except Exception as e:
-    text = f'Произошла ошибка при вызове функции category_svo - {e}'
-    writing_to_log_file(name_log, text)
+# try:
+#     writing_to_log_file(name_log, f'Запуск процесса category_svo')
+#     schedule.every().day.at("05:30").do(category_svo)
+#     schedule.every().day.at("12:30").do(category_svo)
+# except Exception as e:
+#     text = f'Произошла ошибка при вызове функции category_svo - {e}'
+#     writing_to_log_file(name_log, text)
 
 #***************************************************************
 #***************************************************************

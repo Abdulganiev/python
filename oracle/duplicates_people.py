@@ -16,6 +16,8 @@ def duplicates_people(region_id):
     return curs.fetchall()
 
 #***************************************************************
+goto_folder()
+
 try:
     curs = connect_oracle()
 except Exception as e:

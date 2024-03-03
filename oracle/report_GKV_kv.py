@@ -1,7 +1,11 @@
 from generating_report_files import *
 
 # *****************************************************************
-curs = connect_oracle()
+log = 'report_GKV_kv'
+test = 0
+period = report_GKV_name()[0]
+name = f'отчет ЖКВ за {period}'
+mail = 'IVAbdulganiev@yanao.ru'
 
 # *****************************************************************
 def report_GKV_kv(region_id):
@@ -56,17 +60,10 @@ def report_GKV_mail(region_id, mail, ):
     return curs.fetchone()
 
 # *****************************************************************
-log = 'report_GKV_kv'
-test = 0
-period = report_GKV_name()[0]
-name = f'отчет ЖКВ за {period}'
+goto_folder()
 
-if test == 1:
-    mail = 'IVAbdulganiev@yanao.ru'
-else:
-    mail = 'IVAbdulganiev@yanao.ru'
+curs = connect_oracle()
 
-# *****************************************************************
 writing_to_log_file(log, '********************************************')
 
 for region_id in range(58, 71):

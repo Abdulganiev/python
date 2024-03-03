@@ -32,7 +32,10 @@ def not_snils(curs):
     return data
 
 #***************************************************************
+goto_folder()
+
 writing_to_log_file(name_log, f'***************************************************************')
+
 try:
     curs = connect_oracle()
 except Exception as e:    

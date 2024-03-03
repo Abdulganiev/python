@@ -20,6 +20,8 @@ def write_alarm(n):
     alarm_log(mail, name_log, text)
 
 #***************************************************************
+goto_folder()
+
 try:
     curs = connect_oracle()
 except Exception as e:

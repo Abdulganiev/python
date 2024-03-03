@@ -5,4 +5,6 @@ mail = 'IVAbdulganiev@yanao.ru'
 table = 'uszn.temp$_msk_all'
 file_sql = 'report_MSK_all.sql'
 
+goto_folder()
+
 report_temp_table(name_log, mail, table, file_sql)

@@ -6,12 +6,15 @@ from generating_report_files import *
 name_log = 'ES_milk'
 name_def = 'ES_milk'
 mail = 'IVAbdulganiev@yanao.ru'
-path_backup = r'd:/python/schedule/backup/ES_milk/'
-path = r'd:/python/schedule/zdrav_milk/'
-os.chdir(path)
 today = datetime.now().strftime('%d.%m.%Y')
 test = 0
 chech_alarm = 0
+
+patchs = get_platform()
+trek = patchs['trek']
+
+path_backup = f'{trek}/backup/ES_milk/'
+path = patchs['milk']
 
 #*****************************************************    
 def table_cnt(table):
@@ -144,11 +147,11 @@ def zdrav_milk_processing(xl, file):
 
 #***************************************************************    
 def zdrav_milk_to_mo():
-    path = r'd:/python/schedule/'
+    path = trek
     writing_to_log_file(name_log, '-------------')
     writing_to_log_file(name_log, 'Формирование отчета в УСЗН')
     
-    with open(f'{path}ES_milk.sql', 'r', encoding='utf8') as f:
+    with open(f'{path}/ES_milk.sql', 'r', encoding='utf8') as f:
         sql = f.read()
     curs.execute(sql)
     d = curs.fetchall()
@@ -186,10 +189,12 @@ def zdrav_milk_to_mo():
     generating_report_files(data, name_log, name_def, test, mail)
 
 # *************************************************
+#goto_folder()
+
+os.chdir(path)
 
 writing_to_log_file(name_log, '***************************************')
 
-# *************************************************
 try:
     curs = connect_oracle()
 except Exception as e:
@@ -197,9 +202,12 @@ except Exception as e:
     alarm_log(mail, name_log, text)
     
 cnt_file = 0
+
 c = os.listdir(os.getcwd())
+
 for file in c:
     if file.endswith(".xlsx") or file.endswith(".xltx"):
+        writing_to_log_file(name_log, f'Папка {path}')
         writing_to_log_file(name_log, f'Файл поступил - {file}')
         
         try:
@@ -244,16 +252,16 @@ for file in c:
                 text = f'произошла ошибка при вызове функции zdrav_milk_insert() - {e}'
                 alarm_log(mail, name_log, text)
                 chech_alarm = 1            
-                
+
         if chech_alarm == 0:
             try:
-                backup_file(test, file, name_log, name_def, path_backup)
+                backup_file(test, file, name_log, name_def, path_backup, path)
                 chech_alarm = 0
             except Exception as e:
                 text = f'произошла ошибка при вызове функции backup_file() - {e}'
                 alarm_log(mail, name_log, text)
                 chech_alarm = 1
-                
+
         if chech_alarm == 0:
             try:
                 zdrav_milk_to_mo()
@@ -262,6 +270,6 @@ for file in c:
                 text = f'произошла ошибка при вызове функции zdrav_milk_to_mo() - {e}'
                 alarm_log(mail, name_log, text)
                 chech_alarm = 1
-        
+
         if chech_alarm == 0:
-            writing_to_log_file(name_log, 'Обработка завершена')    
+            writing_to_log_file(name_log, 'Обработка завершена')

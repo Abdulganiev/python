@@ -9,6 +9,133 @@ writing_to_log_file(name_log, f'************************************************
 writing_to_log_file(name_log, f'Запуск schedule_time_check')
 
 #***************************************************************
+def egr_death(): # Обработка ЗАГС ЕГИССО умершие
+    try:
+        writing_to_log_file(name_log, f'Запуск процесса egr_death')
+        subprocess.call("python d:/python/schedule/egr_death.py", shell=True)
+    except Exception as e:
+        text = f'произошла ошибка при вызове функции egr_death - {e}'
+        writing_to_log_file(name_log, text)
+
+# try:
+#     writing_to_log_file(name_log, f'Запуск процесса egr_death')
+#     schedule.every().day.at("05:30").do(egr_death)
+# except Exception as e:
+#     text = f'Произошла ошибка при вызове функции egr_death - {e}'
+#     writing_to_log_file(name_log, text)
+
+#***************************************************************
+def death(): # Обработка рассылка ЕГИССО умершие
+    try:
+        writing_to_log_file(name_log, f'Запуск процесса death')
+        subprocess.call("python d:/python/schedule/death.py", shell=True)
+    except Exception as e:
+        text = f'произошла ошибка при вызове функции death - {e}'
+        writing_to_log_file(name_log, text)
+
+# try:
+#     writing_to_log_file(name_log, f'Запуск процесса death')
+#     schedule.every().day.at("05:00").do(death)
+# except Exception as e:
+#     text = f'Произошла ошибка при вызове функции death - {e}'
+#     writing_to_log_file(name_log, text)
+
+#***************************************************************
+def check_sfr_power(): # Обработка ответов ВС "Сведения о факте осуществления трудовой деятельности"
+    try:
+        writing_to_log_file(name_log, f'Запуск процесса check_sfr_power')
+        subprocess.call("python d:/python/schedule/check_sfr_power.py", shell=True)
+    except Exception as e:
+        text = f'произошла ошибка при вызове функции check_sfr_power - {e}'
+        writing_to_log_file(name_log, text)
+
+def pfr_work(): # Обработка ответов ВС "Сведения о факте осуществления трудовой деятельности"
+    try:
+        writing_to_log_file(name_log, f'Запуск процесса pfr_work')
+        subprocess.call("python d:/python/schedule/pfr_work.py", shell=True)
+    except Exception as e:
+        text = f'произошла ошибка при вызове функции pfr_work - {e}'
+        writing_to_log_file(name_log, text)
+
+# try:
+#     writing_to_log_file(name_log, f'Запуск процесса check_sfr_power')
+#     schedule.every().day.at("07:30").do(check_sfr_power)
+# except Exception as e:
+#     text = f'Произошла ошибка при вызове функции check_sfr_power - {e}'
+#     writing_to_log_file(name_log, text)
+
+# try:
+#     writing_to_log_file(name_log, f'Запуск процесса pfr_work')
+#     schedule.every().day.at("07:15").do(pfr_work)
+# except Exception as e:
+#     text = f'Произошла ошибка при вызове функции pfr_work - {e}'
+#     writing_to_log_file(name_log, text)
+
+#***************************************************************
+def checking_death(): # Проверка на умершие
+    try:
+        writing_to_log_file(name_log, f'Запуск процесса checking_death')
+        subprocess.call("python d:/python/schedule/checking_death.py", shell=True)
+    except Exception as e:
+        text = f'произошла ошибка при вызове функции checking_death - {e}'
+        writing_to_log_file(name_log, text)
+
+# try:
+#     writing_to_log_file(name_log, f'Запуск процесса checking_death')
+#     schedule.every().day.at("05:00").do(checking_death)
+# except Exception as e:
+#     text = f'Произошла ошибка при вызове функции checking_death - {e}'
+#     writing_to_log_file(name_log, text)
+
+#***************************************************************
+def report_RSD(): # РСД временная таблица
+    try:
+        writing_to_log_file(name_log, f'Запуск процесса report_RSD')
+        subprocess.call("python d:/python/schedule/report_RSD.py", shell=True)
+    except Exception as e:
+        text = f'произошла ошибка при вызове функции report_RSD - {e}'
+        writing_to_log_file(name_log, text)
+
+# try:
+#     writing_to_log_file(name_log, f'Запуск процесса report_RSD')
+#     schedule.every().day.at("05:10").do(report_RSD)
+# except Exception as e:
+#     text = f'Произошла ошибка при вызове функции report_RSD - {e}'
+#     writing_to_log_file(name_log, text)
+
+#***************************************************************
+def statuses_in_MFC(): # Статусы в МФЦ
+    try:
+        writing_to_log_file(name_log, f'Запуск процесса statuses_in_MFC')
+        subprocess.call("python d:/python/schedule/statuses_in_MFC.py", shell=True)
+    except Exception as e:
+        text = f'произошла ошибка при вызове функции statuses_in_MFC - {e}'
+        writing_to_log_file(name_log, text)
+
+# try:
+#     writing_to_log_file(name_log, f'Запуск процесса statuses_in_MFC')
+#     schedule.every().day.at("06:10").do(statuses_in_MFC)
+# except Exception as e:
+#     text = f'Произошла ошибка при вызове функции statuses_in_MFC - {e}'
+#     writing_to_log_file(name_log, text)
+
+#***************************************************************
+def files_in_MFC(): # Файлы в МФЦ
+    try:
+        writing_to_log_file(name_log, f'Запуск процесса files_in_MFC')
+        subprocess.call("python d:/python/schedule/files_in_MFC.py", shell=True)
+    except Exception as e:
+        text = f'произошла ошибка при вызове функции files_in_MFC - {e}'
+        writing_to_log_file(name_log, text)
+
+# try:
+#     writing_to_log_file(name_log, f'Запуск процесса files_in_MFC')
+#     schedule.every().day.at("06:00").do(files_in_MFC)
+# except Exception as e:
+#     text = f'Произошла ошибка при вызове функции files_in_MFC - {e}'
+#     writing_to_log_file(name_log, text)
+
+#***************************************************************
 def ES_milk(): # Молочка в УСЗН
     try:
         writing_to_log_file(name_log, f'Запуск процесса ES_milk')
@@ -17,16 +144,16 @@ def ES_milk(): # Молочка в УСЗН
         text = f'произошла ошибка при вызове функции ES_milk - {e}'
         writing_to_log_file(name_log, text)
 
-try:
-    writing_to_log_file(name_log, f'Запуск процесса ES_milk')
-    schedule.every().day.at("09:10").do(ES_milk)
-    schedule.every().day.at("11:10").do(ES_milk)
-    schedule.every().day.at("13:10").do(ES_milk)
-    schedule.every().day.at("15:10").do(ES_milk)
-    schedule.every().day.at("17:10").do(ES_milk)
-except Exception as e:
-    text = f'Произошла ошибка при вызове функции ES_milk - {e}'
-    writing_to_log_file(name_log, text)
+# try:
+#     writing_to_log_file(name_log, f'Запуск процесса ES_milk')
+#     schedule.every().day.at("09:10").do(ES_milk)
+#     schedule.every().day.at("11:10").do(ES_milk)
+#     schedule.every().day.at("13:10").do(ES_milk)
+#     schedule.every().day.at("15:10").do(ES_milk)
+#     schedule.every().day.at("17:10").do(ES_milk)
+# except Exception as e:
+#     text = f'Произошла ошибка при вызове функции ES_milk - {e}'
+#     writing_to_log_file(name_log, text)
 
 #***************************************************************
 def check_large_family_duble(): # проверка дубликатов многодетных в УСЗН
@@ -54,12 +181,12 @@ def check_dul_large_family(): # поиск многодетных с кривы�
         text = f'произошла ошибка при вызове функции check_dul_large_family() - {e}'
         writing_to_log_file(name_log, text)
 
-try:
-    writing_to_log_file(name_log, f'Запуск процесса check_dul_large_family')
-    schedule.every().day.at("07:15").do(check_dul_large_family)
-except Exception as e:
-    text = f'Произошла ошибка при вызове функции check_dul_large_family - {e}'
-    writing_to_log_file(name_log, text)
+# try:
+#     writing_to_log_file(name_log, f'Запуск процесса check_dul_large_family')
+#     schedule.every().day.at("07:15").do(check_dul_large_family)
+# except Exception as e:
+#     text = f'Произошла ошибка при вызове функции check_dul_large_family - {e}'
+#     writing_to_log_file(name_log, text)
 
 #***************************************************************
 def check_doc_large_family(): # названия в удостоверении многодетных в УСЗН

@@ -4,7 +4,7 @@ select c.*,
        to_char(c.app_date, 'yyyy') as app_year,
 	   uszn.pkPerson.GetPersonalReq(c.region_id, c.people_id, 25) as snils,
 	   uszn.pkXMLUtils.GuidToStr(uszn.pkJUtil.GetGUIDRAW(c.region_id*1000000 + c.people_id)) as people_guid,
-		uszn.pkPerson.GetDocReqValue(c.region_id, 7732, c.num_zayav) as application_date,
+		uszn.pkPerson.GetDocReqValueDate(c.region_id, 7732, c.num_zayav) as application_date,
 		uszn.pkPerson.GetDocReqValue(c.region_id, 7749, c.num_zayav) as law,
 		(case uszn.pkPerson.GetDocReqValue(c.region_id, 7749, c.num_zayav)
          when 'Второй ребенок c 01.01.2020' then 'на второго ребенка'
@@ -16,8 +16,8 @@ select c.*,
          when 'Мужчина, являющийся единственным усыновителем третьего и последующих детей' then 'на третьего и последующих детей'
          when 'Третий и последующий ребенок' then 'на третьего и последующих детей' end) as law2,
 		 uszn.pkPerson.GetDocReqValue(c.region_id, 7742, c.num_zayav) as decision,
-		 uszn.pkPerson.GetDocReqValue(c.region_id, 7741, c.num_zayav) as decision_date,
-		 uszn.pkPerson.GetDocReqValue(c.region_id, 7809, c.num_zayav) as amount,
+		 uszn.pkPerson.GetDocReqValueDate(c.region_id, 7741, c.num_zayav) as decision_date,
+		 uszn.pkPerson.GetDocReqValueNumber(c.region_id, 7809, c.num_zayav) as amount,
 		 
 		 uszn.pkPerson.GetBirthDate(c.region_id, uszn.pkPerson.GetDocReqValueInt(c.region_id, 7754, c.num_zayav)) as baby_date_birth,
 		 (select uszn.StrCommaConcat(uszn.pkGen.StripRgnPrefix(c2.value))
@@ -26,7 +26,7 @@ select c.*,
 		         c1.value=uszn.pkPerson.GetDocReqValueInt(c.region_id, 7754, c.num_zayav) and
                  c2.class_id=7746 and c1.region_id=c2.region_id and c1.pdoc_id=c2.pdoc_id and c1.order_num=c2.order_num) as baby_account,
 		 uszn.pkPerson.GetDocReqValue(c.region_id, 7754, c.num_zayav) as baby,
-		 uszn.pkPerson.GetDocReqValue(c.region_id, 7757, c.iDIID) as certificate_date,
+		 uszn.pkPerson.GetDocReqValueDate(c.region_id, 7757, c.iDIID) as certificate_date,
 		 uszn.pkPerson.GetDocReqValue(c.region_id, 7755, c.iDIID)||'-'||uszn.pkPerson.GetDocReqValue(c.region_id, 7756, c.iDIID)||' от '||uszn.pkPerson.GetDocReqValue(c.region_id, 7757, c.iDIID) as SV
  from
 (select
@@ -56,5 +56,6 @@ select c.*,
     from uszn.r_personal_doc_instances c
         where c.region_id in (58,59,60,61,62,63,64,65,66,67,68,69,70) and c.class_id=7757 and
           uszn.ToDateDef(value) is not null and
+          uszn.pkPerson.GetDocReqValue(c.region_id, 7742, uszn.pkPerson.GetDocReqValueInt(c.region_id, 7765, c.doc_instance_id)) != 'Отказать в выдаче свидетельства' and
           uszn.pkPerson.GetDocReqValue(c.region_id, 7767, c.doc_instance_id) is null) c
 where c.region_id=c.mo

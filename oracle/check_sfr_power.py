@@ -54,6 +54,8 @@ def check_sfr_power_cnt(curs):
     return int(curs.fetchall()[0][0])
 
 #*********************************************
+goto_folder()
+
 writing_to_log_file(name_log, '*******start*************************************')
 
 try:

@@ -73,6 +73,8 @@ def count_collection_200():
   return col_cnt
 
 # ********************************************************
+goto_folder()
+
 try:
   writing_to_log_file(log, '************************************************')
 except Exception as e:

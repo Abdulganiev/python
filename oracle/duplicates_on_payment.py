@@ -22,6 +22,8 @@ def duplicates_on_payment_MO():
     return curs.fetchall()
 
 #***************************************************************
+goto_folder()
+
 try:
     curs = connect_oracle()
     writing_to_log_file(name_log, f'Подключение к базе')

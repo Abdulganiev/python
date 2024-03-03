@@ -49,13 +49,15 @@ def death_cnt(curs):
     return int(curs.fetchall()[0][0])
 
 #*********************************************
+goto_folder()
+
 writing_to_log_file(name_log, '**************start******************************')
 
 try:
     curs = connect_oracle()
-except Exception as e:    
+except Exception as e:
     text = f'произошла ошибка при вызове функции connect_oracle() - {e}'
-    alarm_log(mail, name_log, text)    
+    alarm_log(mail, name_log, text)
 
 try:
     data = pd.DataFrame(search_messages(curs))

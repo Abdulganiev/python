@@ -4,7 +4,7 @@ from generating_report_files import *
 name_log = 'check_doc_large_family'
 test = 0
 mail = 'IVAbdulganiev@yanao.ru'
-name_def = 'Удостоврение многодетных неправильная организация'
+name_def = 'Удостоверение многодетных неправильная организация'
 check = 0
 
 #***************************************************************

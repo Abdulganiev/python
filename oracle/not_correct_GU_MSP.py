@@ -6,6 +6,8 @@ log = 'not_correct_GU_MSP'
 mail = 'IVAbdulganiev@yanao.ru'
 
 #***************************************************************
+goto_folder()
+
 try:
     curs = connect_oracle()
 except Exception as e:

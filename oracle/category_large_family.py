@@ -22,7 +22,10 @@ def category_large_family_member(curs, region_id):
     curs.execute(sql)
 
 #***************************************************************
+goto_folder()
+
 writing_to_log_file(name_log, f'************************start***************************************')
+
 try:
     curs = connect_oracle()
     check = 0

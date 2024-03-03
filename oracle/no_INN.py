@@ -26,6 +26,8 @@ def no_INN():
     return data
 
 #***************************************************************
+goto_folder()
+
 try:
     curs = connect_oracle()
 except Exception as e:

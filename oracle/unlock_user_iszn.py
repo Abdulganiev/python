@@ -5,6 +5,7 @@ import pandas as pd
 name_def = 'unlock_user_iszn'
 name_log = 'unlock_user_iszn'
 mail = 'IVAbdulganiev@yanao.ru'
+alarm_flag = 0
 
 # *****************************************************************
 def unlock_user_iszn_find():
@@ -20,23 +21,32 @@ def unlock_user_iszn_unlock(d):
         curs.execute(sql[0])
     
 # *****************************************************************
+goto_folder()
+
 try:
     curs = connect_oracle()
+    alarm_flag = 0
 except Exception as e:    
     text = f'произошла ошибка при вызове функции connect_oracle() - {e}'
     alarm_log(mail, name_log, text)
+    alarm_flag = 1
 
-try:
-    user_lock = unlock_user_iszn_find()
-except Exception as e:    
-    text = f'произошла ошибка при вызове функции unlock_user_iszn_find() - {e}'
-    alarm_log(mail, name_log, text)
 
-data = pd.DataFrame(user_lock)
-
-if len(data) > 0:
+if alarm_flag == 0:
     try:
-        unlock_user_iszn_unlock(data)
+        user_lock = unlock_user_iszn_find()
+        alarm_flag = 0
     except Exception as e:    
-        text = f'произошла ошибка при вызове функции unlock_user_iszn_unlock() - {e}'
+        text = f'произошла ошибка при вызове функции unlock_user_iszn_find() - {e}'
         alarm_log(mail, name_log, text)
+        alarm_flag = 1
+
+if alarm_flag == 0:
+    data = pd.DataFrame(user_lock)
+
+    if len(data) > 0:
+        try:
+            unlock_user_iszn_unlock(data)
+        except Exception as e:    
+            text = f'произошла ошибка при вызове функции unlock_user_iszn_unlock() - {e}'
+            alarm_log(mail, name_log, text)

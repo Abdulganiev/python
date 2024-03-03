@@ -17,12 +17,12 @@ def check_ES_alarm_MIR(): # Неверный номер карты МИР у Э�
         text = f'произошла ошибка при вызове функции check_ES_alarm_MIR - {e}'
         writing_to_log_file(name_log, text)
 
-try:
-    writing_to_log_file(name_log, f'Запуск процесса check_ES_alarm_MIR')
-    schedule.every().day.at("09:30").do(check_ES_alarm_MIR)
-except Exception as e:
-    text = f'Произошла ошибка при вызове функции check_ES_alarm_MIR - {e}'
-    writing_to_log_file(name_log, text)
+# try:
+#     writing_to_log_file(name_log, f'Запуск процесса check_ES_alarm_MIR')
+#     schedule.every().day.at("09:30").do(check_ES_alarm_MIR)
+# except Exception as e:
+#     text = f'Произошла ошибка при вызове функции check_ES_alarm_MIR - {e}'
+#     writing_to_log_file(name_log, text)
 
 #***************************************************************
 def check_duble_EK(): # поиск более одной ЕКЖЯ у одного человека
@@ -33,19 +33,19 @@ def check_duble_EK(): # поиск более одной ЕКЖЯ у одног�
         text = f'произошла ошибка при вызове функции check_duble_EK - {e}'
         writing_to_log_file(name_log, text)
 
-try:
-    writing_to_log_file(name_log, f'Запуск процесса check_duble_EK')
-    schedule.every().day.at("09:00").do(check_duble_EK)
-    schedule.every().day.at("11:00").do(check_duble_EK)
-    schedule.every().day.at("13:00").do(check_duble_EK)
-    schedule.every().day.at("15:00").do(check_duble_EK)
-    schedule.every().day.at("17:00").do(check_duble_EK)
-except Exception as e:
-    text = f'Произошла ошибка при вызове функции check_duble_EK - {e}'
-    writing_to_log_file(name_log, text)
+# try:
+#     writing_to_log_file(name_log, f'Запуск процесса check_duble_EK')
+#     schedule.every().day.at("09:00").do(check_duble_EK)
+#     schedule.every().day.at("11:00").do(check_duble_EK)
+#     schedule.every().day.at("13:00").do(check_duble_EK)
+#     schedule.every().day.at("15:00").do(check_duble_EK)
+#     schedule.every().day.at("17:00").do(check_duble_EK)
+# except Exception as e:
+#     text = f'Произошла ошибка при вызове функции check_duble_EK - {e}'
+#     writing_to_log_file(name_log, text)
 
 #***************************************************************
-def EKJ_find_alarms_cnt():
+def EKJ_find_alarms_cnt(): # Проверка потоков ЕКЖЯ
     try:
         writing_to_log_file(name_log, f'Запуск процесса EKJ_find_alarms_cnt')
         subprocess.call("python d:/python/schedule/EKJ_find_alarms_cnt.py", shell=True)
@@ -53,12 +53,12 @@ def EKJ_find_alarms_cnt():
         text = f'произошла ошибка при вызове функции EKJ_find_alarms_cnt() - {e}'
         writing_to_log_file(name_log, text)
 
-try:
-    writing_to_log_file(name_log, f'Запуск процесса EKJ_find_alarms_cnt')
-    schedule.every(3).hours.do(EKJ_find_alarms_cnt)
-except Exception as e:
-    text = f'Произошла ошибка при вызове функции EKJ_find_alarms_cnt - {e}'
-    writing_to_log_file(name_log, text)
+# try:
+#     writing_to_log_file(name_log, f'Запуск процесса EKJ_find_alarms_cnt')
+#     schedule.every(3).hours.do(EKJ_find_alarms_cnt)
+# except Exception as e:
+#     text = f'Произошла ошибка при вызове функции EKJ_find_alarms_cnt - {e}'
+#     writing_to_log_file(name_log, text)
 
 #***************************************************************
 def ES_EKGYA(): # изменилась карта МИР относительно ЭС
@@ -69,13 +69,13 @@ def ES_EKGYA(): # изменилась карта МИР относительн�
         text = f'произошла ошибка при вызове функции ES_EKGYA() - {e}'
         writing_to_log_file(name_log, text)
 
-try:
-    writing_to_log_file(name_log, f'Запуск процесса ES_EKGYA')
-    schedule.every().day.at("08:40").do(ES_EKGYA)
-    schedule.every().day.at("13:50").do(ES_EKGYA)
-except Exception as e:
-    text = f'Произошла ошибка при вызове функции ES_EKGYA - {e}'
-    writing_to_log_file(name_log, text)
+# try:
+#     writing_to_log_file(name_log, f'Запуск процесса ES_EKGYA')
+#     schedule.every().day.at("08:40").do(ES_EKGYA)
+#     schedule.every().day.at("13:50").do(ES_EKGYA)
+# except Exception as e:
+#     text = f'Произошла ошибка при вызове функции ES_EKGYA - {e}'
+#     writing_to_log_file(name_log, text)
 
 #***************************************************************
 def ES_new_MIR(): # привязка к ЭС новой карты МИР
@@ -86,12 +86,22 @@ def ES_new_MIR(): # привязка к ЭС новой карты МИР
         text = f'произошла ошибка при вызове функции ES_new_MIR() - {e}'
         writing_to_log_file(name_log, text)
 
-try:
-    writing_to_log_file(name_log, f'Запуск процесса ES_new_MIR')
-    schedule.every(4).hours.do(ES_new_MIR)
-except Exception as e:
-    text = f'Произошла ошибка при вызове функции ES_new_MIR - {e}'
-    writing_to_log_file(name_log, text)
+# try:
+#     writing_to_log_file(name_log, f'Запуск процесса ES_new_MIR')
+#     schedule.every().day.at("08:30").do(ES_new_MIR)
+#     schedule.every().day.at("09:30").do(ES_new_MIR)
+#     schedule.every().day.at("10:30").do(ES_new_MIR)
+#     schedule.every().day.at("11:30").do(ES_new_MIR)
+#     schedule.every().day.at("12:30").do(ES_new_MIR)
+#     schedule.every().day.at("13:30").do(ES_new_MIR)
+#     schedule.every().day.at("14:30").do(ES_new_MIR)
+#     schedule.every().day.at("15:30").do(ES_new_MIR)
+#     schedule.every().day.at("16:30").do(ES_new_MIR)
+#     schedule.every().day.at("17:30").do(ES_new_MIR)
+#     schedule.every().day.at("18:30").do(ES_new_MIR)
+# except Exception as e:
+#     text = f'Произошла ошибка при вызове функции ES_new_MIR - {e}'
+#     writing_to_log_file(name_log, text)
 
 #***************************************************************
 def check_EPB(): # проверка дубликатов ЕПБ
@@ -102,15 +112,15 @@ def check_EPB(): # проверка дубликатов ЕПБ
         text = f'произошла ошибка при вызове функции check_EPB() - {e}'
         writing_to_log_file(name_log, text)
 
-try:
-    writing_to_log_file(name_log, f'Запуск процесса check_EPB')
-    schedule.every().day.at("08:00").do(check_EPB)
-    schedule.every().day.at("12:00").do(check_EPB)
-    schedule.every().day.at("14:00").do(check_EPB)
-    schedule.every().day.at("17:00").do(check_EPB)
-except Exception as e:
-    text = f'Произошла ошибка при вызове функции check_EPB - {e}'
-    writing_to_log_file(name_log, text)
+# try:
+#     writing_to_log_file(name_log, f'Запуск процесса check_EPB')
+#     schedule.every().day.at("08:00").do(check_EPB)
+#     schedule.every().day.at("12:00").do(check_EPB)
+#     schedule.every().day.at("14:00").do(check_EPB)
+#     schedule.every().day.at("17:00").do(check_EPB)
+# except Exception as e:
+#     text = f'Произошла ошибка при вызове функции check_EPB - {e}'
+#     writing_to_log_file(name_log, text)
 
 #***************************************************************
 #***************************************************************

@@ -36,6 +36,8 @@ def not_processed_3_days():
     return data
 
 #***************************************************************
+goto_folder()
+
 try:
     curs = connect_oracle()
 except Exception as e:

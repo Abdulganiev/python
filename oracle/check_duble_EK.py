@@ -23,7 +23,10 @@ def check_duble_EK_MO(curs):
     return curs.fetchall()
 
 #***************************************************************
+goto_folder()
+
 writing_to_log_file(name_log, f'***************************************************************')
+
 try:
     curs = connect_oracle()
     check = 0

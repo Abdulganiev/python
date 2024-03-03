@@ -17,16 +17,65 @@ from email.mime.image import MIMEImage # Изображения
 from email.mime.audio import MIMEAudio # Аудио
 from email.mime.multipart import MIMEMultipart # Многокомпонентный объект
 
+from sys import platform
+
 # *****************************************************************
 mail = 'IVAbdulganiev@yanao.ru'
-mail_rezerv = '300195@mail.ru'
+mail_rezerv = '300195@mail.ru, bers@yandex.ru'
 today = dt.date.today()
 sec = time.strftime("%S", time.localtime())
 
 # *****************************************************************
+if platform == 'linux' or platform == 'linux2': # linux
+    trek = '/home/user/schedule'
+    vipnet_main = f'/home/share22/s68/! Обмен с организациями/УСЗН/к ним/'
+    vipnet_test = f'{trek}/VipoNet_out1/'
+    server_105 = '/home/share/105'
+    server_68 = '/home/share22/s68'
+    milk = f'{server_68}/! Обмен с организациями/Деп_Здрав/от них молочка/'
+    prezent = f'{server_68}/! Обмен с организациями/Деп_Здрав/от них подарок/'
+    samohod = f'{server_68}/! Обмен с организациями/Служба самоход/от них реестр/'
+    path_to_gasu = f'{server_68}/! Обмен с организациями/ГМУ/'
+    pfr_4454 = f'{server_68}/! Обмен с организациями/от ПФР/prf_4454/'
+elif platform == 'darwin': # OS X
+    pass
+elif platform == 'win32': # Windows...
+    trek = 'd:/python/schedule'
+    vipnet_main = 'c:/VipoNet_out/'
+    vipnet_test = 'c:/VipoNet_out1/'
+    server_105 = 'Y:'
+    server_68 = 'Z:'
+    milk = f'{server_68}/! Обмен с организациями/Деп_Здрав/от них молочка/'
+    prezent = f'{server_68}/! Обмен с организациями/Деп_Здрав/от них подарок/'
+    samohod = f'{server_68}/! Обмен с организациями/Служба самоход/от них реестр/'
+    path_to_gasu = f'{server_68}/! Обмен с организациями/ГМУ/'
+    pfr_4454 = f'{server_68}/! Обмен с организациями/от ПФР/prf_4454/'
+
+# *****************************************************************
+def get_platform():
+    answer = {
+        'platform' : platform,
+        'trek' : trek,
+        'vipnet_main' : vipnet_main,
+        'vipnet_test' : vipnet_test,
+        'path_to_gasu' : path_to_gasu,
+        'server_105' : server_105,
+        'server_68' : server_68,
+        'milk' : milk,
+        'prezent' : prezent,
+        'samohod' : samohod,
+        'pfr_4454' : pfr_4454,
+    }
+    return answer
+
+# *****************************************************************
+def goto_folder(x=trek):
+    os.chdir(x)
+
+# *****************************************************************
 def report_1gmu(df, file_name, mail, name_log, test, path_backup):
-    path_to = r'x:/! ГАСУ/in/'
-    path_in = r'd:/python/schedule/GMU/'
+    path_to = path_to_gasu
+    path_in = f'{trek}/GMU/'
 
     data = pd.DataFrame(df)
     data.to_excel(f'{path_in}{file_name}', index=False)
@@ -42,7 +91,7 @@ def report_1gmu(df, file_name, mail, name_log, test, path_backup):
         shutil.move(f'{path_in}{file_name}', path_to)
         text = f'{path_in}{file_name} в папке {path_to}'
         writing_to_log_file(name_log, text)
-        text_mail = f'{file_name} в каталоге отдела в папке ГАСУ/in/'
+        text_mail = f'{file_name} в {path_to}'
         text = f'1-ГМУ {file_name}'
         send_email(mail, text, msg_text=text_mail)
     except Exception as e:
@@ -61,7 +110,7 @@ def report_death(df, region_id, id):
     send_email(mail, text, msg_text=file_name, files=[file_name])
 
     new_file_name = f'{today} - {file_name}'
-    os.replace(file_name, f'backup/{new_file_name}') 
+    os.replace(file_name, f'{trek}/backup/{new_file_name}') 
 
     writing_to_log_file(name_log, text)      
 
@@ -76,7 +125,7 @@ def generating_list_GKV_kv(name_log, text, file_name, test, mail):
     text = f'mail - {mail} \n{text}'
 
     send_email(mail, file_name, msg_text=text, files=[file_name])
-    os.replace(file_name, f'backup/{new_file_name}') 
+    os.replace(file_name, f'{trek}/backup/{new_file_name}') 
     writing_to_log_file(name_log, text)
 
 # *****************************************************************
@@ -98,7 +147,7 @@ def generating_report_GKV_kv(df, name_log, name, region_id, mail):
         format_GKV(file_name)
         format_GKV_104(file_name)
         send_email(mail, text, msg_text=name, files=[file_name])
-        os.replace(file_name, f'backup/{new_file_name}') 
+        os.replace(file_name, f'{trek}/backup/{new_file_name}') 
 
     writing_to_log_file(name_log, text)
 
@@ -113,7 +162,7 @@ def generating_report_GKV(df, name_log, name, mail):
     # format_GKV(file_name)
 
     send_email(mail, text, msg_text=text, files=[file_name])
-    os.replace(file_name, f'backup/{new_file_name}') 
+    os.replace(file_name, f'{trek}/backup/{new_file_name}') 
     writing_to_log_file(name_log, text)      
 
 # *****************************************************************
@@ -222,15 +271,16 @@ def generating_report_GSP(df, name_log, name, mail):
     send_email(mail, text, msg_text=file_name, files=[file_name])
 
     new_file_name = f'{today} - {file_name}'
-    os.replace(file_name, f'backup/{new_file_name}') 
+    os.replace(file_name, f'{trek}/backup/{new_file_name}') 
 
     writing_to_log_file(name_log, text)
 
 # *****************************************************************
 def send_email(addr_to, msg_subj, msg_text='', files=[]):
-    writing_to_log_file('smtp.txt', '*********************************************')
-    writing_to_log_file('smtp.txt', 'Вызов функции send_email')
-    writing_to_log_file('smtp.txt', f'Отправка письма {addr_to} с темой "{msg_subj}"')
+    name_log = 'smtp'
+    writing_to_log_file(name_log, '*********************************************')
+    writing_to_log_file(name_log, 'Вызов функции send_email')
+    writing_to_log_file(name_log, f'Отправка письма {addr_to} с темой "{msg_subj}"')
     # '''Функция по отпрвке писем через smtp.yanao.ru. 
     #    Логин, пароль и сервер указываются в файле access_mail.txt.
     #    addr_to - указать адресата (обязательно).
@@ -238,7 +288,7 @@ def send_email(addr_to, msg_subj, msg_text='', files=[]):
     #    msg_text - указать текст письма (необязательно).
     #    files - указать файлы в виде ['файл 1', 'файл 2', и т.д.] (необязательно).
     # '''
-    path = r'd:/python/schedule/access_mail.txt'
+    path = f'{trek}/access_mail.txt'
     with open(path) as f:
         access = json.load(f)
     
@@ -259,7 +309,7 @@ def send_email(addr_to, msg_subj, msg_text='', files=[]):
     try:
         # подключаемся к почтовому сервису
         smtp = smtplib.SMTP(server) # Создаем объект SMTP
-        writing_to_log_file('smtp.txt', f'Подлючение к серверу {server}')
+        writing_to_log_file(name_log, f'Подлючение к серверу {server}')
 #         smtp.set_debuglevel(1) # журнал, при необходимости включаем
 #         smtp.set_debuglevel(True) # Включаем режим отладки, если не нужен - можно закомментировать
         smtp.starttls() # Начинаем шифрованный обмен по TLS
@@ -267,9 +317,9 @@ def send_email(addr_to, msg_subj, msg_text='', files=[]):
         # логинимся на почтовом сервере
         smtp.login(addr_from, password) # Получаем доступ
         smtp.send_message(msg) # Отправляем сообщение
-        writing_to_log_file('smtp.txt', 'Письмо отправлено')
+        writing_to_log_file(name_log, 'Письмо отправлено')
     except smtplib.SMTPException as err:
-        writing_to_log_file('smtp.txt', f'Ошибка подлючения к серверу {server} - {err}')
+        writing_to_log_file(name_log, f'Ошибка подлючения к серверу {server} - {err}')
         # print('Что - то пошло не так...')
         raise err
     finally:
@@ -277,7 +327,8 @@ def send_email(addr_to, msg_subj, msg_text='', files=[]):
 
 
 def process_attachement(msg, files):                        # Функция по обработке списка, добавляемых к сообщению файлов
-    writing_to_log_file('smtp.txt', 'Вызов функции process_attachement')
+    name_log = 'smtp'
+    writing_to_log_file(name_log, 'Вызов функции process_attachement')
     # '''Функция по обработке списка, добавляемых к сообщению файлов'''
     for f in files:
         if os.path.isfile(f):                               # Если файл существует
@@ -290,7 +341,8 @@ def process_attachement(msg, files):                        # Функция п�
 
 
 def attach_file(msg, filepath):                             # Функция по добавлению конкретного файла к сообщению
-    writing_to_log_file('smtp.txt', 'Вызов функции attach_file')
+    name_log = 'smtp'
+    writing_to_log_file(name_log, 'Вызов функции attach_file')
     # '''Функция по добавлению конкретного файла к сообщению'''
     filename = os.path.basename(filepath)                   # Получаем только имя файла
     ctype, encoding = mimetypes.guess_type(filepath)        # Определяем тип файла на основе его расширения
@@ -324,7 +376,7 @@ def attach_file(msg, filepath):                             # Функция п�
 def writing_to_log_file(file, text):
     # '''функция создания лог файла и записи в него информации'''
     dt = datetime.now().strftime('%Y-%m-%d %X')
-    path = f'd:/python/schedule/log/{file}.log'
+    path = f'{trek}/log/{file}.log'
     # with open(path, 'a+', encoding='utf8') as file_log:
     with open(path, 'a+') as file_log:
         log = f'{dt} : {text} \n'
@@ -336,11 +388,11 @@ def connect_oracle():
     name_log = 'access_report'
 
     #***************************************************************
-    path = r'd:/python/schedule/access_report.txt'
+    path = f'{trek}/access_report.txt'
     with open(path) as f:
         access = json.load(f)
     
-    driver = r'd:/python/schedule/ojdbc14.jar'
+    driver = f'{trek}/ojdbc14.jar'
     path_base = access['path_base']
     password = access['password']
     login = access['login']
@@ -367,11 +419,11 @@ def connect_oracle_large_family():
     name_log = 'access_report_large_family'
 
     #***************************************************************
-    path = r'd:/python/schedule/access_large_family.txt'
+    path = f'{trek}/access_large_family.txt'
     with open(path) as f:
         access = json.load(f)
     
-    driver = r'd:/python/schedule/ojdbc14.jar'
+    driver = f'{trek}/ojdbc14.jar'
     path_base = access['path_base']
     password = access['password']
     login = access['login']
@@ -398,11 +450,11 @@ def connect_oracle_public_service():
     name_log = 'access_report_public_service'
 
     #***************************************************************
-    path = r'd:/python/schedule/access_public_service.txt'
+    path = f'{trek}/access_public_service.txt'
     with open(path) as f:
         access = json.load(f)
     
-    driver = r'd:/python/schedule/ojdbc14.jar'
+    driver = f'{trek}/ojdbc14.jar'
     path_base = access['path_base']
     password = access['password']
     login = access['login']
@@ -429,11 +481,11 @@ def connect_oracle_ecert():
     name_log = 'connect_oracle_ecert'
 
     #***************************************************************
-    path = r'd:/python/schedule/access_ecert.txt'
+    path = f'{trek}/access_ecert.txt'
     with open(path) as f:
         access = json.load(f)
     
-    driver = r'd:/python/schedule/ojdbc14.jar'
+    driver = f'{trek}/ojdbc14.jar'
     path_base = access['path_base']
     password = access['password']
     login = access['login']
@@ -456,53 +508,59 @@ def connect_oracle_ecert():
 
 # *****************************************************************
 def movi_vipnet(test, file, name_log, name_def):
-    os.chmod(file, stat.S_IWRITE)
+    os.chmod(file, 0o666)
+    t = os.getcwd()
     if test == 1:
-        path = 'c:/VipoNet_out1/'
+        path = vipnet_test
     else:
-        path = 'c:/VipoNet_out/'
+        path = vipnet_main
+    
+    copy_vipnet(test, file, name_log, name_def)
+
     try:
-      shutil.move(file, path)
-    except:
-      send_email(mail, f'{name_def} - ошибка переноса файла', msg_text=file)
-      text = f'{name_def} - ошибка переноса файла {file} в папку {path}'
-      writing_to_log_file(name_log, text)      
+        os.remove(file)
+        writing_to_log_file(name_log, f'{file} удален в папке {t}')
+    except Exception as e:
+        text = f'os.remove - {e} - в папке {t}'
+        writing_to_log_file(name_log, text)    
 
 # *****************************************************************
 def copy_vipnet(test, file, name_log, name_def):
+    os.chmod(file, 0o666)
+    t = os.getcwd()
     if test == 1:
-        path = 'c:/VipoNet_out1/'
+        path = vipnet_test
     else:
-        path = 'c:/VipoNet_out/'
+        path = vipnet_main
     try:
-      shutil.copy(file, path)
+      shutil.copyfile(file, f'{path}/{file}')
     except Exception as e:
       send_email(mail, f'{name_def} - ошибка копирования файла', msg_text=file)
-      text = f'{name_def} - ошибка копирования файла {file} в папку {path} - {e}'
-      writing_to_log_file(name_log, text)      
+      text = f'{name_def} - ошибка копирования файла {file} из папки {t} в папку {path} - {e}'
+      writing_to_log_file(name_log, text)
 
 #***************************************************************
-def backup_file(test, file, name_log, name_def, path_backup = r'd:/python/schedule/backup/'):
-    os.chmod(file, stat.S_IWRITE)
+def backup_file(test, file, name_log, name_def, path_backup = f'{trek}/backup/', path_out = f'{trek}/'):
+    os.chmod(f'{path_out}/{file}', 0o666)
     new_file_name = f'{today}_{sec} - {file}'
     if test == 1:
-        path_backup = r'd:/python/schedule/backup1/'
+        path_backup = f'{trek}/backup1/'
     try:
-        shutil.move(file, f'{path_backup}/{new_file_name}')
-        writing_to_log_file(name_log, f'Файл {file} перемещен в {path_backup} и переименован в {new_file_name}')
+        shutil.move(f'{path_out}/{file}', f'{path_backup}/{new_file_name}')
+        writing_to_log_file(name_log, f'Файл {file} из папки {path_out} перемещен в {path_backup} и переименован в {new_file_name}')
     except Exception as e:
         send_email(mail, f'{name_def} - ошибка переноса файла', msg_text=file)
-        text = f'{name_def} - ошибка переноса файла {file} в папку {path_backup} - {e}'
+        text = f'{name_def} - ошибка переноса файла {file} из папки {path_out} в папку {path_backup} - {e}'
         writing_to_log_file(name_log, text)      
 
 #***************************************************************
 def backup_file_pfr_4454(test, file, name_log, name_def, path):
-    os.chmod(file, stat.S_IWRITE)
+    os.chmod(file, 0o666)
     new_file_name = f'{today} - {file}'
     if test == 1:
-        path_backup = r'd:/python/schedule/backup1/'
+        path_backup = f'{trek}/backup1/'
     else:
-        path_backup = r'd:/python/schedule/backup/'
+        path_backup = f'{trek}/backup/'
     try:
         shutil.move(f'{path}/{file}', f'{path_backup}/{new_file_name}')
         writing_to_log_file(name_log, f'Файл {file} перемещен в {path_backup} и переименован в {new_file_name}')
@@ -521,26 +579,18 @@ def generating_report_files(df, name_log, name_def, test, mail):
             file = row + '.xlsx'
             data[data['name'].isin([row])].to_excel(file, index=False)
             if test == 1:
-                path = 'c:/VipoNet_out1/'
+                path = vipnet_test
             else:
-                path = 'c:/VipoNet_out/'
-            try:
-              shutil.move(file, path)
-            except:
-              send_email(mail, f'{name_def} - ошибка переноса файла', msg_text=file)
-              text = f'{name_def} - ошибка переноса файла {file} в папку {path}'
-              writing_to_log_file(name_log, text)      
+                path = vipnet_main
+            movi_vipnet(test, file, name_log, name_def)
             files += file + '\n'
-
         writing_to_log_file(name_log, '\n'+files)
         send_email(mail, f'{name_def} в МО отправлены', msg_text=files)
     else:
         text = 'файлов нет'
         writing_to_log_file(name_log, text)
-        # send_email(mail, f'{name_def} - {text}', msg_text='')
 
 # *****************************************************************
-
 def generating_report_files_PFR(df, name_log, name_def, test, mail):
     data = pd.DataFrame(df)
     dt = datetime.now().strftime('%m-%Y')
@@ -548,14 +598,8 @@ def generating_report_files_PFR(df, name_log, name_def, test, mail):
     data.to_excel(file, index=False)
     writing_to_log_file(name_log, f'создали файл {file}')
 
-    if test == 1:
-        path = 'c:/VipoNet_out1/'
-        writing_to_log_file(name_log, f'path {path}')
-    else:
-        path = 'c:/VipoNet_out/'
-        writing_to_log_file(name_log, f'path {path}')
     try:
-        path_backup = r'd:/python/schedule/backup/na_3/'
+        path_backup = f'{trek}/backup/na_3/'
         writing_to_log_file(name_log, f'path_backup {path_backup}')
         
         try:
@@ -567,17 +611,9 @@ def generating_report_files_PFR(df, name_log, name_def, test, mail):
         except:
             writing_to_log_file(name_log, 'ошибка архивирования файла {file} в {new_file}')
         
-        try:
-            shutil.move(new_file, path)
-            writing_to_log_file(name_log, f'перенесли {new_file} в {path}')
-        except:
-            writing_to_log_file(name_log, f'ошибка переноса {new_file} в {path}')
+        movi_vipnet(test, new_file, name_log, name_def)
 
-        try:
-            shutil.move(file, path_backup)
-            writing_to_log_file(name_log, f'перенесли {file} в {path_backup}')
-        except:
-            writing_to_log_file(name_log, f'ошибка переноса {file} в {path_backup}')
+        backup_file(test, file, name_log, name_def, path_backup)
 
         writing_to_log_file(name_log, new_file)
 
@@ -589,18 +625,10 @@ def generating_report_files_PFR(df, name_log, name_def, test, mail):
         writing_to_log_file(name_log, text)      
 
 # *****************************************************************
-
 def generating_report_files_PFR_2(name_log, name_def, test, mail, text):
     dt = datetime.now().strftime('%m-%Y')
     new_file = name_def
-    path_backup = r'd:/python/schedule/backup/RSD/'
-
-    if test == 1:
-        path = 'c:/VipoNet_out1/'
-    else:
-        path = 'c:/VipoNet_out/'
-
-    writing_to_log_file(name_log, f'выбран режим {test} - {path}')
+    path_backup = f'{trek}/backup/RSD/'
 
     try:
         os.remove(f'{path}{new_file}')
@@ -616,23 +644,10 @@ def generating_report_files_PFR_2(name_log, name_def, test, mail, text):
     
     cnt = 0 # счетчик для отправки
 
-    try:
-        shutil.copy(new_file, path)
-        writing_to_log_file(name_log, f'Файл {new_file} скопирован в {path}')
-        cnt += 1
-    except Exception as e:
-        text = f'{name_def} - ошибка копирования файла {new_file} в папку {path}, ошибка - {e}'
-        send_email(mail, f'{new_file} - ошибка переноса файла', msg_text=text)
-        writing_to_log_file(name_log, text)
-
-    try:
-        shutil.move(new_file, path_backup)
-        writing_to_log_file(name_log, f'Файл {new_file} перемещен в {path_backup}')
-        cnt += 1
-    except Exception as e:
-        text = f'{name_def} - ошибка переноса файла {new_file} в папку {path_backup}, ошибка - {e}'
-        send_email(mail, f'{new_file} - ошибка переноса файла', msg_text=text)
-        writing_to_log_file(name_log, text)
+    movi_vipnet(test, new_file, name_log, name_def)
+    cnt += 1
+    backup_file(test, new_file, name_log, name_def, path_backup)
+    cnt += 1
 
     if cnt == 2:
         send_email(mail, f'{name_def} в ПФР отправлен', msg_text=text)
@@ -643,7 +658,7 @@ def generating_report_files_PFR_2(name_log, name_def, test, mail, text):
 
 # ***************************************************************************************
 def report_temp_table(name_log, mail, table, file_sql):
-
+    writing_to_log_file(name_log, '**********start**************')
     curs = connect_oracle()
 
     try:
@@ -717,6 +732,88 @@ def report_temp_table(name_log, mail, table, file_sql):
 
     writing_to_log_file(name_log, cnt)
     send_email(mail, name_log, msg_text=cnt)
+
+    writing_to_log_file(name_log, '**********start**************')
+
+#***************************************************************
+def insert_temp_table(name_log, mail, table, file_sql):
+    writing_to_log_file(name_log, '**********start**************')
+    curs = connect_oracle()
+
+    try:
+        curs.execute(f'DELETE FROM {table}')
+        text = f'{table} очищена'
+        writing_to_log_file(name_log, text)
+    except:
+        text = f'{table} нету'
+        writing_to_log_file(name_log, text)
+        return 1
+
+    try:
+        text = f'обновление {table}'
+        writing_to_log_file(name_log, text)
+        
+        with open(file_sql, 'r', encoding='utf8') as f:
+            sql = f.read()
+        curs.execute(sql)
+        
+        text = f'{table} обновлена'
+        writing_to_log_file(name_log, text)
+    except Exception as e:
+        alarm = str(e)
+        text = f'alarm - {alarm} - {sql}'
+        writing_to_log_file(name_log, text)
+        send_email(mail, f'Alarm - {name_log}', msg_text=text)
+        return
+    
+    curs.execute(f'SELECT count(*) FROM {table}')
+
+    cnt = str(curs.fetchall()[0][0])
+
+    try:
+        curs.execute(f'grant select on {table} to USZN_TSRV_ROLE_000000000003')
+        text = f'grant select on {table} to USZN_TSRV_ROLE_000000000003'
+        writing_to_log_file(name_log, text)
+    except Exception as e:
+        alarm = str(e)
+        text = f'alarm - {alarm}'
+        writing_to_log_file(name_log, text)
+        send_email(mail, f'Alarm - {name_log}', msg_text=text)
+
+    try:    
+        curs.execute(f'grant select on {table} to USZN_TSRV_ROLE_000000000004')
+        text = f'grant select on {table} to USZN_TSRV_ROLE_000000000004'
+        writing_to_log_file(name_log, text)    
+    except Exception as e:
+        alarm = str(e)
+        text = f'alarm - {alarm}'
+        writing_to_log_file(name_log, text)
+        send_email(mail, f'Alarm - {name_log}', msg_text=text)
+
+    try:    
+        curs.execute(f'grant select on {table} to USZN_TSRV_ROLE_000000000008')
+        text = f'grant select on {table} to USZN_TSRV_ROLE_000000000008'
+        writing_to_log_file(name_log, text)
+    except Exception as e:
+        alarm = str(e)
+        text = f'alarm - {alarm}'
+        writing_to_log_file(name_log, text)
+        send_email(mail, f'Alarm - {name_log}', msg_text=text)
+
+    try:    
+        curs.execute(f'grant select on {table} to USZN_TSRV_ROLE_000000000010')
+        text = f'grant select on {table} to USZN_TSRV_ROLE_000000000010'
+        writing_to_log_file(name_log, text)    
+    except:
+        alarm = str(e)
+        text = f'alarm - {alarm}'
+        writing_to_log_file(name_log, text)
+        send_email(mail, f'Alarm - {name_log}', msg_text=text)
+
+    writing_to_log_file(name_log, cnt)
+    send_email(mail, name_log, msg_text=cnt)
+
+    writing_to_log_file(name_log, '**********start**************')
 
 #***************************************************************
 def write_file(file, log):
@@ -865,11 +962,39 @@ def kod_sfr_uszn_name(x):
     return sfr_uszn_kod_name(x, 1)
 
 # *****************************************************************
-def movi_file(file, name_log, name_def, path_in, path_to):
-    os.chmod(file, stat.S_IWRITE)
+def copy_file(file, name_log, name_def, path_in, path_to):
+    t = os.getcwd()
+    writing_to_log_file(name_log, f'каталог {t} с файлом {file}')
     try:
-        shutil.move(f'{path_in}{file}', path_to)
-    except:
-        send_email(mail, f'{name_def} - ошибка переноса файла', msg_text=file)
-        text = f'{name_def} - ошибка переноса файла {path_in}{file} в папку {path_to}'
-        writing_to_log_file(name_log, text)      
+        os.chmod(f'{path_in}{file}', 0o666)
+        writing_to_log_file(name_log, 'chmod')
+    except Exception as e:
+        text = f'os.chmod - {e} - в папке {path_in}'
+        writing_to_log_file(name_log, text)
+
+    try:
+        shutil.copyfile(f'{path_in}{file}', f'{path_to}{file}')
+        writing_to_log_file(name_log, f'{path_in}{file} - {path_to}{file}')
+    except Exception as e:
+        send_email(mail, f'{name_def} - ошибка копирования файла', msg_text=file)
+        text = f'{name_def} - {e} - ошибка копирования файла {path_in}{file} в папку {path_to}'
+        writing_to_log_file(name_log, text)
+
+# *****************************************************************
+def movi_file(file, name_log, name_def, path_in, path_to):
+    t = os.getcwd()
+    writing_to_log_file(name_log, f'каталог {t} с файлом {file}')
+    try:
+        os.chmod(f'{path_in}{file}', 0o666)
+        writing_to_log_file(name_log, 'chmod')
+    except Exception as e:
+        text = f'os.chmod - {e} - в папке {path_in}'
+        writing_to_log_file(name_log, text)
+    copy_file(file, name_log, name_def, path_in, path_to)
+
+    try:
+        os.remove(file)
+        writing_to_log_file(name_log, f'{file} удален в папке {path_in}')
+    except Exception as e:
+        text = f'os.remove - {e} - в папке {path_in}'
+        writing_to_log_file(name_log, text)

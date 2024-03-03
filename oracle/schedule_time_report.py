@@ -9,6 +9,102 @@ writing_to_log_file(name_log, f'************************************************
 writing_to_log_file(name_log, f'Запуск schedule_time_report')
 
 #***************************************************************
+def report_MSK_cert(): # временная таблица МСК свидетельства
+    try:
+        writing_to_log_file(name_log, f'Запуск процесса report_MSK_cert')
+        subprocess.call("python d:/python/schedule/report_MSK_cert.py", shell=True)
+    except Exception as e:
+        text = f'произошла ошибка при вызове функции report_MSK_cert - {e}'
+        writing_to_log_file(name_log, text)
+
+# try:
+#     writing_to_log_file(name_log, f'Запуск процесса report_MSK_cert')
+#     schedule.every().day.at("07:50").do(report_MSK_cert)
+# except Exception as e:
+#     text = f'Произошла ошибка при вызове функции report_MSK_cert - {e}'
+#     writing_to_log_file(name_log, text)
+
+#***************************************************************
+def report_MSK(): # временная таблица МСК решения
+    try:
+        writing_to_log_file(name_log, f'Запуск процесса report_MSK')
+        subprocess.call("python d:/python/schedule/report_MSK.py", shell=True)
+    except Exception as e:
+        text = f'произошла ошибка при вызове функции report_MSK - {e}'
+        writing_to_log_file(name_log, text)
+
+# try:
+#     writing_to_log_file(name_log, f'Запуск процесса report_MSK')
+#     schedule.every().day.at("07:50").do(report_MSK)
+# except Exception as e:
+#     text = f'Произошла ошибка при вызове функции report_MSK - {e}'
+#     writing_to_log_file(name_log, text)
+
+#***************************************************************
+def report_MSK_all(): # временная таблица МСК все
+    try:
+        writing_to_log_file(name_log, f'Запуск процесса report_MSK_all')
+        subprocess.call("python d:/python/schedule/report_MSK_all.py", shell=True)
+    except Exception as e:
+        text = f'произошла ошибка при вызове функции report_MSK_all - {e}'
+        writing_to_log_file(name_log, text)
+
+# try:
+#     writing_to_log_file(name_log, f'Запуск процесса report_MSK_all')
+#     schedule.every().day.at("08:25").do(report_MSK_all)
+# except Exception as e:
+#     text = f'Произошла ошибка при вызове функции report_MSK_all - {e}'
+#     writing_to_log_file(name_log, text)
+
+#***************************************************************
+def seetable_noz(): # временная таблица seetable нозология
+    try:
+        writing_to_log_file(name_log, f'Запуск процесса seetable_noz')
+        subprocess.call("python d:/python/schedule/seetable_noz.py", shell=True)
+    except Exception as e:
+        text = f'произошла ошибка при вызове функции seetable_noz - {e}'
+        writing_to_log_file(name_log, text)
+
+# try:
+#     writing_to_log_file(name_log, f'Запуск процесса seetable_noz')
+#     schedule.every().day.at("05:00").do(seetable_noz)
+# except Exception as e:
+#     text = f'Произошла ошибка при вызове функции seetable_noz - {e}'
+#     writing_to_log_file(name_log, text)
+
+#***************************************************************
+def ES_report_temp(): # временная таблица ЭС отчет
+    try:
+        writing_to_log_file(name_log, f'Запуск процесса ES_report_temp')
+        subprocess.call("python d:/python/schedule/ES_report_temp.py", shell=True)
+    except Exception as e:
+        text = f'произошла ошибка при вызове функции ES_report_temp - {e}'
+        writing_to_log_file(name_log, text)
+
+# try:
+#     writing_to_log_file(name_log, f'Запуск процесса ES_report_temp')
+#     schedule.every().day.at("07:35").do(ES_report_temp)
+# except Exception as e:
+#     text = f'Произошла ошибка при вызове функции ES_report_temp - {e}'
+#     writing_to_log_file(name_log, text)
+
+#***************************************************************
+def report_reab_sert_amount(): # временная таблица реабилитационный сертификат дети инвалиды суммы 
+    try:
+        writing_to_log_file(name_log, f'Запуск процесса report_reab_sert_amount')
+        subprocess.call("python d:/python/schedule/report_reab_sert_amount.py", shell=True)
+    except Exception as e:
+        text = f'произошла ошибка при вызове функции report_reab_sert_amount - {e}'
+        writing_to_log_file(name_log, text)
+
+# try:
+#     writing_to_log_file(name_log, f'Запуск процесса report_reab_sert_amount')
+#     schedule.every().day.at("06:00").do(report_reab_sert_amount)
+# except Exception as e:
+#     text = f'Произошла ошибка при вызове функции report_reab_sert_amount - {e}'
+#     writing_to_log_file(name_log, text)
+
+#***************************************************************
 def report_milk_malo(): # временная таблица малоимущие для ЭС молочка
     try:
         writing_to_log_file(name_log, f'Запуск процесса report_milk_malo')
@@ -17,13 +113,13 @@ def report_milk_malo(): # временная таблица малоимущие
         text = f'произошла ошибка при вызове функции report_milk_malo - {e}'
         writing_to_log_file(name_log, text)
 
-try:
-    writing_to_log_file(name_log, f'Запуск процесса report_milk_malo')
-    schedule.every().day.at("06:15").do(report_milk_malo)
-    schedule.every().day.at("13:05").do(report_milk_malo)
-except Exception as e:
-    text = f'Произошла ошибка при вызове функции report_milk_malo - {e}'
-    writing_to_log_file(name_log, text)
+# try:
+#     writing_to_log_file(name_log, f'Запуск процесса report_milk_malo')
+#     schedule.every().day.at("06:15").do(report_milk_malo)
+#     schedule.every().day.at("13:05").do(report_milk_malo)
+# except Exception as e:
+#     text = f'Произошла ошибка при вызове функции report_milk_malo - {e}'
+#     writing_to_log_file(name_log, text)
 
 #***************************************************************
 def report_milk_age_3(): # временная таблица дети до 3 лет для ЭС молочка
@@ -34,13 +130,13 @@ def report_milk_age_3(): # временная таблица дети до 3 л�
         text = f'произошла ошибка при вызове функции report_milk_age_3 - {e}'
         writing_to_log_file(name_log, text)
 
-try:
-    writing_to_log_file(name_log, f'Запуск процесса report_milk_age_3')
-    schedule.every().day.at("07:15").do(report_milk_age_3)
-    schedule.every().day.at("13:15").do(report_milk_age_3)
-except Exception as e:
-    text = f'Произошла ошибка при вызове функции report_milk_age_3 - {e}'
-    writing_to_log_file(name_log, text)
+# try:
+#     writing_to_log_file(name_log, f'Запуск процесса report_milk_age_3')
+#     schedule.every().day.at("07:15").do(report_milk_age_3)
+#     schedule.every().day.at("13:15").do(report_milk_age_3)
+# except Exception as e:
+#     text = f'Произошла ошибка при вызове функции report_milk_age_3 - {e}'
+#     writing_to_log_file(name_log, text)
 
 #***************************************************************
 def report_bi_svo(): # временная таблица по выплатам УСВО для РСУД
@@ -51,14 +147,14 @@ def report_bi_svo(): # временная таблица по выплатам �
         text = f'произошла ошибка при вызове функции report_bi_svo - {e}'
         writing_to_log_file(name_log, text)
 
-try:
-    writing_to_log_file(name_log, f'Запуск процесса report_bi_svo')
-    schedule.every().day.at("09:15").do(report_bi_svo)
-    schedule.every().day.at("13:15").do(report_bi_svo)
-    schedule.every().day.at("17:15").do(report_bi_svo)
-except Exception as e:
-    text = f'Произошла ошибка при вызове функции report_bi_svo - {e}'
-    writing_to_log_file(name_log, text)
+# try:
+#     writing_to_log_file(name_log, f'Запуск процесса report_bi_svo')
+#     schedule.every().day.at("09:15").do(report_bi_svo)
+#     schedule.every().day.at("13:15").do(report_bi_svo)
+#     schedule.every().day.at("17:15").do(report_bi_svo)
+# except Exception as e:
+#     text = f'Произошла ошибка при вызове функции report_bi_svo - {e}'
+#     writing_to_log_file(name_log, text)
 
 #***************************************************************
 def svo(): # временная таблица СВО
@@ -69,13 +165,13 @@ def svo(): # временная таблица СВО
         text = f'произошла ошибка при вызове функции svo() - {e}'
         writing_to_log_file(name_log, text)
 
-try:
-    writing_to_log_file(name_log, f'Запуск процесса svo')
-    schedule.every().day.at("07:30").do(svo)
-    schedule.every().day.at("13:30").do(svo)
-except Exception as e:
-    text = f'Произошла ошибка при вызове функции svo - {e}'
-    writing_to_log_file(name_log, text)
+# try:
+#     writing_to_log_file(name_log, f'Запуск процесса svo')
+#     schedule.every().day.at("07:30").do(svo)
+#     schedule.every().day.at("13:30").do(svo)
+# except Exception as e:
+#     text = f'Произошла ошибка при вызове функции svo - {e}'
+#     writing_to_log_file(name_log, text)
 
 #***************************************************************
 def report_ES(): # временная таблица реестр по ЭС
@@ -86,15 +182,15 @@ def report_ES(): # временная таблица реестр по ЭС
         text = f'произошла ошибка при вызове функции report_ES() - {e}'
         writing_to_log_file(name_log, text)
 
-try:
-    writing_to_log_file(name_log, f'Запуск процесса report_ES')
-    schedule.every().day.at("07:00").do(report_ES)
-    schedule.every().day.at("11:00").do(report_ES)
-    schedule.every().day.at("13:30").do(report_ES)
-    schedule.every().day.at("17:00").do(report_ES)
-except Exception as e:
-    text = f'Произошла ошибка при вызове функции report_ES - {e}'
-    writing_to_log_file(name_log, text)
+# try:
+#     writing_to_log_file(name_log, f'Запуск процесса report_ES')
+#     schedule.every().day.at("07:00").do(report_ES)
+#     schedule.every().day.at("11:00").do(report_ES)
+#     schedule.every().day.at("13:30").do(report_ES)
+#     schedule.every().day.at("17:00").do(report_ES)
+# except Exception as e:
+#     text = f'Произошла ошибка при вызове функции report_ES - {e}'
+#     writing_to_log_file(name_log, text)
 
 #***************************************************************
 def report_large_family(): # реестр многодетных
@@ -105,13 +201,13 @@ def report_large_family(): # реестр многодетных
         text = f'произошла ошибка при вызове функции report_large_family() - {e}'
         writing_to_log_file(name_log, text)
 
-try:
-    writing_to_log_file(name_log, f'Запуск процесса report_large_family')
-    schedule.every().day.at("07:00").do(report_large_family)
-    schedule.every().day.at("12:30").do(report_large_family)
-except Exception as e:
-    text = f'Произошла ошибка при вызове функции report_large_family - {e}'
-    writing_to_log_file(name_log, text)
+# try:
+#     writing_to_log_file(name_log, f'Запуск процесса report_large_family')
+#     schedule.every().day.at("07:00").do(report_large_family)
+#     schedule.every().day.at("12:30").do(report_large_family)
+# except Exception as e:
+#     text = f'Произошла ошибка при вызове функции report_large_family - {e}'
+#     writing_to_log_file(name_log, text)
 
 #***************************************************************
 #***************************************************************

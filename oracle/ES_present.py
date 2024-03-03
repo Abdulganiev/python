@@ -8,11 +8,16 @@ from generating_report_files import *
 log = 'ES_present'
 mail = 'IVAbdulganiev@yanao.ru'
 today = dt.date.today()
-path_backup = r'd:/python/schedule/backup/ES_present/'
-path = r'd:/python/schedule/zdrav/'
-os.chdir(path)
 test = 0
 check_day = 10
+
+patchs = get_platform()
+trek = patchs['trek']
+
+path_backup = f'{trek}/backup/ES_present/'
+path = patchs['prezent']
+
+os.chdir(path)
 
 #***************************************************************
 def movi_file(file):
@@ -396,6 +401,88 @@ def zdrav_backup(file):
         os.replace(file, f'{path_backup}{new_file_name}')
     writing_to_log_file(log, f'Файл {file} перемещен в {path_backup} и переименован в {new_file_name}')
 
+#****************************************************************************************************    
+def main(xl, cnt_file):
+    if cnt_file > 0:
+        col = ['NOM', 'HOSPITAL', 'SNILS', 'F', 'I', 'O', 'DR', 
+                'DUL_TYPE', 'DUL_SER', 'DUL_NOM', 'DUL_PLACE', 'DUL_KEM', 'DUL_DATE', 'DUL_CODE', 
+                'BABY_DR', 'ADR_MO', 'ADR_FULL', 'CONTACT', 'REASON']
+
+        xl.columns = col
+
+        xl.dropna(thresh=13, inplace = True)
+
+        for data in xl.itertuples():
+            if pd.isna(data[1]):
+                xl.drop(index=data[0], inplace = True)
+
+
+        xl['DR'] = xl['DR'].apply(dat)
+        xl['DUL_DATE'] = xl['DUL_DATE'].apply(dat)
+        xl['BABY_DR'] = xl['BABY_DR'].apply(dat)
+        xl['F'] = xl['F'].apply(up)
+        xl['I'] = xl['I'].apply(up)
+        xl['O'] = xl['O'].apply(up)
+        xl['REGION_ID'] = xl['ADR_MO'].apply(mo_id)
+        
+        xl = xl.fillna(0)
+        
+        try:
+            zdrav_insert_temp(xl)
+        except Exception as e:
+            text = f'произошла ошибка при вызове функции zdrav_insert_temp() - {e}'
+            alarm_log(mail, log, text)
+
+        try:
+            zdrav_new()
+        except Exception as e:
+            text = f'произошла ошибка при вызове функции zdrav_new() - {e}'
+            alarm_log(mail, log, text)
+
+        try:
+            zdrav_insert()
+        except Exception as e:
+            text = f'произошла ошибка при вызове функции zdrav_insert() - {e}'
+            alarm_log(mail, log, text)
+        
+        find_presend()
+
+    #****************************************************************************************************
+def find_presend():
+    try:
+        zdrav_find_egisso()
+    except Exception as e:
+        text = f'произошла ошибка при вызове функции zdrav_find_egisso() - {e}'
+        alarm_log(mail, log, text)
+
+    try:
+        zdrav_find_iszn()
+    except Exception as e:
+        text = f'произошла ошибка при вызове функции zdrav_find_iszn() - {e}'
+        alarm_log(mail, log, text)
+
+    try:
+        zdrav_not_find_iszn()
+    except Exception as e:
+        text = f'произошла ошибка при вызове функции zdrav_not_find_iszn() - {e}'
+        alarm_log(mail, log, text)
+
+    try:
+        zdrav_not_find_egisso()
+    except Exception as e:
+        text = f'произошла ошибка при вызове функции zdrav_not_find_egisso() - {e}'
+        alarm_log(mail, log, text)
+
+
+#****************************************************************************************************
+# goto_folder()
+
+try:
+    curs = connect_oracle()
+except Exception as e:
+    text = f'произошла ошибка при вызове функции connect_oracle() - {e}'
+    alarm_log(mail, log, text)
+
 #****************************************************************************************************
 writing_to_log_file(log, '***************************************')
 cnt_file = 0
@@ -412,77 +499,8 @@ for file in c:
             alarm_log(mail, log, text)
         cnt_file += 1
         
-#****************************************************************************************************
-try:
-    curs = connect_oracle()
-except Exception as e:
-    text = f'произошла ошибка при вызове функции connect_oracle() - {e}'
-    alarm_log(mail, log, text)
+        main(xl, cnt_file)
 
-#****************************************************************************************************    
-if cnt_file > 0:
-    col = ['NOM', 'HOSPITAL', 'SNILS', 'F', 'I', 'O', 'DR', 
-            'DUL_TYPE', 'DUL_SER', 'DUL_NOM', 'DUL_PLACE', 'DUL_KEM', 'DUL_DATE', 'DUL_CODE', 
-            'BABY_DR', 'ADR_MO', 'ADR_FULL', 'CONTACT', 'REASON']
-
-    xl.columns = col
-
-    xl.dropna(thresh=13, inplace = True)
-
-    for data in xl.itertuples():
-        if pd.isna(data[1]):
-            xl.drop(index=data[0], inplace = True)
-
-
-    xl['DR'] = xl['DR'].apply(dat)
-    xl['DUL_DATE'] = xl['DUL_DATE'].apply(dat)
-    xl['BABY_DR'] = xl['BABY_DR'].apply(dat)
-    xl['F'] = xl['F'].apply(up)
-    xl['I'] = xl['I'].apply(up)
-    xl['O'] = xl['O'].apply(up)
-    xl['REGION_ID'] = xl['ADR_MO'].apply(mo_id)
+if cnt_file == 0:
+    find_presend()
     
-    xl = xl.fillna(0)
-    
-    try:
-        zdrav_insert_temp(xl)
-    except Exception as e:
-        text = f'произошла ошибка при вызове функции zdrav_insert_temp() - {e}'
-        alarm_log(mail, log, text)
-
-    try:
-        zdrav_new()
-    except Exception as e:
-        text = f'произошла ошибка при вызове функции zdrav_new() - {e}'
-        alarm_log(mail, log, text)
-
-    try:
-        zdrav_insert()
-    except Exception as e:
-        text = f'произошла ошибка при вызове функции zdrav_insert() - {e}'
-        alarm_log(mail, log, text)
-
-#****************************************************************************************************
-try:
-    zdrav_find_egisso()
-except Exception as e:
-    text = f'произошла ошибка при вызове функции zdrav_find_egisso() - {e}'
-    alarm_log(mail, log, text)
-
-try:
-    zdrav_find_iszn()
-except Exception as e:
-    text = f'произошла ошибка при вызове функции zdrav_find_iszn() - {e}'
-    alarm_log(mail, log, text)
-
-try:
-    zdrav_not_find_iszn()
-except Exception as e:
-    text = f'произошла ошибка при вызове функции zdrav_not_find_iszn() - {e}'
-    alarm_log(mail, log, text)
-
-try:
-    zdrav_not_find_egisso()
-except Exception as e:
-    text = f'произошла ошибка при вызове функции zdrav_not_find_egisso() - {e}'
-    alarm_log(mail, log, text)

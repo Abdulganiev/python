@@ -90,6 +90,8 @@ def str_insert(xl, table):
     writing_to_log_file(name_log, f'В {table} после загрузки {cnt} записей')
 
 #***************************************************************
+goto_folder()
+
 try:
     curs = connect_oracle()
 except Exception as e:

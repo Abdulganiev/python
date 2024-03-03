@@ -7,12 +7,6 @@ mail = 'IVAbdulganiev@yanao.ru,AVShashkov@yanao.ru'
 root_path = 'PFR'
 
 #***************************************************************
-writing_to_log_file(name_log, f'***************************************************************')
-
-curs = connect_oracle()
-writing_to_log_file(name_log, f'к базе подключился')
-
-#***************************************************************
 def PFR_file_request_file(pccat_id):
     with open('PFR_file_request_file.sql', 'r', encoding='utf8') as f:
         sql = f.read()
@@ -35,6 +29,17 @@ def PFR_file_request_name():
         from dual""")
     return curs.fetchone()
 
+#***************************************************************
+goto_folder()
+
+writing_to_log_file(name_log, f'***************************************************************')
+
+try:
+    curs = connect_oracle()
+except Exception as e:
+    text = f'произошла ошибка при вызове функции connect_oracle() - {e}'
+    alarm_log(mail, name_log, text)
+    
 #***************************************************************
 cats_id = [732,725,723,727,730,724,728,1108,729,726,1116,1109]
 categories = {}

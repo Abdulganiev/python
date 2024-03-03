@@ -5,13 +5,17 @@ import zipfile
 from generating_report_files import *
 
 # ******************************************************
-log_backups = 'log/'
-path_y = r'Y:/'
-os.chdir(path_y)
 name_log = 'backup_log_iszn'
 mail = 'IVAbdulganiev@yanao.ru'
 yesterday = str(date.today() - timedelta(days=1))
 today = str(date.today())
+log_backups = 'log/'
+
+patchs = get_platform()
+server_105 = patchs['server_105'] 
+path_y = f'{server_105}/'
+
+os.chdir(path_y)
 
 # ******************************************************
 def file_list(file_start, file_end, path_log):
@@ -87,19 +91,28 @@ dict_logs = {
     'EKJ_YD_wants_to_participate_' : 'EKJ_YD_wants_to_participate',
     'EKJ_Recipient_' : 'EKJ_Recipient',
     'EKJ_EPB_' : 'EKJ_EPB',
-    'ES_request_' : 'ES_request',
+    'ES_add_prezent_' : 'ES_edit',
+    'ES_add_milk_' : 'ES_edit',
+    'ES_add_student_' : 'ES_edit',
+    'ES_edit_' : 'ES_add',
+    'ES_block_' : 'ES_block',
     'ES_status_' : 'ES_status',
     'PAN_in_' : 'PAN',
     'PAN_out_' : 'PAN',
     'ServerOperationLog_' : 'ServerOperationLog',
     'sfr_power_' : 'sfr_power',
+    'EKJ_ES_change_in_' : 'EKJ_ES_change_in',
+    'EKJ_ES_change_out_' : 'EKJ_ES_change_out',
+    'EKJ_ES_new_in_' : 'EKJ_ES_new_in',
+    'EKJ_ES_new_out_' : 'EKJ_ES_new_out',
+    'EKJ_ES_program_registry_' : 'EKJ_ES_program_registry',
 }
 
 text = '****************start****************'
 writing_to_log_file(name_log, text)
 
 for file, log_backup in dict_logs.items():
-    path_log = path_y + log_backups + log_backup+'/'
+    path_log = path_y + log_backups + log_backup + '/'
     file_list(file, 'txt', path_log)
 
 text = '****************end******************'

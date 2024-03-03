@@ -34,6 +34,8 @@ def reminder_requests_in_SMEV():
     return data
 
 #***************************************************************
+goto_folder()
+
 try:
   curs = connect_oracle()
 except Exception as e:

@@ -5,4 +5,6 @@ mail = 'IVAbdulganiev@yanao.ru'
 table = 'uszn.temp$_kind_as_rsd'
 file_sql = 'report_RSD.sql'
  
+goto_folder()
+
 report_temp_table(name_log, mail, table, file_sql)

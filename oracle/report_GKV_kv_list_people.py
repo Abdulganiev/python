@@ -50,6 +50,8 @@ def report_GKV_name():
     return curs.fetchone()
 
 #***************************************************************
+goto_folder()
+
 try: # очистка временной папки
     shutil.rmtree(root_path, ignore_errors=False, onerror=None)
     writing_to_log_file(name_log, f'папку {root_path} удалил')

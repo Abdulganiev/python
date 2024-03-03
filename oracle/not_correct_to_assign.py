@@ -32,6 +32,8 @@ def not_correct_to_assign():
     return data
 
 #***************************************************************
+goto_folder()
+
 try:
     curs = connect_oracle()
 except Exception as e:
@@ -45,4 +47,3 @@ except Exception as e:
     alarm_log(mail, name_log, text)
 
 generating_report_files(data, name_log, name_def, test, mail)
-

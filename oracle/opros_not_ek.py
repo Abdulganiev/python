@@ -6,13 +6,16 @@ import datetime as dt
 #***************************************************************
 today = dt.date.today()
 sec = time.strftime("%S", time.localtime())
-path = r'd:/python/schedule/opros/'
-
 name_log = 'opros_not_ek'
 name_def = 'opros_not_ek'
 test = 0
 mail = 'IVAbdulganiev@yanao.ru'
 data_len = 0
+
+patchs = get_platform()
+trek = patchs['trek']
+
+path = f'{trek}/opros/'
 
 #***************************************************************
 def opros_not_ek():

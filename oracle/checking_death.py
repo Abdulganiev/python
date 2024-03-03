@@ -6,11 +6,13 @@ name_log = 'checking_death'
 mail = 'IVAbdulganiev@yanao.ru'
 
 #***************************************************************
+goto_folder()
+
 try:
     curs = connect_oracle()
-except Exception as e:    
+except Exception as e:
     text = f'произошла ошибка при вызове функции connect_oracle() - {e}'
-    alarm_log(mail, name_log, text)    
+    alarm_log(mail, name_log, text)
 
 #***************************************************************
 def find_doc(curs):

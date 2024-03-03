@@ -7,13 +7,25 @@ mail = 'IVAbdulganiev@yanao.ru'
 
 #***************************************************************
 def ES_report_temp_drop():
-    curs.execute('delete from uszn.temp$_ecert_report')
+    try:
+        #curs.execute('delete from uszn.temp$_ecert_report')
+        curs.execute('drop table uszn.temp$_ecert_report')
+    except Exception as e:
+        text = f'произошла ошибка при delete from uszn.temp$_ecert_report - {e}'
+        alarm_log(mail, name_log, text)
 
 #***************************************************************
 def ES_report_temp_create():
-    curs.execute('insert into uszn.temp$_ecert_report select * from uszn.temp$_v_ecert')
+    try:
+        #curs.execute('insert into uszn.temp$_ecert_report select * from uszn.temp$_v_ecert')
+        curs.execute('create table uszn.temp$_ecert_report as select * from uszn.temp$_v_ecert')
+    except Exception as e:
+        text = f'произошла ошибка при insert into uszn.temp$_ecert_report - {e}'
+        alarm_log(mail, name_log, text)
 
 #***************************************************************
+goto_folder()
+
 try:
     curs = connect_oracle()
 except Exception as e:
@@ -27,7 +39,7 @@ try:
     writing_to_log_file(name_log, f'Запуск скрипта ES_report_temp_drop')
     ES_report_temp_drop()
     writing_to_log_file(name_log, f'Скрипт отработан ES_report_temp_drop')
-except:
+except Exception as e:
     text = f'произошла ошибка при вызове функции ES_report_temp_drop - {e}'
     alarm_log(mail, name_log, text)
 
@@ -36,6 +48,6 @@ try:
     writing_to_log_file(name_log, f'Запуск скрипта ES_report_temp_create')
     ES_report_temp_create()
     writing_to_log_file(name_log, f'Скрипт отработан ES_report_temp_create')
-except:
+except Exception as e:
     text = f'произошла ошибка при вызове функции ES_report_temp_create - {e}'
-    alarm_log(mail, name_log, text)    
+    alarm_log(mail, name_log, text)

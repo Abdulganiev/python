@@ -36,6 +36,8 @@ def PFR_large_family_01():
     return data
 
 #***************************************************************
+goto_folder()
+
 try:
     curs = connect_oracle()
 except Exception as e:

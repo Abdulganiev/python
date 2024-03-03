@@ -2,28 +2,31 @@ from generating_report_files import *
 import pandas as pd
 
 #***************************************************************
-name_log = 'check_large_family_duble'
+name_log = 'check_VT_duble'
 test = 0
 mail = 'IVAbdulganiev@yanao.ru'
-name_def = 'Дубликаты многодетных'
+name_def = 'Дубликаты ВТ'
 check = 0
 
 #***************************************************************
-def check_large_family_duble(curs):
-    with open('check_large_family_duble.sql', 'r', encoding='utf8') as f:
+def check_VT_duble(curs):
+    with open('check_VT_duble.sql', 'r', encoding='utf8') as f:
         sql = f.read()
     curs.execute(sql)
     return curs.fetchall()
 
 #***************************************************************
-def check_large_family_duble_MO(curs):
-    with open('check_large_family_duble_MO.sql', 'r', encoding='utf8') as f:
+def check_VT_duble_MO(curs):
+    with open('check_VT_duble_MO.sql', 'r', encoding='utf8') as f:
         sql = f.read()
     curs.execute(sql)
     return curs.fetchall()
 
 #***************************************************************
+goto_folder()
+
 writing_to_log_file(name_log, f'***************************************************************')
+
 try:
     curs = connect_oracle()
     check = 0
@@ -34,16 +37,16 @@ except Exception as e:
 
 if check == 0:
     try:
-        mo = check_large_family_duble_MO(curs)
+        mo = check_VT_duble_MO(curs)
         check = 0
     except Exception as e:
-        text = f'произошла ошибка при вызове функции check_large_family_duble_MO() - {e}'
+        text = f'произошла ошибка при вызове функции check_VT_duble_MO() - {e}'
         alarm_log(mail, name_log, text)
         check = 1
 
 if check == 0:
     try:
-        d = check_large_family_duble(curs)
+        d = check_VT_duble(curs)
         data = {
              'id района' : [],
              'name' : [] ,
@@ -54,7 +57,7 @@ if check == 0:
                 }
 
         for region in mo:
-            name = f'0{region[0]} - дубликаты многодетных'
+            name = f'0{region[0]} - дубликаты ВТ'
             for row in d:
                 data['name'].append(name)
                 data['id района'].append(row[0])
@@ -65,7 +68,7 @@ if check == 0:
 
         check = 0
     except Exception as e:
-        text = f'произошла ошибка при вызове функции check_large_family_duble() - {e}'
+        text = f'произошла ошибка при вызове функции check_VT_duble() - {e}'
         alarm_log(mail, name_log, text)
         check = 1
     

@@ -14,6 +14,8 @@ def ES_EKGYA():
     return curs.fetchall()
 
 #***************************************************************
+goto_folder()
+
 try:
     curs = connect_oracle()
 except Exception as e:
