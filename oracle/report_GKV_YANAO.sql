@@ -526,7 +526,7 @@ from
                           from uszn.all_po_amounts a
                           where
                             -- фильтр по району
-                            a.region_id in (select id from uszn.tsrv_regions where owner_id=104 and id not in (71, 72)) and
+                            a.region_id in (58,59,60,61,62,63,64,65,66,67,68,69,70) and
 							-- a.region_id=66 and
                             -- виды выплат, заданные в параметрах выходного документа
                             (a.pka_kind_region_id, a.pka_kind_id) in ((104,29),(104,29)) and
@@ -535,8 +535,8 @@ from
                             -- оплачено
                             a.status_kind_id=2 and
                             -- за период выборки
-                            a.payout_doc_doc_date between TRUNC(ADD_MONTHS(SYSDATE,-1),'MM') and TRUNC(SYSDATE,'MM')-1 and
-							--a.poi_payout_date between TRUNC(ADD_MONTHS(SYSDATE,-1),'MM') and TRUNC(SYSDATE,'MM')-1 and
+                            -- a.payout_doc_doc_date between TRUNC(ADD_MONTHS(SYSDATE,-1),'MM') and TRUNC(SYSDATE,'MM')-1 and
+							a.poi_payout_date between TRUNC(ADD_MONTHS(SYSDATE,-1),'MM') and TRUNC(SYSDATE,'MM')-1 and
                             ( -- фильтр по признакам учёта
                               ( -- признак учёта "Наличие документа «Сведения о получении льгот на ЖКУ на декабрь 2008 года»"
                                 (a.pkaf_region_id, a.pkaf_id) in ((104, 339)) and

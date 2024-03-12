@@ -1,7 +1,5 @@
 select
-   t1.region_id,
-   '0'||t1.region_id||' '||uszn.pkTSrv.GetRegionName(t1.region_id)||' - неверный номер карты МИР для электронного сертификата' as name,
-   uszn.pkTSrv.GetRegionName(t1.region_id) as mo,
+   'ДО - неверный номер карты МИР для электронного сертификата' as name,
    t1.cert_kind_name,
    t1.person_id,
    t1.person_desc,
@@ -19,5 +17,5 @@ select
            on a1.region_id=a2.region_id and a1.ecert_id=a2.ecert_id and a1.status_date_time=a2.max_status_date_time) t2
        on t1.region_id=t2.region_id and t1.id=t2.ecert_id
  where t1.status_id=1 and sysdate < t1.date_end and t2.status_notes='Неверный номер карты'
-       and (t1.cert_kind_region_id, t1.cert_kind_id) in ((104,1),(104,2))
+       and (t1.cert_kind_region_id, t1.cert_kind_id) in ((104,3))
 order by t2.status_notes

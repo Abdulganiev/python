@@ -86,7 +86,8 @@ def load_postgre(table_oracle, table_postgree, name_log, name_def, mail = f'IVAb
         try:
             col_table_oracle = table_oracle.replace('uszn.', '').upper() 
             curs.execute(f"SELECT uszn.StrCommaConcat(column_name) FROM DBA_TAB_COLS WHERE upper(table_name) = '{col_table_oracle}' order by column_id")
-            col = curs.fetchall()[0][0].split(',')
+            col_oracle = curs.fetchall()[0][0]
+            col = col_oracle.split(',')
             writing_to_log_file(name_log, f'Забрали из ГИС ЭСРН наименование столбцов из {col_table_oracle}')
             flag_alarm = 0
         except Exception as e:    
@@ -96,7 +97,7 @@ def load_postgre(table_oracle, table_postgree, name_log, name_def, mail = f'IVAb
 
     if flag_alarm == 0:
         try:
-            curs.execute(f'select * FROM {table_oracle}')
+            curs.execute(f'select {col_oracle} FROM {table_oracle}')
             writing_to_log_file(name_log, f'Забрали из ГИС ЭСРН данные из {table_oracle}')
             flag_alarm = 0
         except Exception as e:    

@@ -493,7 +493,8 @@ for file in c:
 #         print(file)
         xl = write_file(file, log)
         try:
-            zdrav_backup(file)
+            backup_file(test, file, log, log, path_backup, path)
+            # zdrav_backup(file)
         except Exception as e:
             text = f'произошла ошибка при вызове функции zdrav_backup() - {e}'
             alarm_log(mail, log, text)

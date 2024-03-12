@@ -28,8 +28,6 @@ sec = time.strftime("%S", time.localtime())
 # *****************************************************************
 if platform == 'linux' or platform == 'linux2': # linux
     trek = '/home/user/schedule'
-    vipnet_main = f'/home/share22/s68/! Обмен с организациями/УСЗН/к ним/'
-    vipnet_test = f'{trek}/VipoNet_out1/'
     server_105 = '/home/share/105'
     server_68 = '/home/share22/s68'
     milk = f'{server_68}/! Обмен с организациями/Деп_Здрав/от них молочка/'
@@ -37,12 +35,16 @@ if platform == 'linux' or platform == 'linux2': # linux
     samohod = f'{server_68}/! Обмен с организациями/Служба самоход/от них реестр/'
     path_to_gasu = f'{server_68}/! Обмен с организациями/ГМУ/'
     pfr_4454 = f'{server_68}/! Обмен с организациями/от ПФР/prf_4454/'
+    vipnet_main = f'{server_68}/! Обмен с организациями/УСЗН/к ним/'
+    vipnet_test = f'{trek}/VipoNet_out1/'
+    vipnet_main_cso = f'{server_68}/! Обмен с организациями/ЦСО_отправка/'
+    vipnet_test_cso = f'{trek}/VipoNet_out1/'
+    vipnet_main_do = f'{server_68}/! Обмен с организациями/Деп_Обр/ЭС/'
+    vipnet_test_do = f'{trek}/VipoNet_out1/'
 elif platform == 'darwin': # OS X
     pass
 elif platform == 'win32': # Windows...
     trek = 'd:/python/schedule'
-    vipnet_main = 'c:/VipoNet_out/'
-    vipnet_test = 'c:/VipoNet_out1/'
     server_105 = 'Y:'
     server_68 = 'Z:'
     milk = f'{server_68}/! Обмен с организациями/Деп_Здрав/от них молочка/'
@@ -50,6 +52,12 @@ elif platform == 'win32': # Windows...
     samohod = f'{server_68}/! Обмен с организациями/Служба самоход/от них реестр/'
     path_to_gasu = f'{server_68}/! Обмен с организациями/ГМУ/'
     pfr_4454 = f'{server_68}/! Обмен с организациями/от ПФР/prf_4454/'
+    vipnet_main = 'c:/VipoNet_out/'
+    vipnet_test = 'c:/VipoNet_out1/'
+    vipnet_main_cso = f'{server_68}/! Обмен с организациями/ЦСО_отправка/'
+    vipnet_test_cso = 'c:/VipoNet_out1/'
+    vipnet_main_do = f'{server_68}/! Обмен с организациями/Деп_Обр/ЭС/'
+    vipnet_test_do = 'c:/VipoNet_out1/'
 
 # *****************************************************************
 def get_platform():
@@ -507,16 +515,10 @@ def connect_oracle_ecert():
     return curs
 
 # *****************************************************************
-def movi_vipnet(test, file, name_log, name_def):
+def movi_vipnet(test, file, name_log, name_def, recipient='uszn'):
     os.chmod(file, 0o666)
     t = os.getcwd()
-    if test == 1:
-        path = vipnet_test
-    else:
-        path = vipnet_main
-    
-    copy_vipnet(test, file, name_log, name_def)
-
+    copy_vipnet(test, file, name_log, name_def, recipient)
     try:
         os.remove(file)
         writing_to_log_file(name_log, f'{file} удален в папке {t}')
@@ -525,13 +527,18 @@ def movi_vipnet(test, file, name_log, name_def):
         writing_to_log_file(name_log, text)    
 
 # *****************************************************************
-def copy_vipnet(test, file, name_log, name_def):
+def copy_vipnet(test, file, name_log, name_def, recipient='uszn'):
     os.chmod(file, 0o666)
     t = os.getcwd()
+    recip = {
+        'uszn' : [vipnet_test, vipnet_main],
+        'cso' : [vipnet_test_cso, vipnet_main_cso],
+        'do' : [vipnet_test_do, vipnet_main_do],
+        }
     if test == 1:
-        path = vipnet_test
+        path = recip[recipient][0]
     else:
-        path = vipnet_main
+        path = recip[recipient][1]
     try:
       shutil.copyfile(file, f'{path}/{file}')
     except Exception as e:
@@ -570,7 +577,7 @@ def backup_file_pfr_4454(test, file, name_log, name_def, path):
         writing_to_log_file(name_log, text)      
 
 # *****************************************************************
-def generating_report_files(df, name_log, name_def, test, mail):
+def generating_report_files(df, name_log, name_def, test, mail, recipient='uszn'):
     data = pd.DataFrame(df)
     files = ''
     mo = set(data['name'])
@@ -578,17 +585,14 @@ def generating_report_files(df, name_log, name_def, test, mail):
         for row in mo:
             file = row + '.xlsx'
             data[data['name'].isin([row])].to_excel(file, index=False)
-            if test == 1:
-                path = vipnet_test
-            else:
-                path = vipnet_main
-            movi_vipnet(test, file, name_log, name_def)
+            movi_vipnet(test, file, name_log, name_def, recipient)
             files += file + '\n'
         writing_to_log_file(name_log, '\n'+files)
-        send_email(mail, f'{name_def} в МО отправлены', msg_text=files)
+        send_email(mail, f'{name_def} отправлены', msg_text=files)
     else:
         text = 'файлов нет'
         writing_to_log_file(name_log, text)
+
 
 # *****************************************************************
 def generating_report_files_PFR(df, name_log, name_def, test, mail):
@@ -657,9 +661,41 @@ def generating_report_files_PFR_2(name_log, name_def, test, mail, text):
         writing_to_log_file(name_log, 'Письмо "Alarm" отправлено')
 
 # ***************************************************************************************
+def count_line_table(curs, table, name_log):
+    cnt = 0
+    try:
+        curs.execute(f'SELECT COUNT(1) FROM {table}')
+        cnt = curs.fetchall()[0][0]
+        text = f' в {table} кол-во строк {cnt}'
+        writing_to_log_file(name_log, text)
+        check = 0
+    except:
+        text = f'{table} нету'
+        writing_to_log_file(name_log, text)
+    return cnt
+
+# ***************************************************************************************
+def grant_table(curs, table, role, name_log):
+    check = 0
+
+    try:
+        curs.execute(f'grant select on {table} to {role}')
+        text = f'grant select on {table} to {role}'
+        writing_to_log_file(name_log, text)
+        check = 0
+    except Exception as e:
+        text = f'{role} - alarm - {alarm}'
+        writing_to_log_file(name_log, text)
+        send_email(mail, f'Alarm - {name_log}', msg_text=text)
+        check = 0
+
+    return check
+
+# ***************************************************************************************
 def report_temp_table(name_log, mail, table, file_sql):
     writing_to_log_file(name_log, '**********start**************')
     curs = connect_oracle()
+    check = count_line_table(curs, table, name_log)
 
     try:
         curs.execute(f'DROP TABLE {table}')
@@ -679,59 +715,27 @@ def report_temp_table(name_log, mail, table, file_sql):
         
         text = f'{table} обновлена'
         writing_to_log_file(name_log, text)
+        check = 0
     except Exception as e:
         alarm = str(e)
         text = f'alarm - {alarm} - {sql}'
         writing_to_log_file(name_log, text)
         send_email(mail, f'Alarm - {name_log}', msg_text=text)
-        return
-    
-    curs.execute(f'SELECT count(*) FROM {table}')
+        check = 1
+        
+    if check == 0:
+        check = grant_table(curs, table, 'USZN_TSRV_ROLE_000000000003', name_log)
+    if check == 0:
+        check = grant_table(curs, table, 'USZN_TSRV_ROLE_000000000004', name_log)
+    if check == 0:
+        check = grant_table(curs, table, 'USZN_TSRV_ROLE_000000000008', name_log)
+    if check == 0:
+        check = grant_table(curs, table, 'USZN_TSRV_ROLE_000000000010', name_log)
 
-    cnt = str(curs.fetchall()[0][0])
-
-    try:
-        curs.execute(f'grant select on {table} to USZN_TSRV_ROLE_000000000003')
-        text = f'grant select on {table} to USZN_TSRV_ROLE_000000000003'
-        writing_to_log_file(name_log, text)
-    except Exception as e:
-        alarm = str(e)
-        text = f'alarm - {alarm}'
-        writing_to_log_file(name_log, text)
-        send_email(mail, f'Alarm - {name_log}', msg_text=text)
-
-    try:    
-        curs.execute(f'grant select on {table} to USZN_TSRV_ROLE_000000000004')
-        text = f'grant select on {table} to USZN_TSRV_ROLE_000000000004'
-        writing_to_log_file(name_log, text)    
-    except Exception as e:
-        alarm = str(e)
-        text = f'alarm - {alarm}'
-        writing_to_log_file(name_log, text)
-        send_email(mail, f'Alarm - {name_log}', msg_text=text)
-
-    try:    
-        curs.execute(f'grant select on {table} to USZN_TSRV_ROLE_000000000008')
-        text = f'grant select on {table} to USZN_TSRV_ROLE_000000000008'
-        writing_to_log_file(name_log, text)
-    except Exception as e:
-        alarm = str(e)
-        text = f'alarm - {alarm}'
-        writing_to_log_file(name_log, text)
-        send_email(mail, f'Alarm - {name_log}', msg_text=text)
-
-    try:    
-        curs.execute(f'grant select on {table} to USZN_TSRV_ROLE_000000000010')
-        text = f'grant select on {table} to USZN_TSRV_ROLE_000000000010'
-        writing_to_log_file(name_log, text)    
-    except:
-        alarm = str(e)
-        text = f'alarm - {alarm}'
-        writing_to_log_file(name_log, text)
-        send_email(mail, f'Alarm - {name_log}', msg_text=text)
-
-    writing_to_log_file(name_log, cnt)
-    send_email(mail, name_log, msg_text=cnt)
+    cnt = count_line_table(curs, table, name_log)
+    text = f' в {table} кол-во строк {cnt}'
+    writing_to_log_file(name_log, text)
+    send_email(mail, name_log, msg_text=text)
 
     writing_to_log_file(name_log, '**********start**************')
 
@@ -744,74 +748,44 @@ def insert_temp_table(name_log, mail, table, file_sql):
         curs.execute(f'DELETE FROM {table}')
         text = f'{table} очищена'
         writing_to_log_file(name_log, text)
+        check = 0
     except:
         text = f'{table} нету'
         writing_to_log_file(name_log, text)
-        return 1
+        check = 1
 
-    try:
-        text = f'обновление {table}'
-        writing_to_log_file(name_log, text)
-        
-        with open(file_sql, 'r', encoding='utf8') as f:
-            sql = f.read()
-        curs.execute(sql)
-        
-        text = f'{table} обновлена'
-        writing_to_log_file(name_log, text)
-    except Exception as e:
-        alarm = str(e)
-        text = f'alarm - {alarm} - {sql}'
-        writing_to_log_file(name_log, text)
-        send_email(mail, f'Alarm - {name_log}', msg_text=text)
-        return
+    if check == 0:
+        try:
+            text = f'обновление {table}'
+            writing_to_log_file(name_log, text)
+            
+            with open(file_sql, 'r', encoding='utf8') as f:
+                sql = f.read()
+            curs.execute(sql)
+            
+            text = f'{table} обновлена'
+            writing_to_log_file(name_log, text)
+            check = 0
+        except Exception as e:
+            alarm = str(e)
+            text = f'alarm - {alarm} - {sql}'
+            writing_to_log_file(name_log, text)
+            send_email(mail, f'Alarm - {name_log}', msg_text=text)
+            check = 1
     
-    curs.execute(f'SELECT count(*) FROM {table}')
+    if check == 0:
+        check = grant_table(curs, table, 'USZN_TSRV_ROLE_000000000003', name_log)
+    if check == 0:
+        check = grant_table(curs, table, 'USZN_TSRV_ROLE_000000000004', name_log)
+    if check == 0:
+        check = grant_table(curs, table, 'USZN_TSRV_ROLE_000000000008', name_log)
+    if check == 0:
+        check = grant_table(curs, table, 'USZN_TSRV_ROLE_000000000010', name_log)
 
-    cnt = str(curs.fetchall()[0][0])
-
-    try:
-        curs.execute(f'grant select on {table} to USZN_TSRV_ROLE_000000000003')
-        text = f'grant select on {table} to USZN_TSRV_ROLE_000000000003'
-        writing_to_log_file(name_log, text)
-    except Exception as e:
-        alarm = str(e)
-        text = f'alarm - {alarm}'
-        writing_to_log_file(name_log, text)
-        send_email(mail, f'Alarm - {name_log}', msg_text=text)
-
-    try:    
-        curs.execute(f'grant select on {table} to USZN_TSRV_ROLE_000000000004')
-        text = f'grant select on {table} to USZN_TSRV_ROLE_000000000004'
-        writing_to_log_file(name_log, text)    
-    except Exception as e:
-        alarm = str(e)
-        text = f'alarm - {alarm}'
-        writing_to_log_file(name_log, text)
-        send_email(mail, f'Alarm - {name_log}', msg_text=text)
-
-    try:    
-        curs.execute(f'grant select on {table} to USZN_TSRV_ROLE_000000000008')
-        text = f'grant select on {table} to USZN_TSRV_ROLE_000000000008'
-        writing_to_log_file(name_log, text)
-    except Exception as e:
-        alarm = str(e)
-        text = f'alarm - {alarm}'
-        writing_to_log_file(name_log, text)
-        send_email(mail, f'Alarm - {name_log}', msg_text=text)
-
-    try:    
-        curs.execute(f'grant select on {table} to USZN_TSRV_ROLE_000000000010')
-        text = f'grant select on {table} to USZN_TSRV_ROLE_000000000010'
-        writing_to_log_file(name_log, text)    
-    except:
-        alarm = str(e)
-        text = f'alarm - {alarm}'
-        writing_to_log_file(name_log, text)
-        send_email(mail, f'Alarm - {name_log}', msg_text=text)
-
-    writing_to_log_file(name_log, cnt)
-    send_email(mail, name_log, msg_text=cnt)
+    cnt = count_line_table(curs, table, name_log)
+    text = f'в {table} кол-во строк {cnt}'
+    writing_to_log_file(name_log, text)
+    send_email(mail, name_log, msg_text=text)
 
     writing_to_log_file(name_log, '**********start**************')
 

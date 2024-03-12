@@ -5,15 +5,12 @@ import pandas as pd
 name_log = '1-GMU'
 mail = 'IVAbdulganiev@yanao.ru, AVShashkov@yanao.ru' 
 # mail = 'IVAbdulganiev@yanao.ru' 
-path_backup = r'd:/python/schedule/backup/GMU/'
-test = 0
 
-#***************************************************************
-try:
-    curs = connect_oracle()
-except Exception as e:    
-    text = f'произошла ошибка при вызове функции connect_oracle() - {e}'
-    alarm_log(mail, name_log, text)    
+patchs = get_platform()
+trek = patchs['trek']
+
+path_backup = f'{trek}/backup/GMU/'
+test = 0
 
 #***************************************************************
 def file_gu(id):
@@ -98,7 +95,15 @@ def fact_gu_all():
     return data
 
 #***************************************************************
+goto_folder()
+
 writing_to_log_file(name_log, f'***************************************************************')
+
+try:
+    curs = connect_oracle()
+except Exception as e:    
+    text = f'произошла ошибка при вызове функции connect_oracle() - {e}'
+    alarm_log(mail, name_log, text)    
 
 try:
     data_find = pd.DataFrame(find_gu())

@@ -17,7 +17,7 @@ select distinct t1.pc_region_id as region_id, --t1.pc_id as coll_id,
        uszn.pkXMLUtils.GuidToStr(uszn.pkJUtil.GetGUIDRAW(t2.region_id*1000000 + t2.people_id)) as people_guid,
        t2.role_class_name,
        Floor(Months_Between(sysdate, uszn.pkPerson.GetBirthDate(t2.region_id, t2.people_id))/12) as age,
-       uszn.pkPerson.GetSex(t1.pc_id, t1.pc_region_id) as gender,
+       uszn.pkPerson.GetSex(t2.people_id, t2.region_id) as gender,
        case when uszn.pkCat.HasCategory(t2.people_id, t2.region_id, 905, 0, sysdate)=1 and
                  uszn.pkCat.HasCategory(t2.people_id, t2.region_id, 1091, 0, sysdate)=1 then 1 else 0 end as student,
        uszn.pkCat.HasCategory(t2.people_id, t2.region_id, 325, 0, sysdate) as invalid
